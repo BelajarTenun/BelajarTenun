@@ -3,3 +3,8 @@ node_modules/
 logs/
 data/recordings/*/
 !data/recordings/.gitkeep
+dataset/
+data/users.json
+data/cache/
+data/logs/
+public/models/

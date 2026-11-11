@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pendamping · BelajarTenun</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page">
+  <header class="brand">
+    <a href="./">← BelajarTenun</a>
+    <h1>Pendamping Jarak Jauh</h1>
+    <p>Untuk penenun senior: lihat langsung apa yang dilihat murid dari kacamata/HP-nya, lalu kirim arahan singkat yang akan dibacakan di telinganya.</p>
+  </header>
+  <section class="card">
+    <form id="join" class="row">
+      <input id="code" placeholder="Kode dari murid (mis. K7Q2ZB)" maxlength="6" style="text-transform:uppercase" required>
+      <input id="name" placeholder="Nama pendamping" value="Pendamping">
+      <button class="primary">Lihat</button>
+    </form>
+    <p id="state" class="hint"></p>
+    <video id="view" autoplay playsinline muted controls></video>
+  </section>
+  <section class="card">
+    <h2>Kirim arahan</h2>
+    <div class="row" id="quick"></div>
+    <form id="msg" class="row"><input id="text" placeholder="mis. Tarik pedangnya lebih tegak"><button class="primary">Kirim</button></form>
+    <ul id="sent" class="rec-list"></ul>
+  </section>
+<script type="module">
+import { $, esc } from './js/api.js';
+import { joinView } from './js/rtc.js';
+let conn;
+const send = (text) => { if (!conn?.say(text)) return alert('Belum tersambung'); $('sent').insertAdjacentHTML('afterbegin', `<li>${esc(text)} <small>${new Date().toLocaleTimeString()}</small></li>`); };
+['Bagus, lanjutkan!', 'Pelan-pelan saja', 'Coba lihat video contohnya', 'Tegangkan lungsinya', 'Ulangi baris terakhir'].forEach((t) => {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = t; b.onclick = () => send(t); $('quick').append(b);
+});
+$('join').onsubmit = async (e) => {
+  e.preventDefault(); conn?.stop();
+  $('state').textContent = 'Menyambung…';
+  try { conn = await joinView($('code').value.trim(), $('view'), { name: $('name').value, onState: (s) => { $('state').textContent = `Status: ${s}`; } }); }
+  catch (err) { $('state').textContent = err.message; }
+};
+$('msg').onsubmit = (e) => { e.preventDefault(); if ($('text').value.trim()) send($('text').value.trim()); $('text').value = ''; };
+</script>
+</body>
+</html>

@@ -8,24 +8,31 @@
 </head>
 <body class="page">
   <header class="brand">
+    <div class="account" id="account"></div>
     <a href="./">← BelajarTenun</a>
     <h1>Editor Kurikulum</h1>
-    <p>Untuk partner penenun: isi dan validasi setiap tahap serta jawaban tutor, tanpa perlu mengedit file.</p>
-    <p><a href="rekam.html">🎥 Rekam data tenun</a></p>
+    <p>Untuk partner penenun: isi dan validasi setiap tahap serta jawaban tutor. <a href="rekam.html">🎥 Rekam</a> · <a href="anotasi.html">🏷️ Anotasi</a></p>
   </header>
-  <label id="token-wrap" hidden class="card">Token editor <input id="token" type="password"></label>
 
   <section class="card">
-    <h2>Modul</h2>
+    <div class="row"><label style="flex:1">Modul <select id="m-pick"></select></label><button id="m-new">+ Modul baru</button></div>
+    <label>ID modul <input id="m-id"></label>
     <label>Judul <input id="m-title"></label>
+    <label>Tradisi <input id="m-trad"></label>
     <label>Deskripsi <textarea id="m-desc" rows="2"></textarea></label>
     <label>Status <input id="m-status"></label>
+    <label class="toggle"><input type="checkbox" id="m-pub"> Tampilkan ke pemula</label>
   </section>
 
   <div id="steps"></div>
   <button id="add-step">+ Tambah tahap</button>
 
+  <h2 class="section-title">Pertanyaan pemula yang belum terjawab</h2>
+  <p class="hint">Dari sesi belajar: tutor tidak menemukan jawaban tervalidasi. Jadikan entri baru lalu isi jawabannya bersama penenun.</p>
+  <ul id="unanswered" class="rec-list"></ul>
+
   <h2 class="section-title">Knowledge base (tanya jawab)</h2>
+  <p class="hint">Status: <b>draft</b> → <b>ditinjau</b> → <b>tervalidasi</b>. Di produksi hanya entri tervalidasi yang dipakai tutor.</p>
   <div id="kb"></div>
   <button id="add-kb">+ Tambah tanya jawab</button>
 
@@ -35,12 +42,13 @@
   </div>
 
 <script type="module">
-const $ = (id) => document.getElementById(id);
-let mod, kb;
-const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-const field = (label, key, val, rows) => rows
+import { api, $, esc, requireLogin, accountBadge } from './js/api.js';
+const cfg = await requireLogin(['partner']);
+accountBadge($('account'), cfg.user);
+let mod, kb, modules;
+const field = (label, key, val, rows, type = 'text') => rows
   ? `<label>${label}<textarea data-k="${key}" rows="${rows}">${esc(val)}</textarea></label>`
-  : `<label>${label}<input data-k="${key}" value="${esc(val)}"></label>`;
+  : `<label>${label}<input type="${type}" step="any" data-k="${key}" value="${esc(val)}"></label>`;
 
 function stepCard(s, i) {
   const mistakes = (s.common_mistakes || []).map((m) => `${m.mistake} => ${m.fix}`).join('\n');
@@ -49,10 +57,11 @@ function stepCard(s, i) {
     ${field('ID (huruf kecil-tanda-hubung)', 'id', s.id)}
     ${field('Judul', 'title', s.title)}
     ${field('Instruksi (seperti diucapkan ke murid)', 'instruction', s.instruction, 3)}
-    ${field('Tips (satu per baris)', 'tips', (s.tips || []).join('\n'), 2)}
+    ${field('Tips / petunjuk (satu per baris; dipakai tutor saat murid terlihat kesulitan)', 'tips', (s.tips || []).join('\n'), 2)}
     ${field('Seperti apa kalau BERHASIL (yang terlihat kamera)', 'success_criteria', s.success_criteria, 2)}
     ${field('Kesalahan umum (format: kesalahan => cara memperbaiki, satu per baris)', 'common_mistakes', mistakes, 3)}
-    ${field('Video demo (path, bisa dipilih dari halaman Rekam)', 'demo_video', s.demo_video)}
+    ${field('Video demo (diisi dari halaman Rekam/Anotasi)', 'demo_video', s.demo_video)}
+    <div class="grid2">${field('Konfirmasi kamera berturut-turut sebelum "selesai"', 'confirm_frames', s.confirm_frames ?? 2, 0, 'number')}${field('Keyakinan minimum AI (0–1)', 'min_confidence', s.min_confidence ?? 0.6, 0, 'number')}</div>
     <label class="toggle"><input type="checkbox" data-k="auto_detect" ${s.auto_detect ? 'checked' : ''}> Deteksi otomatis dengan kamera</label>
     ${field('Divalidasi oleh (nama penenun; kosongkan jika belum)', 'validated_by', s.validated_by)}
     <div class="row"><button data-act="up">↑</button><button data-act="down">↓</button><button data-act="del">Hapus</button></div>
@@ -60,33 +69,34 @@ function stepCard(s, i) {
 }
 function kbCard(e, i) {
   return `<section class="card" data-kb="${i}">
-    ${field('ID', 'id', e.id)} ${field('Pertanyaan', 'question', e.question)}
-    ${field('Jawaban', 'answer', e.answer, 3)} ${field('Kata kunci (pisahkan koma)', 'keywords', (e.keywords || []).join(', '))}
-    ${field('Sumber', 'source', e.source)} ${field('Divalidasi oleh', 'validated_by', e.validated_by)}
+    <div class="grid2">${field('ID', 'id', e.id)}<label>Status<select data-k="status">${['draft', 'ditinjau', 'tervalidasi'].map((s) => `<option ${s === e.status ? 'selected' : ''}>${s}</option>`).join('')}</select></label></div>
+    ${field('Pertanyaan', 'question', e.question)} ${field('Jawaban', 'answer', e.answer, 3)}
+    ${field('Kata kunci (pisahkan koma)', 'keywords', (e.keywords || []).join(', '))}
+    <div class="grid2">${field('Topik', 'topic', e.topic)}<label>Khusus modul<select data-k="module"><option value="">(semua modul)</option>${modules.map((m) => `<option value="${m.id}" ${m.id === e.module ? 'selected' : ''}>${esc(m.title)}</option>`).join('')}</select></label></div>
+    <div class="grid2">${field('Sumber (nama penenun / rekaman / literatur)', 'source', e.source)}${field('Divalidasi oleh', 'validated_by', e.validated_by)}</div>
     <button data-act="del-kb">Hapus</button></section>`;
 }
 function render() {
-  $('m-title').value = mod.title; $('m-desc').value = mod.description || ''; $('m-status').value = mod.status || '';
+  $('m-id').value = mod.id; $('m-title').value = mod.title; $('m-trad').value = mod.tradition || ''; $('m-desc').value = mod.description || ''; $('m-status').value = mod.status || ''; $('m-pub').checked = mod.published !== false;
   $('steps').innerHTML = mod.steps.map(stepCard).join('');
   $('kb').innerHTML = kb.entries.map(kbCard).join('');
 }
-// Baca kembali form ke objek.
 function collect() {
-  mod.title = $('m-title').value; mod.description = $('m-desc').value; mod.status = $('m-status').value;
+  Object.assign(mod, { id: $('m-id').value.trim(), title: $('m-title').value, tradition: $('m-trad').value, description: $('m-desc').value, status: $('m-status').value, published: $('m-pub').checked });
   document.querySelectorAll('[data-step]').forEach((card) => {
     const s = mod.steps[card.dataset.step], v = (k) => card.querySelector(`[data-k="${k}"]`);
     for (const k of ['id', 'title', 'instruction', 'success_criteria']) s[k] = v(k).value.trim();
     s.tips = v('tips').value.split('\n').map((x) => x.trim()).filter(Boolean);
-    s.common_mistakes = v('common_mistakes').value.split('\n').filter((l) => l.trim()).map((l) => {
-      const [mistake, fix = ''] = l.split('=>'); return { mistake: mistake.trim(), fix: fix.trim() };
-    });
+    s.common_mistakes = v('common_mistakes').value.split('\n').filter((l) => l.trim()).map((l) => { const [mistake, fix = ''] = l.split('=>'); return { mistake: mistake.trim(), fix: fix.trim() }; });
     s.demo_video = v('demo_video').value.trim() || undefined;
+    s.confirm_frames = Math.max(1, Number(v('confirm_frames').value) || 2);
+    s.min_confidence = Math.min(1, Math.max(0, Number(v('min_confidence').value) || 0.6));
     s.auto_detect = v('auto_detect').checked;
     s.validated_by = v('validated_by').value.trim() || null;
   });
   document.querySelectorAll('[data-kb]').forEach((card) => {
     const e = kb.entries[card.dataset.kb], v = (k) => card.querySelector(`[data-k="${k}"]`).value.trim();
-    Object.assign(e, { id: v('id'), question: v('question'), answer: v('answer'), source: v('source') || null, validated_by: v('validated_by') || null,
+    Object.assign(e, { id: v('id'), status: v('status'), question: v('question'), answer: v('answer'), topic: v('topic') || null, module: v('module') || null, source: v('source') || null, validated_by: v('validated_by') || null,
       keywords: v('keywords').split(',').map((x) => x.trim()).filter(Boolean) });
   });
 }
@@ -103,21 +113,32 @@ document.body.addEventListener('click', (e) => {
   render();
 });
 $('add-step').onclick = () => { collect(); mod.steps.push({ id: `tahap-${mod.steps.length + 1}`, title: '', instruction: '', tips: [], success_criteria: '', common_mistakes: [], auto_detect: true, validated_by: null }); render(); };
-$('add-kb').onclick = () => { collect(); kb.entries.push({ id: `qa-${kb.entries.length + 1}`, question: '', answer: '', keywords: [], source: null, validated_by: null }); render(); };
+$('add-kb').onclick = () => { collect(); kb.entries.push({ id: `qa-${Date.now().toString(36)}`, status: 'draft', question: '', answer: '', keywords: [], source: null, validated_by: null }); render(); };
+$('m-new').onclick = () => {
+  const id = prompt('ID modul baru (huruf kecil-tanda-hubung), mis. tidore-motif-1'); if (!id) return;
+  mod = { id, title: 'Modul baru', tradition: mod.tradition, level: 'pemula', status: 'DRAFT', description: '', published: false, steps: [{ id: 'tahap-1', title: 'Tahap pertama', instruction: '…', tips: [], success_criteria: '…', common_mistakes: [], auto_detect: false, validated_by: null }] };
+  render();
+};
+$('m-pick').onchange = async (e) => { mod = await api(`/api/module?id=${e.target.value}`); render(); };
+$('unanswered').onclick = (e) => {
+  const q = e.target.dataset.q; if (!q) return;
+  collect(); kb.entries.unshift({ id: `qa-${Date.now().toString(36)}`, status: 'draft', question: q, answer: '', keywords: q.toLowerCase().split(/\s+/).filter((w) => w.length > 3).slice(0, 4), source: null, validated_by: null });
+  render(); document.querySelector('[data-kb="0"]').scrollIntoView({ behavior: 'smooth' });
+};
 $('save').onclick = async () => {
   collect();
-  const headers = { 'content-type': 'application/json', 'x-editor-token': $('token').value };
-  try {
-    for (const [url, body] of [['/api/module', mod], ['/api/knowledge', kb]]) {
-      const r = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
-      if (!r.ok) throw new Error((await r.json()).error);
-    }
-    msg('Tersimpan ✔', 'ok'); render();
-  } catch (e) { msg(e.message, 'warn'); }
+  try { await api('/api/module', mod); await api('/api/knowledge', kb); msg('Tersimpan ✔', 'ok'); await loadModules(); render(); }
+  catch (e) { msg(e.message, 'warn'); }
 };
-
-[mod, kb] = await Promise.all([fetch('/api/module').then((r) => r.json()), fetch('/api/knowledge').then((r) => r.json())]);
-$('token-wrap').hidden = !(await (await fetch('/api/editor-auth')).json()).required;
+async function loadModules() {
+  ({ modules } = await api('/api/modules'));
+  $('m-pick').innerHTML = modules.map((m) => `<option value="${m.id}" ${m.id === mod?.id ? 'selected' : ''}>${esc(m.title)}${m.published ? '' : ' (draft)'}</option>`).join('');
+}
+({ modules } = await api('/api/modules'));
+[mod, kb] = await Promise.all([api(`/api/module?id=${modules[0].id}`), api('/api/knowledge')]);
+await loadModules();
+const { items } = await api('/api/knowledge/unanswered');
+$('unanswered').innerHTML = items.slice(0, 30).map((u) => `<li>${esc(u.question)} <small>${u.at.slice(0, 10)} · ${esc(u.step || '')}</small> <button data-q="${esc(u.question)}">Jadikan entri</button></li>`).join('') || '<li>Tidak ada. 👍</li>';
 render();
 </script>
 </body>

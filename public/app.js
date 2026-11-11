@@ -1,208 +1,163 @@
-// BelajarTenun – klien sesi belajar (state machine tahap, kamera, suara, Q&A).
-const $ = (id) => document.getElementById(id);
-const CHECK_INTERVAL_MS = 6000;
+// BelajarTenun – aplikasi pemula di HP.
+import { api, $, esc, accountBadge } from './js/api.js';
+import { PhoneCamera } from './js/sources.js';
+import { TutorClient } from './js/tutor.js';
+import { renderCard } from './js/cards.js';
+import { shareView } from './js/rtc.js';
+import { earcon } from './js/earcons.js';
 
-const state = { handsfree: false, demoOpen: false, config: {}, module: null, index: 0, events: [], sessionId: crypto.randomUUID(), timer: null, busy: false, stream: null };
-
-const api = async (path, body) => {
-  const res = await fetch(path, body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) } : {});
-  if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || res.statusText);
-  return res.json();
-};
-const log = (type, data = {}) => {
-  const ev = { sessionId: state.sessionId, module: state.module?.id, step: currentStep()?.id, type, ...data };
-  state.events.push({ ...ev, t: Date.now() });
-  api('/api/log', ev).catch(() => {});
-};
-const currentStep = () => state.module?.steps[state.index];
+const state = { config: null, module: null, tutor: null, share: null, events: { questions: 0, auto: 0 }, startedAt: 0 };
 const show = (id) => document.querySelectorAll('.screen').forEach((s) => s.classList.toggle('active', s.id === id));
+const feedback = (text, kind = 'info') => { const f = $('feedback'); f.textContent = text; f.className = `feedback ${kind}`; };
 
-// ---------- Suara ----------
-let audio;
-let speakingUntil = 0;
-async function speak(text) {
-  audio?.pause(); speechSynthesis.cancel();
-  speakingUntil = Date.now() + 400 + text.length * 70; // perkiraan durasi agar mic tidak menangkap suara sendiri
-  if (state.config.tts) {
-    try {
-      const { audio: b64 } = await api('/api/tts', { text });
-      audio = new Audio(`data:audio/mp3;base64,${b64}`);
-      return audio.play();
-    } catch { /* jatuh ke suara browser */ }
+// ---------- Render balasan tutor ----------
+function renderReply(r) {
+  const m = state.module, step = m.steps[r.step?.index] ?? null;
+  if (r.step && step) {
+    $('bar').style.width = `${(r.step.index / r.step.total) * 100}%`;
+    $('step-count').textContent = `Tahap ${r.step.index + 1} dari ${r.step.total}`;
+    $('step-title').textContent = step.title;
+    $('step-instruction').textContent = step.instruction;
   }
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'id-ID'; u.rate = 0.95;
-  speechSynthesis.speak(u);
+  if (r.intent === 'koreksi') feedback(r.display, 'warn');
+  else if (r.intent === 'jawaban') { $('answer').hidden = false; $('answer').textContent = r.speak; state.events.questions++; }
+  else if (r.intent === 'petunjuk' || r.intent === 'tawar_bantuan') feedback(r.speak, 'info');
+  else if (r.observation) feedback(r.observation, 'info');
+  else if (r.display?.startsWith('📌')) feedback(r.display, 'info');
+  else if (r.intent === 'instruksi') { feedback(state.config.ai && step?.auto_detect ? 'Aku memperhatikan… tekan "Sudah" kalau selesai.' : 'Tekan "Sudah" atau ucapkan "sudah" kalau selesai.'); $('answer').hidden = true; }
 }
 
-const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-function listenOnce() {
-  return new Promise((resolve, reject) => {
-    const r = new Recognition();
-    r.lang = 'id-ID'; r.interimResults = false;
-    r.onresult = (e) => resolve(e.results[0][0].transcript);
-    r.onerror = (e) => reject(e.error);
-    r.onend = () => resolve('');
-    r.start();
-  });
-}
-
-// ---------- Alur tahap ----------
-function feedback(text, kind = 'info') { const f = $('feedback'); f.textContent = text; f.className = `feedback ${kind}`; }
-
-function renderStep() {
-  const s = currentStep(), n = state.module.steps.length;
-  $('bar').style.width = `${(state.index / n) * 100}%`;
-  $('step-count').textContent = `Tahap ${state.index + 1} dari ${n}`;
-  $('step-title').textContent = s.title;
-  $('step-instruction').textContent = s.instruction;
-  feedback(state.config.ai && s.auto_detect ? 'Aku sedang memperhatikan… tekan "Sudah" kalau kamu selesai.' : 'Tekan "Sudah" atau ucapkan "sudah" kalau selesai.');
-  $('answer').hidden = true;
-  log('step_start');
-  showDemo();
-}
-
-// Demonstrasi tahap: video/gambar dari penenun (field demo_video / demo_image) + tips.
-function showDemo() {
-  const s = currentStep();
-  state.demoOpen = true;
-  $('demo-title').textContent = s.title;
-  const media = s.demo_video
-    ? `<video src="${s.demo_video}" controls autoplay muted playsinline loop></video>`
-    : s.demo_image ? `<img src="${s.demo_image}" alt="Contoh ${s.title}">`
-    : '<p class="step-count">(Video demonstrasi dari penenun belum tersedia untuk tahap ini.)</p>';
-  $('demo-media').innerHTML = media;
-  $('demo-tips').innerHTML = (s.tips || []).map((t) => `<li>${t}</li>`).join('');
+function showDemo(url, intent) {
+  const step = state.module.steps[state.tutor.stepIndex];
+  if (!step) return;
+  if (intent === 'instruksi' && !url && !step.tips?.length) return;
+  $('demo-title').textContent = step.title;
+  const start = step.demo_start ? `#t=${step.demo_start}` : '';
+  $('demo-media').innerHTML = url ? `<video src="${esc(url)}${start}" controls autoplay muted playsinline loop></video>` : '<p class="step-count">(Video demonstrasi dari penenun belum tersedia untuk tahap ini.)</p>';
+  $('demo-tips').innerHTML = (step.tips || []).map((t) => `<li>${esc(t)}</li>`).join('');
   $('demo').hidden = false;
-  speak(`${s.title}. ${s.instruction}`);
 }
-function closeDemo() {
-  if (!state.demoOpen) return;
-  state.demoOpen = false; $('demo').hidden = true; $('demo-media').innerHTML = '';
-  log('demo_closed');
-  speak('Silakan dicoba. Aku memperhatikan.');
-}
+const closeDemo = () => { $('demo').hidden = true; $('demo-media').innerHTML = ''; };
 
-function nextStep(source) {
-  if (state.index >= state.module.steps.length) return;
-  closeDemoSilently();
-  log('step_done', { source });
-  state.index++;
-  if (state.index >= state.module.steps.length) return finish();
-  feedback('Bagus! Lanjut ke tahap berikutnya.', 'ok');
-  setTimeout(renderStep, 1200);
-}
-
-function closeDemoSilently() { state.demoOpen = false; $('demo').hidden = true; $('demo-media').innerHTML = ''; }
-
-async function checkStep() {
-  const s = currentStep();
-  if (!state.config.ai || !s?.auto_detect || state.busy || state.demoOpen || document.hidden) return;
-  state.busy = true;
-  try {
-    const v = $('cam'), c = $('snap');
-    const w = 640, h = Math.round((v.videoHeight / v.videoWidth) * w) || 480;
-    c.width = w; c.height = h; c.getContext('2d').drawImage(v, 0, 0, w, h);
-    const r = await api('/api/check-step', { stepId: s.id, image: c.toDataURL('image/jpeg', 0.7) });
-    log('check', { status: r.status, confidence: r.confidence });
-    if (s !== currentStep()) return;
-    if (r.status === 'done') { speak('Bagus, tahap ini sudah selesai.'); nextStep('vision'); }
-    else if (r.status === 'mistake') { feedback(`⚠️ ${r.fix}`, 'warn'); speak(r.fix); }
-    else if (r.status === 'not_yet' && r.observation) feedback(r.observation, 'info');
-  } catch (e) {
-    console.warn('check gagal', e);
-  } finally { state.busy = false; }
-}
-
-async function ask(question) {
-  if (!question.trim()) return;
-  $('answer').hidden = false; $('answer').textContent = '…';
-  log('question', { question });
-  try {
-    const { answer } = await api('/api/ask', { question, stepId: currentStep()?.id });
-    $('answer').textContent = answer;
-    speak(answer);
-  } catch (e) { $('answer').textContent = 'Maaf, tutor sedang tidak bisa dihubungi.'; }
-}
-
-// Perintah suara singkat; selain itu dianggap pertanyaan.
-function handleUtterance(text) {
-  const t = text.toLowerCase().trim();
-  if (/^(sudah|selesai|lanjut)\b/.test(t)) return nextStep('voice');
-  if (/^(ulang|ulangi)\b/.test(t)) return speak(currentStep().instruction);
-  if (/^(contoh|lihat contoh|demo)\b/.test(t)) return showDemo();
-  if (/^(coba|mulai|siap)\b/.test(t)) return closeDemo();
-  return ask(text);
-}
-
-// Hands-free: pengenalan suara terus-menerus, dimulai ulang otomatis.
+// ---------- Hands-free ----------
+const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let hfRec = null;
 function startHandsfree() {
-  if (!Recognition) { alert('Browser ini belum mendukung pengenalan suara. Coba Chrome.'); return; }
-  hfRec = new Recognition();
-  hfRec.lang = 'id-ID'; hfRec.continuous = true; hfRec.interimResults = false;
+  if (!Recognition) return alert('Browser ini belum mendukung pengenalan suara. Coba Chrome.');
+  hfRec = new Recognition(); hfRec.lang = 'id-ID'; hfRec.continuous = true;
   hfRec.onresult = (e) => {
-    const text = e.results[e.results.length - 1][0].transcript;
-    if (Date.now() < speakingUntil) return;
-    log('voice', { text });
-    handleUtterance(text);
+    if (speechSynthesis.speaking) return; // jangan menangkap suara tutor sendiri
+    const text = e.results[e.results.length - 1][0].transcript.trim();
+    if (/^(coba|mulai|siap)\b/i.test(text)) return closeDemo();
+    state.tutor.say(text);
   };
   hfRec.onend = () => { if (hfRec) try { hfRec.start(); } catch {} };
-  hfRec.start();
-  $('hf-status').hidden = false;
+  hfRec.start(); $('hf-status').hidden = false;
 }
 function stopHandsfree() { const r = hfRec; hfRec = null; r?.stop(); $('hf-status').hidden = true; }
 
-// ---------- Layar ----------
+// ---------- Sesi ----------
 async function start() {
-  try {
-    state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: 1280 }, audio: false });
-    $('cam').srcObject = state.stream;
-  } catch { alert('Kamera tidak bisa dibuka. Latihan tetap bisa berjalan dengan konfirmasi manual.'); }
-  state.index = 0; state.events = []; state.sessionId = crypto.randomUUID();
-  show('session'); log('session_start'); renderStep();
-  state.timer = setInterval(checkStep, CHECK_INTERVAL_MS);
-  if ($('handsfree').checked) startHandsfree();
+  const cam = new PhoneCamera();
+  try { await cam.start($('cam')); } catch { alert('Kamera tidak bisa dibuka. Latihan tetap bisa berjalan dengan konfirmasi manual.'); }
+  state.camera = cam; state.events = { questions: 0, auto: 0 }; state.startedAt = Date.now();
+  $('cards').innerHTML = ''; $('transcript').innerHTML = ''; $('badges').textContent = '';
+  show('session');
+  state.tutor = new TutorClient({
+    moduleId: state.module.id, source: cam, serverTts: state.config.tts,
+    ui: {
+      show: renderReply,
+      card: (c) => renderCard($('cards'), c),
+      demo: showDemo,
+      status: (t) => { if (!$('feedback').textContent) feedback(t); },
+      finish,
+      transcript: (role, text) => { const t = $('transcript'); t.hidden = false; t.insertAdjacentHTML('beforeend', `<p class="${role}">${role === 'user' ? '🗣️' : '🧵'} ${esc(text)}</p>`); t.scrollTop = t.scrollHeight; },
+    },
+  });
+  await state.tutor.start();
+  if ($('live').checked) {
+    try { await state.tutor.startLive(); $('badges').textContent = '· 🎧 Live'; } catch (e) { feedback(`Live tidak tersedia: ${e.message}. Pakai mode standar.`, 'warn'); }
+  }
+  if ($('handsfree').checked && !state.tutor.live) startHandsfree();
 }
 
-function stop() {
-  clearInterval(state.timer); stopHandsfree(); state.stream?.getTracks().forEach((t) => t.stop());
-  speechSynthesis.cancel(); audio?.pause();
-}
+function stop() { stopHandsfree(); state.tutor?.stop(); state.camera?.stop(); state.share?.stop(); state.share = null; closeDemo(); }
 
 function finish() {
-  stop(); log('session_done');
-  const q = state.events.filter((e) => e.type === 'question').length;
-  const auto = state.events.filter((e) => e.type === 'step_done' && e.source === 'vision').length;
-  const mins = Math.max(1, Math.round((Date.now() - state.events[0].t) / 60000));
+  const mins = Math.max(1, Math.round((Date.now() - state.startedAt) / 60000));
+  stop();
   $('summary').textContent = `Kamu menyelesaikan ${state.module.steps.length} tahap dalam ±${mins} menit.`;
-  $('summary-list').innerHTML = `<li>${q} pertanyaan diajukan ke tutor</li><li>${auto} tahap dikenali otomatis oleh kamera</li>`;
-  show('finish'); speak('Selamat! Latihan dasar selesai.');
+  $('summary-list').innerHTML = `<li>${state.events.questions} pertanyaan diajukan ke tutor</li>`;
+  show('finish');
 }
 
+// ---------- Kuesioner ----------
+const answers = {};
+document.querySelectorAll('.scale').forEach((el) => {
+  el.innerHTML = [1, 2, 3, 4, 5].map((n) => `<button type="button" data-v="${n}">${n}</button>`).join('');
+  el.onclick = (e) => { const v = e.target.dataset.v; if (!v) return; answers[el.dataset.q] = Number(v); el.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === v)); };
+});
+$('survey').onsubmit = async (e) => {
+  e.preventDefault();
+  await api('/api/log', { type: 'survey', sessionId: state.tutor?.sessionId, module: state.module.id, ...answers, text: $('survey-text').value }).catch(() => {});
+  $('survey').innerHTML = '<p>Terima kasih! 🙏</p>';
+};
+
+// ---------- Tombol ----------
 $('start').onclick = start;
 $('demo-go').onclick = closeDemo;
-$('btn-done').onclick = () => nextStep('button');
-$('btn-repeat').onclick = () => showDemo();
-$('btn-exit').onclick = () => { log('session_exit'); stop(); show('home'); };
-$('again').onclick = () => show('home');
-$('btn-ask').onclick = async () => {
-  if (!Recognition) { $('ask-form').hidden = !$('ask-form').hidden; $('ask-input').focus(); return; }
-  const b = $('btn-ask'); b.classList.add('listening'); b.textContent = '🎙️ Mendengar…';
-  try { handleUtterance(await listenOnce()); }
-  catch { $('ask-form').hidden = false; }
-  finally { b.classList.remove('listening'); b.textContent = '🎙️ Tanya'; }
+$('btn-done').onclick = () => state.tutor.button('next');
+$('btn-repeat').onclick = () => state.tutor.button('demo');
+$('btn-pin').onclick = () => { state.tutor.button('pin'); $('btn-pin').classList.toggle('on'); };
+$('btn-exit').onclick = () => { stop(); show('home'); };
+$('again').onclick = () => location.reload();
+$('btn-ask').onclick = () => {
+  if (state.tutor.live) return feedback('Mode Live: langsung bicara saja.');
+  if (!Recognition) { $('ask-form').hidden = !$('ask-form').hidden; return $('ask-input').focus(); }
+  const r = new Recognition(); r.lang = 'id-ID';
+  $('btn-ask').classList.add('listening');
+  r.onresult = (e) => state.tutor.say(e.results[0][0].transcript);
+  r.onerror = () => { $('ask-form').hidden = false; };
+  r.onend = () => $('btn-ask').classList.remove('listening');
+  r.start();
 };
-$('ask-form').onsubmit = (e) => { e.preventDefault(); handleUtterance($('ask-input').value); $('ask-input').value = ''; };
+$('ask-form').onsubmit = (e) => { e.preventDefault(); state.tutor.say($('ask-input').value); $('ask-input').value = ''; };
+$('btn-share').onclick = async () => {
+  if (state.share) { state.share.stop(); state.share = null; $('btn-share').classList.remove('on'); return feedback('Berbagi tampilan dihentikan.'); }
+  if (!state.camera?.stream) return feedback('Kamera belum aktif.', 'warn');
+  state.share = await shareView(state.camera.stream, {
+    onViewers: (n) => feedback(`🧑‍🏫 ${n} pendamping melihat`, 'ok'),
+    onMessage: (m) => { earcon('captured'); feedback(`🧑‍🏫 ${m.from}: ${m.text}`, 'ok'); const u = new SpeechSynthesisUtterance(m.text); u.lang = 'id-ID'; speechSynthesis.speak(u); state.tutor.tracer.emit('companion_message', { text: m.text }); },
+  });
+  $('btn-share').classList.add('on');
+  feedback(`Kode pendamping: ${state.share.code} — bagikan ke penenun pendampingmu (halaman /pendamping.html).`, 'ok');
+};
 
 // ---------- Init ----------
-(async () => {
-  [state.config, state.module] = await Promise.all([api('/api/config'), api('/api/module')]);
+async function selectModule(id) {
+  state.module = await api(`/api/module${id ? `?id=${encodeURIComponent(id)}` : ''}`);
   const m = state.module;
   $('module-title').textContent = m.title;
   $('module-desc').textContent = m.description;
-  $('module-status').textContent = m.status;
-  $('module-steps').innerHTML = m.steps.map((s) => `<li>${s.title}</li>`).join('');
-  $('mode').textContent = state.config.ai ? `Mode AI aktif · deteksi tahap otomatis (${state.config.model})` : 'Mode manual · AI belum dikonfigurasi (lihat README)';
+  $('module-status').textContent = m.status || '';
+  $('module-steps').innerHTML = m.steps.map((s) => `<li>${esc(s.title)}</li>`).join('');
   $('start').disabled = false;
+  try { localStorage.setItem('bt_module', m.id); } catch {}
+}
+
+(async () => {
+  state.config = await api('/api/config');
+  accountBadge($('account'), state.config.user);
+  const { modules } = await api('/api/modules');
+  const pub = modules.filter((m) => m.published);
+  if (pub.length > 1) {
+    $('modules').innerHTML = `<label class="picker">Modul <select id="module-select">${pub.map((m) => `<option value="${esc(m.id)}">${esc(m.title)}</option>`).join('')}</select></label>`;
+    $('module-select').onchange = (e) => selectModule(e.target.value);
+  }
+  let saved = null; try { saved = localStorage.getItem('bt_module'); } catch {}
+  await selectModule(pub.some((m) => m.id === saved) ? saved : pub[0]?.id);
+  if ($('module-select')) $('module-select').value = state.module.id;
+  $('live-wrap').hidden = !state.config.live;
+  $('mode').textContent = state.config.ai ? `Mode AI aktif · deteksi tahap otomatis (${state.config.model})` : 'Mode manual · AI belum dikonfigurasi (lihat README)';
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();

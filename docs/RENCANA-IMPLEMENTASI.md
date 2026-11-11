@@ -1,5 +1,7 @@
 # Rencana Implementasi End-to-End BelajarTenun
 
+> **Status (11 Nov 2026):** semua fase sudah diimplementasikan di kode. Bagian yang butuh API key atau hardware belum diuji (lihat README → Status & keterbatasan).
+
 Dokumen ini disusun setelah membaca kode lima repo referensi (di-clone 11 Nov 2026). Untuk setiap fitur dijelaskan: **cara kerja**, **apa yang ditiru dari referensi**, **langkah pengembangan**, dan **kebutuhan**.
 
 ---

@@ -3,75 +3,88 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Simulator Kacamata · BelajarTenun</title>
+  <title>Mode Kacamata · BelajarTenun</title>
   <link rel="stylesheet" href="style.css">
   <style>
     body { background: #0b0b0b; color: #ddd; }
     .sim { max-width: 900px; margin: 0 auto; padding: 16px; }
     .sim a { color: #ffb38a; }
-    /* Tampilan lensa: latar = dunia nyata (kamera), teks hijau monokrom seperti HUD kacamata */
-    .lens { position: relative; aspect-ratio: 16 / 9; border-radius: 48% 48% 40% 40% / 30% 30% 45% 45%; overflow: hidden; border: 10px solid #222; }
-    .lens video { width: 100%; height: 100%; object-fit: cover; filter: brightness(.8); }
-    .hud-text { position: absolute; left: 12%; right: 12%; top: 18%; color: #6dff9e; font: 600 clamp(14px, 3vw, 22px)/1.3 ui-monospace, monospace;
-      text-shadow: 0 0 6px #0f0a; white-space: pre-wrap; }
-    .sim .row { margin-top: 12px; }
+    .lens { position: relative; aspect-ratio: 16 / 9; border-radius: 48% 48% 40% 40% / 30% 30% 45% 45%; overflow: hidden; border: 10px solid #222; background: #000; }
+    .lens video, .lens img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.8); }
+    .lens img[hidden], .lens video[hidden] { display: none; }
+    .hud-text { position: absolute; left: 12%; right: 12%; top: 18%; color: #6dff9e; font: 600 clamp(14px, 3vw, 22px)/1.3 ui-monospace, monospace; text-shadow: 0 0 6px #0f0a; white-space: pre-wrap; }
+    .lens.audio-only .hud-text { display: none; }
+    .sim .row { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     .sim button { background: #222; color: #eee; border-color: #444; }
     .sim button.primary { background: #a3361f; }
-    .log { font: 12px/1.4 ui-monospace, monospace; background: #111; padding: 8px; border-radius: 8px; max-height: 180px; overflow: auto; margin-top: 12px; white-space: pre-wrap; }
-    .sim input { flex: 1; min-width: 0; font: inherit; padding: .6rem .9rem; border-radius: 999px; border: 1px solid #444; background: #161616; color: #eee; }
+    .sim select, .sim input { font: inherit; padding: .55rem .8rem; border-radius: 999px; border: 1px solid #444; background: #161616; color: #eee; }
+    .sim input { flex: 1; min-width: 0; }
+    .log { font: 12px/1.4 ui-monospace, monospace; background: #111; padding: 8px; border-radius: 8px; max-height: 200px; overflow: auto; margin-top: 12px; white-space: pre-wrap; }
+    .sim .cards { position: static; width: auto; margin-top: 12px; }
+    .sim label { font-size: .85rem; color: #aaa; }
   </style>
 </head>
 <body>
 <div class="sim">
-  <p><a href="./">← BelajarTenun</a> · Simulator kacamata: memakai <b>Glasses API</b> yang sama dengan smart glasses sungguhan (lihat docs/KACAMATA.md).</p>
-  <div class="lens"><video id="cam" autoplay playsinline muted></video><div class="hud-text" id="hud">Tekan "Pakai kacamata"</div></div>
+  <p><a href="./">← BelajarTenun</a> · <b>Mode kacamata</b>: memakai Glasses API &amp; Gemini Live yang sama dengan kacamata sungguhan (docs/KACAMATA.md).</p>
+  <div class="lens" id="lens"><video id="cam" autoplay playsinline muted></video><img id="photo" hidden alt=""><div class="hud-text" id="hud">Pilih kamera lalu "Pakai kacamata"</div></div>
+  <div class="row">
+    <label>Kamera <select id="source"><option value="phone">HP / webcam</option><option value="openglass">OpenGlass (Bluetooth)</option></select></label>
+    <label><input type="checkbox" id="audio-only"> Kacamata tanpa layar (suara saja)</label>
+    <label id="live-wrap" hidden><input type="checkbox" id="live"> Gemini Live</label>
+  </div>
   <div class="row">
     <button id="start" class="primary">👓 Pakai kacamata</button>
     <button data-btn="next">Tap: lanjut</button>
     <button data-btn="repeat">Tap: ulangi</button>
+    <button data-btn="pin">📌 Bekukan</button>
     <button id="mic">🎙️ Bicara</button>
   </div>
-  <form id="say" class="row"><input id="text" placeholder='Ucapan (mis. "kenapa tepi menyempit?" / "sudah")'><button>Kirim</button></form>
+  <form id="say" class="row"><input id="text" placeholder='Ucapan (mis. "kenapa tepi menyempit?" / "sudah" / "catat …")'><button>Kirim</button></form>
+  <div class="cards" id="cards"></div>
   <div class="log" id="log"></div>
 </div>
 <script type="module">
-const $ = (id) => document.getElementById(id);
-let sessionId, timer;
-const post = (path, body) => fetch(path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }).then((r) => r.json());
+import { api, $ } from './js/api.js';
+import { PhoneCamera, OpenGlassCamera } from './js/sources.js';
+import { TutorClient } from './js/tutor.js';
+import { renderCard } from './js/cards.js';
+
+let tutor, source;
 const log = (t) => { $('log').textContent = `${new Date().toLocaleTimeString()}  ${t}\n` + $('log').textContent; };
-
-// Inilah seluruh tugas klien kacamata: tampilkan "display", ucapkan "speak".
-function render(r) {
-  if (r.error) return log(`error: ${r.error}`);
-  if (r.display) $('hud').textContent = r.display;
-  if (r.speak) {
-    log(`🔊 ${r.speak}`);
-    if (r.audio) new Audio(`data:audio/mp3;base64,${r.audio}`).play();
-    else { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(r.speak); u.lang = 'id-ID'; speechSynthesis.speak(u); }
-  }
-  if (r.finished) clearInterval(timer);
-}
-
-function frame() {
-  const v = $('cam'); if (!v.videoWidth) return;
-  const c = document.createElement('canvas'); c.width = 640; c.height = Math.round(v.videoHeight / v.videoWidth * 640);
-  c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
-  post('/api/glasses/frame', { sessionId, image: c.toDataURL('image/jpeg', 0.7) }).then((r) => { if (!r.skipped) render(r); });
-}
+const cfg = await api('/api/config');
+$('live-wrap').hidden = !cfg.live;
+if (!OpenGlassCamera.supported()) $('source').options[1].text += ' – butuh Chrome';
 
 $('start').onclick = async () => {
-  try { $('cam').srcObject = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); } catch { log('kamera tidak tersedia'); }
-  const cfg = await fetch('/api/config').then((r) => r.json());
-  const r = await post('/api/glasses/start', { audio: cfg.tts });
-  sessionId = r.sessionId; render(r);
-  clearInterval(timer); timer = setInterval(frame, 2000); // kacamata mengirim frame tiap 2 dtk; server membatasi pemanggilan AI
+  tutor?.stop(); source?.stop();
+  const og = $('source').value === 'openglass';
+  $('cam').hidden = og; $('photo').hidden = !og;
+  source = og ? new OpenGlassCamera({ intervalSec: 5 }) : new PhoneCamera();
+  source.onstatus = (t) => log(`📡 ${t}`);
+  try { await source.start(og ? $('photo') : $('cam')); } catch (e) { log(`kamera: ${e.message}`); }
+  $('lens').classList.toggle('audio-only', $('audio-only').checked);
+  tutor = new TutorClient({
+    moduleId: undefined, source, audioOnly: $('audio-only').checked, serverTts: cfg.tts,
+    ui: {
+      // Inilah seluruh tugas klien kacamata: tampilkan "display", ucapkan "speak".
+      show: (r) => { if (r.display) $('hud').textContent = r.display; if (r.speak) log(`🔊 ${r.speak}`); },
+      card: (c) => renderCard($('cards'), c),
+      demo: (url) => url && log(`▶ video demo: ${url}`),
+      status: (t) => log(t),
+      finish: () => log('🎉 selesai'),
+      transcript: (role, text) => log(`${role === 'user' ? '🗣️' : '🧵'} ${text}`),
+    },
+  });
+  await tutor.start();
+  if ($('live').checked) { try { await tutor.startLive(); log('🎧 Gemini Live tersambung'); } catch (e) { log(`Live gagal: ${e.message}`); } }
 };
-document.querySelectorAll('[data-btn]').forEach((b) => b.onclick = async () => render(await post('/api/glasses/button', { sessionId, action: b.dataset.btn })));
-$('say').onsubmit = async (e) => { e.preventDefault(); const text = $('text').value; $('text').value = ''; log(`🗣️ ${text}`); render(await post('/api/glasses/say', { sessionId, text })); };
+document.querySelectorAll('[data-btn]').forEach((b) => b.onclick = () => tutor?.button(b.dataset.btn));
+$('say').onsubmit = (e) => { e.preventDefault(); const t = $('text').value; $('text').value = ''; log(`🗣️ ${t}`); tutor?.say(t); };
 $('mic').onclick = () => {
   const R = window.SpeechRecognition || window.webkitSpeechRecognition; if (!R) return log('pengenalan suara tidak didukung browser ini');
   const rec = new R(); rec.lang = 'id-ID';
-  rec.onresult = async (e) => { const text = e.results[0][0].transcript; log(`🗣️ ${text}`); render(await post('/api/glasses/say', { sessionId, text })); };
+  rec.onresult = (e) => { const t = e.results[0][0].transcript; log(`🗣️ ${t}`); tutor?.say(t); };
   rec.start();
 };
 </script>

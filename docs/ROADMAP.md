@@ -31,7 +31,21 @@ Ya, produk ini butuh computer vision. Kita bangun bertahap:
 - ✅ Skrip evaluasi akurasi deteksi (technical validation)
 - ✅ Editor kurikulum & knowledge base untuk partner; halaman progres belajar
 
+## Sudah dikerjakan (fase 1–5 rencana implementasi)
+- ✅ Deteksi v2: filter kualitas, multi-frame, few-shot, smoothing, ambang per tahap
+- ✅ Gemini Live + tools, sampler suara, earcons, kartu, tracer (pola VisionClaw)
+- ✅ Policy kapan bicara, petunjuk proaktif
+- ✅ Anotasi timeline + usulan AI + ekspor frame; persetujuan berjenjang & pencabutan
+- ✅ Tanya jawab berbasis makna dengan status validasi; pertanyaan belum terjawab
+- ✅ Evaluasi (matriks kebingungan, latensi, ambang CI); kuesioner; dashboard admin
+- ✅ Akun & peran, kode akses perangkat, multi-modul
+- ✅ Adaptor OpenGlass, bridge Frame, miniapp Mentra; pendamping jarak jauh (WebRTC)
+- ✅ Pipeline model offline + PWA; Dockerfile, CI, panduan deploy, dokumen privasi
+
 ## Backlog berikutnya
+- Uji dengan GEMINI_API_KEY nyata dan dataset partner; atur ambang per tahap dari hasil evaluasi.
+- Uji klien kacamata di perangkat; server TURN untuk pendamping.
+- Sesi di penyimpanan bersama (Redis/Firestore) agar bisa lebih dari satu instance.
 - Klien kacamata nyata (mulai dari Brilliant Labs Frame atau MentraOS) memakai Glasses API.
 - Penyimpanan sesi & dataset di cloud (sekarang di disk server) + login partner.
 - Model CV ringan di perangkat (offline) dilatih dari dataset rekaman.

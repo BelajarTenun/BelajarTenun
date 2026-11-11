@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { searchKnowledge, interpretStepCheck, buildStepCheckPrompt } from '../lib/core.js';
 
 const kb = JSON.parse(readFileSync(new URL('../data/knowledge.json', import.meta.url))).entries;
-const mod = JSON.parse(readFileSync(new URL('../data/tidore-dasar.json', import.meta.url)));
+const mod = JSON.parse(readFileSync(new URL('../data/modules/tidore-dasar.json', import.meta.url)));
 const step = mod.steps.find((s) => s.id === 'masukkan-pakan');
 
 test('Q&A menemukan entri yang relevan', () => {
@@ -51,10 +51,34 @@ test('ringkasan log progres', () => {
   const p = summarizeLogs([L({ type: 'session_start' }), L({ type: 'step_done', step: 's1', source: 'vision' }),
     L({ type: 'question', step: 's1' }), L({ type: 'session_done', at: '2026-11-11T10:12:00Z' }), 'rusak']);
   assert.equal(p.completed, 1); assert.equal(p.sessions[0].minutes, 12);
-  assert.deepEqual(p.steps[0], { step: 's1', done: 1, vision: 1, manual: 0, questions: 1, mistakes: 0, checks: 0 });
+  assert.deepEqual(p.steps[0], { step: 's1', done: 1, vision: 1, manual: 0, questions: 1, mistakes: 0, checks: 0, hints: 0 });
 });
 
 test('skor evaluasi', () => {
   const s = scoreEvaluation([{ label: 'done', predicted: 'done' }, { label: 'not_yet', predicted: 'done' }, { label: 'done', predicted: 'uncertain' }, { label: 'mistake', predicted: 'mistake' }]);
   assert.equal(s.accuracy, 0.5); assert.equal(s.doneRecall, 0.5); assert.equal(s.falseDoneRate, 0.5); assert.equal(s.uncertainRate, 0.25);
+});
+
+import { createJpegAssembler } from '../public/js/sources.js';
+test('perakit JPEG OpenGlass: potongan berurutan, paket hilang dibuang', () => {
+  const got = [];
+  const feed = createJpegAssembler((j) => got.push([...j]));
+  feed(Uint8Array.from([0, 0, 1, 2])); feed(Uint8Array.from([1, 0, 3])); feed(Uint8Array.from([0xff, 0xff]));
+  assert.deepEqual(got, [[1, 2, 3]]);
+  feed(Uint8Array.from([0, 0, 9])); feed(Uint8Array.from([2, 0, 9])); feed(Uint8Array.from([0xff, 0xff]));
+  assert.equal(got.length, 1, 'foto dengan paket hilang tidak dipakai');
+});
+
+import { buildStepCheckPrompt as bp } from '../lib/core.js';
+test('prompt multi-frame menyebut contoh & riwayat', () => {
+  const p = bp(mod.steps[1], { frames: 3, examples: 2, history: [{ status: 'not_yet', observation: 'celah belum terbuka' }] });
+  assert.match(p, /2 foto pertama adalah CONTOH BENAR/);
+  assert.match(p, /3 foto berikutnya/);
+  assert.match(p, /celah belum terbuka/);
+});
+
+import { confusionMatrix } from '../lib/core.js';
+test('matriks kebingungan', () => {
+  const m = confusionMatrix([{ label: 'done', predicted: 'done' }, { label: 'done', predicted: 'uncertain' }, { label: 'mistake', predicted: 'aneh' }]);
+  assert.equal(m.done.done, 1); assert.equal(m.done.uncertain, 1); assert.equal(m.mistake.error, 1);
 });

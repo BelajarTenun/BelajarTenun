@@ -33,7 +33,17 @@ Balasan:
   "step": { "index": 1, "total": 5, "title": "…" }, "finished": false, "audio": "<mp3 base64, opsional>" }
 ```
 
-Coba tanpa hardware: buka **`/kacamata.html`** (simulator lensa yang memakai API yang sama).
+Selain `/api/glasses/*` ada `/api/glasses/tick` (petunjuk proaktif saat tidak mengirim foto) dan aksi tombol `demo` / `pin` (bekukan tampilan). Kirim header `Authorization: Bearer <kode akses perangkat>` (dibuat di `/masuk.html`) agar sesi tercatat atas nama pengguna. Untuk mode suara real-time, klien memanggil `/api/live/token` lalu tersambung langsung ke Gemini Live; tool call diteruskan ke `/api/live/tool`.
+
+Coba tanpa hardware: buka **`/kacamata.html`**. Halaman ini bisa memakai kamera HP/webcam atau **kacamata OpenGlass sungguhan lewat Web Bluetooth**, mode suara saja, dan Gemini Live.
+
+## Klien yang sudah ada
+| Perangkat | Berkas | Status |
+|---|---|---|
+| HP / webcam | `/`, `/kacamata.html` | Diuji di browser |
+| OpenGlass (ESP32-S3) | `public/js/sources.js` (Web Bluetooth) | Protokol dari firmware OpenGlass; belum diuji dengan hardware |
+| Brilliant Labs Frame | `clients/frame/bridge.py` | Belum diuji di perangkat |
+| MentraOS (Mentra Live, dll.) | `clients/mentra/` | Belum diuji di perangkat |
 
 ## Pilihan perangkat
 | Perangkat | Kamera | Layar lensa | Cara sambung | Catatan |

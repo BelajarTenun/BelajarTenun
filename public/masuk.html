@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Akun · BelajarTenun</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page">
+  <header class="brand"><a href="./">← BelajarTenun</a><h1>Akun</h1></header>
+  <p id="notice" class="feedback"></p>
+
+  <div id="guest" hidden class="grid2">
+    <section class="card">
+      <h2>Masuk</h2>
+      <form id="login">
+        <label>Email <input id="l-email" type="email" required autocomplete="email"></label>
+        <label>Kata sandi <input id="l-pass" type="password" required autocomplete="current-password"></label>
+        <button class="primary">Masuk</button>
+      </form>
+    </section>
+    <section class="card">
+      <h2>Daftar</h2>
+      <form id="register">
+        <label>Nama <input id="r-name" required></label>
+        <label>Email <input id="r-email" type="email" required></label>
+        <label>Kata sandi (min. 8) <input id="r-pass" type="password" minlength="8" required autocomplete="new-password"></label>
+        <label>Saya mendaftar sebagai
+          <select id="r-role"><option value="pemula">Pemula (belajar menenun)</option><option value="partner">Partner / penenun (perlu persetujuan admin)</option></select>
+        </label>
+        <label>Komunitas / sentra tenun (opsional) <input id="r-comm"></label>
+        <button class="primary">Daftar</button>
+      </form>
+    </section>
+  </div>
+
+  <div id="member" hidden>
+    <section class="card">
+      <h2 id="who"></h2>
+      <p id="links"></p>
+      <button id="logout">Keluar</button>
+    </section>
+    <section class="card">
+      <h2>Kode akses kacamata</h2>
+      <p class="hint">Dipakai aplikasi kacamata (Frame bridge, miniapp Mentra) agar sesi tercatat atas namamu. Kode hanya ditampilkan sekali; cabut bila perangkat hilang.</p>
+      <form id="token" class="row"><input id="t-label" placeholder="Nama perangkat, mis. Frame-01"><button class="primary">Buat kode</button></form>
+      <pre id="t-new" hidden></pre>
+      <ul id="t-list" class="rec-list"></ul>
+    </section>
+  </div>
+<script type="module">
+import { api, $, esc } from './js/api.js';
+const next = new URLSearchParams(location.search).get('next');
+const notice = (t, k = 'info') => { $('notice').textContent = t; $('notice').className = `feedback ${k}`; };
+if (new URLSearchParams(location.search).get('role')) notice('Halaman itu butuh akun partner atau admin.', 'warn');
+
+async function render() {
+  const { user } = await api('/api/auth/me');
+  $('guest').hidden = Boolean(user); $('member').hidden = !user;
+  if (!user) return;
+  $('who').textContent = `${user.name} · ${user.role}`;
+  const links = [['./', 'Belajar'], ['progres.html', 'Progres']];
+  if (['partner', 'admin'].includes(user.role)) links.push(['editor.html', 'Editor'], ['rekam.html', 'Rekam'], ['anotasi.html', 'Anotasi']);
+  if (user.role === 'admin') links.push(['admin.html', 'Admin']);
+  $('links').innerHTML = links.map(([h, t]) => `<a href="${h}">${t}</a>`).join(' · ');
+  const { tokens } = await api('/api/auth/device-tokens');
+  $('t-list').innerHTML = tokens.map((t) => `<li>${esc(t.label)} <small>${t.createdAt.slice(0, 10)}</small> <button data-revoke="${t.id}">Cabut</button></li>`).join('') || '<li>Belum ada.</li>';
+}
+$('login').onsubmit = async (e) => {
+  e.preventDefault();
+  try { await api('/api/auth/login', { email: $('l-email').value, password: $('l-pass').value }); if (next) location.href = next; else render(); }
+  catch (err) { notice(err.message, 'warn'); }
+};
+$('register').onsubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const u = await api('/api/auth/register', { name: $('r-name').value, email: $('r-email').value, password: $('r-pass').value, role: $('r-role').value, community: $('r-comm').value });
+    if (u.status === 'pending') notice('Pendaftaran diterima. Akun partner menunggu persetujuan admin.', 'ok');
+    else { notice(u.role === 'admin' ? 'Kamu pengguna pertama, jadi otomatis menjadi admin.' : 'Selamat datang!', 'ok'); if (next) location.href = next; else render(); }
+  } catch (err) { notice(err.message, 'warn'); }
+};
+$('logout').onclick = async () => { await api('/api/auth/logout', {}); render(); };
+$('token').onsubmit = async (e) => {
+  e.preventDefault();
+  const r = await api('/api/auth/device-tokens', { label: $('t-label').value || 'kacamata' });
+  $('t-new').hidden = false; $('t-new').textContent = `${r.token}\n\n${r.note}`; render();
+};
+$('t-list').onclick = async (e) => { const id = e.target.dataset.revoke; if (id && confirm('Cabut kode ini?')) { await api('/api/auth/device-tokens/revoke', { id }); render(); } };
+render();
+</script>
+</body>
+</html>

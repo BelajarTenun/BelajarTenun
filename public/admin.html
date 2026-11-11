@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin · BelajarTenun</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page">
+  <header class="brand"><a href="./">← BelajarTenun</a><h1>Dashboard Admin</h1></header>
+  <section class="stats" id="stats"></section>
+  <section class="card">
+    <h2>Pemakaian AI</h2>
+    <p class="hint">Latensi p50/p95 dan perkiraan biaya (atur COST_PER_1K_INPUT_USD / COST_PER_1K_OUTPUT_USD sesuai harga terbaru).</p>
+    <div id="ai"></div>
+  </section>
+  <section class="card">
+    <h2>Akun</h2>
+    <p class="hint">Partner baru menunggu persetujuan di sini (status "pending").</p>
+    <div id="users"></div>
+  </section>
+<script type="module">
+import { api, $, esc, requireLogin } from './js/api.js';
+await requireLogin(['admin']);
+async function render() {
+  const [s, { users }] = await Promise.all([api('/api/admin/stats'), api('/api/admin/users')]);
+  const stat = (v, l) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`;
+  $('stats').innerHTML = stat(s.activeSessions, 'sesi aktif') + stat(s.recordings, 'rekaman') + stat(s.unanswered, 'pertanyaan belum terjawab');
+  const rows = Object.entries(s.ai);
+  $('ai').innerHTML = rows.length ? `<table><tr><th>Jenis</th><th>Panggilan</th><th>Gagal</th><th>p50</th><th>p95</th><th>Token in/out</th><th>Biaya*</th></tr>${rows.map(([k, v]) =>
+    `<tr><td>${esc(k)}</td><td>${v.calls}</td><td>${v.errors}</td><td>${v.p50} ms</td><td>${v.p95} ms</td><td>${v.inputTokens}/${v.outputTokens}</td><td>$${v.estCostUsd}</td></tr>`).join('')}</table>` : '<p>Belum ada pemanggilan AI.</p>';
+  $('users').innerHTML = `<table><tr><th>Nama</th><th>Email</th><th>Komunitas</th><th>Peran</th><th>Status</th></tr>${users.map((u) => `<tr>
+    <td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${esc(u.community || '-')}</td>
+    <td><select data-id="${u.id}" data-f="role">${['pemula', 'partner', 'admin'].map((r) => `<option ${r === u.role ? 'selected' : ''}>${r}</option>`).join('')}</select></td>
+    <td><select data-id="${u.id}" data-f="status">${['approved', 'pending', 'disabled'].map((r) => `<option ${r === u.status ? 'selected' : ''}>${r}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+}
+$('users').onchange = async (e) => { const { id, f } = e.target.dataset; await api('/api/admin/users', { id, [f]: e.target.value }); render(); };
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "packageName": "id.belajartenun.tutor",
+  "version": "0.1.0",
+  "name": "BelajarTenun",
+  "description": "Tutor AI pendamping belajar menenun: melihat alat tenun lewat kamera kacamata, memandu dengan suara, menjawab pertanyaan dari pengetahuan tervalidasi penenun.",
+  "icon": "icon.png",
+  "type": "standard",
+  "sdkVersion": "0.3.0",
+  "minHostVersion": "3.5.0",
+  "entry": { "background": "background/index.js" },
+  "permissions": [
+    { "type": "CAMERA", "description": "Melihat area kerja alat tenun untuk mengenali tahap latihan" },
+    { "type": "MICROPHONE", "description": "Mendengar perintah dan pertanyaan saat tangan sibuk menenun" }
+  ],
+  "hardwareRequirements": [
+    { "type": "CAMERA", "level": "REQUIRED", "description": "Deteksi tahap dari sudut pandang mata" },
+    { "type": "MICROPHONE", "level": "REQUIRED", "description": "Perintah suara & tanya jawab" },
+    { "type": "SPEAKER", "level": "OPTIONAL", "description": "Instruksi suara (kacamata audio seperti Mentra Live)" },
+    { "type": "DISPLAY", "level": "OPTIONAL", "description": "Teks tahap di lensa (kacamata berlayar)" }
+  ]
+}
