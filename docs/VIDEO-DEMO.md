@@ -1,6 +1,26 @@
 # Skrip Video Demo BelajarTenun
 
-Durasi target **±3 menit (maks 3:00)**, rasio 16:9. Dari footage yang sama, potong juga versi pendek 60 detik dalam 9:16 untuk Reels/TikTok (pakai babak 1, 3, dan 6).
+Video ini adalah **Video Showcase BUDAYA GO! 2026**, kategori **Inovasi Digital**, subtema **4. Pembelajaran dan Edukasi Digital Berbasis Budaya** (tema *Indonesia Cultural Power*).
+
+Durasi target **±4 menit**, rasio 16:9. Juknis mewajibkan **3–5 menit**, jadi 3:00 terlalu mepet: kalau hasil editing kurang 1 detik saja, video tidak memenuhi syarat. 4 menit memberi ruang aman dan cukup untuk keenam komponen wajib. Dari footage yang sama, potong juga versi 60 detik 9:16 untuk media sosial (babak 1, 3, dan 9).
+
+## Yang diminta juknis (Lampiran 2.B, Video Showcase)
+
+| Komponen wajib | Babak | Indikator penilaian yang ikut terbantu |
+|---|---|---|
+| 1. Pengenalan produk: nama, konsep, fungsi utama, unsur budaya | 1–2 | Akar Budaya (25%) |
+| 2. Demonstrasi produk secara langsung | 2–5 | Kelayakan Teknis & Implementasi (25%) |
+| 3. Kegunaan & manfaat bagi pengguna, pelaku budaya, komunitas | 3–5 | Kejelasan & Kualitas Proposal (30%) |
+| 4. Keunikan & nilai tambah dibanding solusi sejenis | 6 | Kelayakan Teknis, Akar Budaya |
+| 5. Bukti penggunaan atau pengujian | 7 | Kelayakan Teknis, Proposal |
+| 6. Potensi pengembangan, ekonomi, Cultural Power Indonesia | 8 | Model Bisnis & Komersialisasi (20%) |
+
+Hal lain dari juknis yang memengaruhi video:
+- **Produk harus berfungsi sungguhan**, bukan mockup. Semua adegan demo direkam dari aplikasi yang benar-benar jalan. Label *"Prototipe"* boleh, tapi jangan ada adegan palsu.
+- **Hak pakai aset harus jelas** (Panduan Teknis Produk no. 3). Setiap cuplikan video open source, musik, dan font wajib berlisensi jelas dan dicantumkan di kredit akhir.
+- **Nama produk harus konsisten** di proposal, demo, video, dan slide: selalu tulis **BelajarTenun**.
+- **Akar budaya** dinilai dari rujukan ke **Objek Pemajuan Kebudayaan** (UU 5/2017). Tenun termasuk *pengetahuan tradisional* dan *teknologi tradisional*, istilahnya termasuk *bahasa*. Sebutkan ini secara eksplisit di video.
+- Tim terdiri dari 3 orang (pengembang, ekonomi, budaya). Tampilkan ketiganya di video, masing-masing bicara di babak keahliannya.
 
 ## Fokus lomba: Pembelajaran dan Edukasi Digital Berbasis Budaya
 
@@ -32,7 +52,7 @@ Video referensi (kacamata subvocal, ±77 detik) bekerja karena:
 
 Karena durasi kita 3 menit, ada ruang untuk menunjukkan **lebih banyak fitur nyata**. Supaya tidak membosankan, setiap babak dibuka dengan satu kalimat founder, lalu langsung ke demo, dan tidak ada shot yang lebih dari 8 detik tanpa perubahan.
 
-## Alur cerita (6 babak)
+## Alur cerita (9 babak)
 
 | Babak | Waktu | Inti pesan |
 |---|---|---|
@@ -41,7 +61,10 @@ Karena durasi kita 3 menit, ada ruang untuk menunjukkan **lebih banyak fitur nya
 | 3. Belajar adaptif | 0:55–1:45 | Pemula belajar dengan kacamata: dipandu sesuai tahapnya, istilah bahasa daerah, dikoreksi, bertanya. |
 | 4. Tetap terhubung | 1:45–2:05 | Penenun senior mendampingi dari jauh lewat HP. |
 | 5. Belajar jadi data | 2:05–2:35 | Catatan belajar, progres, mode offline, arsip publik untuk komunitas. |
-| 6. Penutup | 2:35–3:00 | Visi + CTA. |
+| 6. Kenapa berbeda | 2:35–2:55 | Dibanding video tutorial, kelas tatap muka, dan aplikasi belajar biasa. |
+| 7. Bukti uji coba | 2:55–3:25 | Hasil uji pemula, akurasi deteksi, tanggapan penenun dan murid. |
+| 8. Potensi pengembangan | 3:25–3:50 | Model bisnis, mitra, tradisi lain, Cultural Power Indonesia. |
+| 9. Penutup | 3:50–4:10 | Visi + CTA + kredit sumber. |
 
 ## Skrip per adegan
 
@@ -59,6 +82,8 @@ Keterangan: **VO** = suara/ucapan, **LAYAR** = teks/animasi overlay, **B-ROLL** 
 **Adegan 3 (0:14–0:20)** · Kembali ke founder, TV berganti teks.
 - LAYAR (di TV): *"Bagaimana kalau ilmunya bisa ikut… di mata kita?"*
 - Founder memakai kacamata, potong ke judul: **BelajarTenun** (logo muncul dengan garis benang yang menenun dirinya sendiri).
+- VO (anggota tim bidang budaya): "BelajarTenun adalah tutor AI di kacamata yang mengajarkan pengetahuan dan teknologi tradisional menenun, termasuk istilahnya dalam bahasa daerah, langsung saat kita mencoba."
+- LAYAR kecil: *Objek Pemajuan Kebudayaan: pengetahuan tradisional · teknologi tradisional · bahasa*
 
 ### Babak 2 — Dari data terbuka ke pelajaran (0:20–0:55)
 
@@ -147,17 +172,60 @@ Keterangan: **VO** = suara/ucapan, **LAYAR** = teks/animasi overlay, **B-ROLL** 
 - VO: "Yang sudah divalidasi kami buka sebagai arsip tenun publik, supaya pengetahuan ini terus lestari."
 - Chip pojok: **PELESTARIAN**
 
-### Babak 6 — Penutup (2:35–3:00)
+### Babak 6 — Kenapa berbeda (2:35–2:55)
 
-**Adegan 20 (2:35–2:45)** · Montase cepat (1 detik per shot): grid video open source → garis waktu tahap → POV kacamata → kartu hijau ✔ → senior & murid tertawa → kain jadi.
+**Adegan 20 (2:35–2:55)** · Anggota tim bidang pengembang, talking head, diselingi tabel animasi tiga kolom yang muncul baris per baris.
+- LAYAR:
+
+  | | Video tutorial | Kelas tatap muka | **BelajarTenun** |
+  |---|---|---|---|
+  | Melihat kesalahan murid | ✗ | ✔ | ✔ |
+  | Bisa kapan & di mana saja | ✔ | ✗ | ✔ |
+  | Isi divalidasi penenun | ? | ✔ | ✔ |
+  | Tangan tetap bebas | ✗ | ✔ | ✔ |
+  | Istilah bahasa daerah | jarang | ✔ | ✔ |
+
+- VO: "Video tutorial tidak bisa melihat kesalahan kita. Kelas tatap muka terbatas tempat dan waktunya. BelajarTenun menggabungkan keduanya: melihat dari sudut pandang murid, memberi koreksi saat itu juga, dan tetap setia pada ilmu penenunnya."
+
+### Babak 7 — Bukti uji coba (2:55–3:25)
+
+**Adegan 21 (2:55–3:07)** · Dokumentasi uji coba: beberapa pemula (bukan tim) mencoba di sanggar/kampus, cuplikan cepat.
+- LAYAR: angka hasil uji muncul satu per satu, contoh format: *"[N] pemula · [x]/5 tahap selesai rata-rata · [y] menit per sesi"*.
+- Catatan: **isi dengan angka asli** dari `/progres.html` dan kuesioner. Kalau belum ada uji coba, lakukan dulu sebelum syuting. Jangan pakai angka karangan.
+
+**Adegan 22 (3:07–3:15)** · Rekam layar hasil `npm run evaluate` (matriks kebingungan) atau grafik sederhana akurasi deteksi tahap.
+- VO: "Kami menguji akurasi deteksi tahap dari kamera dan kecepatan tutor menjawab."
+- LAYAR: *"Akurasi deteksi tahap: [x]% · Latensi: [y] detik"* (angka asli).
+
+**Adegan 23 (3:15–3:25)** · Testimoni singkat: 1 murid + 1 partner penenun, masing-masing satu kalimat.
+- Contoh arahan (biarkan mereka bicara dengan kata-kata sendiri): murid tentang rasanya belajar sendiri; penenun tentang apakah cara mengajarnya sudah tepat.
+
+### Babak 8 — Potensi pengembangan (3:25–3:50)
+
+**Adegan 24 (3:25–3:40)** · Anggota tim bidang ekonomi, talking head, dengan animasi diagram pengguna dan aliran nilai.
+- LAYAR (ikon muncul bertahap):
+  - **Pengguna**: pemula, sekolah/SMK tekstil, sanggar tenun, pusat wisata budaya.
+  - **Nilai**: sanggar bisa melatih lebih banyak murid; penenun mendapat atribusi dan honor validasi/pendampingan.
+  - **Skema**: [isi sesuai proposal, contoh: langganan sanggar/sekolah, paket kacamata + modul, kemitraan dengan dinas/museum].
+- VO: "Kami mulai dari sanggar dan sekolah. Setiap modul yang divalidasi penenun memberi mereka penghasilan, dan setiap murid baru memperluas pasar kain tenun."
+- Catatan: angka dan skema harus **sama persis** dengan proposal, karena juri menilai konsistensi.
+
+**Adegan 25 (3:40–3:50)** · Animasi peta Indonesia: titik Tidore menyala, lalu Sumba, Toraja, Toba, Lombok… lalu garis keluar ke dunia.
+- VO: "Dari tenun Tidore ke tradisi tenun di seluruh Nusantara, dan dari Indonesia ke dunia. Siapa pun bisa belajar menenun dengan cara Indonesia."
+- LAYAR kecil: *Indonesia Cultural Power*
+
+### Babak 9 — Penutup (3:50–4:10)
+
+**Adegan 26 (3:50–3:58)** · Montase cepat (1 detik per shot): grid video open source → garis waktu tahap → POV kacamata → kartu hijau ✔ → murid & penenun tertawa → kain jadi.
 - Musik naik.
 
-**Adegan 21 (2:45–2:53)** · Founder (atau dua founder) berdiri berdampingan.
-- VO: "BelajarTenun adalah cara baru belajar budaya: terbuka untuk siapa saja, menyesuaikan setiap murid, dan dijaga oleh penenunnya sendiri. Dimulai dari tenun, dan bisa dipakai untuk warisan budaya lain."
+**Adegan 27 (3:58–4:05)** · Ketiga anggota tim berdiri berdampingan.
+- VO: "BelajarTenun adalah cara baru belajar budaya: terbuka untuk siapa saja, menyesuaikan setiap murid, dan dijaga oleh penenunnya sendiri."
 
-**Adegan 22 (2:53–3:00)** · Kartu penutup krem.
+**Adegan 28 (4:05–4:10)** · Kartu penutup krem.
 - LAYAR: logo, sketsa garis kacamata digambar bertahap, motif tenun tipis sebagai latar.
-- Teks: *"Belajar menenun, dipandu ilmu tenun dari seluruh Nusantara."* + CTA (situs/kontak/ajakan jadi partner penenun).
+- Teks: *"Belajar menenun, dipandu ilmu tenun dari seluruh Nusantara."* + tautan demo/situs (sama dengan di proposal).
+- Lanjutkan dengan **kredit sumber** (3–5 detik, di luar hitungan juga boleh asal total tetap ≤5 menit): daftar video open source beserta pembuat & lisensinya, musik, font.
 
 ## Apa yang benar-benar terjadi di sistem (untuk adegan demo)
 
@@ -183,7 +251,8 @@ Catatan: modul Tidore masih **DRAFT**. Untuk video publik, pastikan tahap yang d
 ## Yang perlu disiapkan
 
 ### Orang
-- **Founder** (1–2 orang) untuk talking head.
+- **Ketiga anggota tim** untuk talking head: bidang budaya (babak 1–2), pengembang (babak 6), ekonomi (babak 8).
+- **3–5 pemula** di luar tim untuk uji coba dan testimoni (babak 7), dengan izin tampil.
 - **Partner penenun** untuk adegan validasi (7) dan pendamping (14–15). Mereka tidak direkam sebagai sumber data, hanya tampil di video demo (tetap minta izin tampil).
 - **Murid/pemula** yang memakai kacamata.
 - Pengisi suara tutor: pakai suara Gemini Live asli dari aplikasi (lebih meyakinkan) atau rekam ulang dengan TTS.
@@ -237,25 +306,31 @@ Aturan pakai:
 | # | Shot | Durasi | Sumber |
 |---|---|---|---|
 | 1 | Founder + TV teks | 7 dtk | Kamera |
-| 2 | Tangan senior, ruang tenun sepi | 7 dtk | Kamera makro |
-| 3 | Founder pakai kacamata + logo | 6 dtk | Kamera + motion |
+| 2 | Tangan penenun, ruang tenun sepi | 7 dtk | Kamera makro / video open source |
+| 3 | Founder pakai kacamata + logo + pengenalan | 6 dtk | Kamera + motion |
 | 4 | Founder + grid video open source | 8 dtk | Kamera + motion |
 | 5 | Halaman Sumber, banyak tradisi | 7 dtk | Rekam layar |
 | 6 | Animasi garis waktu tahap | 10 dtk | Remotion/motion |
 | 7 | Partner penenun memvalidasi di Editor | 10 dtk | Kamera + rekam layar |
 | 8 | Murid pakai kacamata, "mulai belajar" | 7 dtk | Kamera |
 | 9 | Video demo tahap | 8 dtk | Kamera + rekam layar |
-| 10 | POV kacamata + kartu tahap | 8 dtk | Rekam layar + overlay |
+| 10 | POV kacamata + kartu tahap + istilah daerah | 8 dtk | Rekam layar + overlay |
 | 11 | Koreksi kesalahan, makro | 9 dtk | Kamera makro + overlay |
 | 12 | Wajah samping + pertanyaan melayang | 9 dtk | Kamera + overlay |
 | 13 | Pertanyaan di luar modul | 9 dtk | Kamera + overlay |
-| 14 | Split screen murid ↔ senior | 10 dtk | 2 kamera + rekam layar HP |
-| 15 | Senior tersenyum | 10 dtk | Kamera |
+| 14 | Split screen murid ↔ penenun | 10 dtk | 2 kamera + rekam layar HP |
+| 15 | Penenun tersenyum | 10 dtk | Kamera |
 | 16 | Catatan belajar di HP | 8 dtk | Kamera + rekam layar |
 | 17 | Halaman Progres | 7 dtk | Rekam layar |
 | 18 | Mode offline di desa | 7 dtk | Kamera + rekam layar |
 | 19 | Halaman Arsip | 8 dtk | Rekam layar |
-| 20 | Montase cepat | 10 dtk | Footage di atas |
-| 21 | Founder penutup | 8 dtk | Kamera |
-| 22 | Kartu logo & CTA | 7 dtk | Motion |
-| | **Total** | **±3:00** | |
+| 20 | Tabel perbandingan | 20 dtk | Kamera + motion |
+| 21 | Uji coba pemula + angka | 12 dtk | Kamera + motion |
+| 22 | Hasil evaluasi akurasi | 8 dtk | Rekam layar |
+| 23 | Testimoni murid & penenun | 10 dtk | Kamera |
+| 24 | Model bisnis | 15 dtk | Kamera + motion |
+| 25 | Peta Nusantara → dunia | 10 dtk | Motion |
+| 26 | Montase cepat | 8 dtk | Footage di atas |
+| 27 | Tim bertiga | 7 dtk | Kamera |
+| 28 | Kartu logo, CTA, kredit | 5 dtk + kredit | Motion |
+| | **Total** | **±4:10** (wajib 3:00–5:00) | |
