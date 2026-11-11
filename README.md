@@ -32,7 +32,7 @@ Kamera kacamata melihat alat tenun dari sudut pandang mata. AI mengenali tahap y
         modules/ · knowledge.json · recordings/ · users.json · logs/ · cache/
 ```
 
-Arsitektur tutornya meniru pola [VisionClaw](https://github.com/sseanliu/VisionClaw): Gemini Live dengan tools, sampling video yang menyesuaikan dengan suara, protokol kartu, tracer, earcons, dan berbagi tampilan POV. Pembacaan kamera kacamata DIY mengikuti protokol Bluetooth [OpenGlass](https://github.com/BasedHardware/OpenGlass). Cara tutor memutuskan kapan bicara dan format anotasinya meniru [Watch-Talk-and-Guide](https://github.com/sled-group/Watch-Talk-and-Guide). Rinciannya ada di [docs/RENCANA-IMPLEMENTASI.md](docs/RENCANA-IMPLEMENTASI.md).
+Arsitektur tutornya meniru pola [VisionClaw](https://github.com/sseanliu/VisionClaw): Gemini Live dengan tools, sampling video yang menyesuaikan dengan suara, protokol kartu, tracer, earcons, dan berbagi tampilan POV. Pembacaan kamera kacamata DIY mengikuti protokol Bluetooth [OpenGlass](https://github.com/BasedHardware/OpenGlass). Cara tutor memutuskan kapan bicara dan format anotasinya meniru [Watch-Talk-and-Guide](https://github.com/sled-group/Watch-Talk-and-Guide).
 
 ## Fitur
 
@@ -139,4 +139,4 @@ test/                     Tes unit + integrasi (npm test)
 - WebRTC pendamping hanya memakai STUN. Di jaringan yang ketat perlu server TURN (LiveKit punya TURN bawaan).
 - LiveKit lokal + agen sudah diuji sampai agen bergabung ke ruang; percakapan Gemini Live belum diuji karena butuh API key.
 
-Dokumentasi lain: [Referensi data](docs/REFERENSI-DATA.md) · [LiveKit lokal](docs/LIVEKIT.md) · [Kacamata](docs/KACAMATA.md) · [Deploy](docs/DEPLOY.md) · [Privasi](docs/PRIVASI.md) · [Rencana implementasi](docs/RENCANA-IMPLEMENTASI.md) · [Panduan anotasi](docs/PANDUAN-ANOTASI.md) · [Validasi](docs/VALIDASI.md) · [Referensi](docs/REFERENSI.md)
+Dokumentasi lain: [LiveKit lokal](docs/LIVEKIT.md) · [Kacamata](docs/KACAMATA.md) · [Deploy](docs/DEPLOY.md) · [Privasi](docs/PRIVASI.md) · [Panduan anotasi](docs/PANDUAN-ANOTASI.md) · [Validasi](docs/VALIDASI.md) · [Referensi](docs/REFERENSI.md)

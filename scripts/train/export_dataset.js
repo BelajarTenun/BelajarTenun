@@ -25,4 +25,4 @@ for (const r of recs) {
 }
 await writeFile(join(out, 'manifest.json'), JSON.stringify({ module: module.id, exportedAt: new Date().toISOString(), counts, items }, null, 2));
 console.table(counts);
-console.log(`${items.length} frame → ${out}/ . Target awal: ≥300 frame per kelas sebelum melatih (lihat docs/RENCANA-IMPLEMENTASI.md F8).`);
+console.log(`${items.length} frame → ${out}/ . Target awal: ≥300 frame per kelas sebelum melatih.`);
