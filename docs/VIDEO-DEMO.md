@@ -20,7 +20,7 @@ Karena durasi kita 3 menit, ada ruang untuk menunjukkan **lebih banyak fitur nya
 | Babak | Waktu | Inti pesan |
 |---|---|---|
 | 1. Masalah | 0:00–0:20 | Ilmu tenun diwariskan dari tangan ke tangan, penenun senior makin sedikit. |
-| 2. Dari senior ke data | 0:20–0:55 | Video senior (dari tradisi mana pun) diolah AI jadi tahap, istilah, kesalahan, lalu divalidasi penenun. |
+| 2. Dari data terbuka ke pelajaran | 0:20–0:55 | Video & arsip tenun open source (tradisi mana pun) diolah AI jadi tahap, istilah, kesalahan, lalu divalidasi penenun. |
 | 3. Kacamata membimbing | 0:55–1:45 | Pemula belajar dengan kacamata: dipandu, dikoreksi, bertanya, tanpa tangan. |
 | 4. Tetap terhubung | 1:45–2:05 | Penenun senior mendampingi dari jauh lewat HP. |
 | 5. Belajar jadi data | 2:05–2:35 | Catatan belajar, progres, mode offline, arsip publik untuk komunitas. |
@@ -36,34 +36,33 @@ Keterangan: **VO** = suara/ucapan, **LAYAR** = teks/animasi overlay, **B-ROLL** 
 - LAYAR (di TV, kata per kata): *"Menenun dulu diajarkan…"* → *"…dari tangan ke tangan."*
 - VO: "Selama ratusan tahun, menenun diajarkan dari tangan ke tangan."
 
-**Adegan 2 (0:07–0:14)** · B-roll: tangan keriput penenun senior di alat tenun, close-up benang, lalu ruang tenun yang sepi.
+**Adegan 2 (0:07–0:14)** · B-roll (cuplikan dari video open source atau footage sendiri): tangan keriput penenun senior di alat tenun, close-up benang, lalu ruang tenun yang sepi.
 - VO: "Tapi penenun senior makin sedikit, dan anak muda sulit belajar tanpa didampingi langsung."
 
 **Adegan 3 (0:14–0:20)** · Kembali ke founder, TV berganti teks.
 - LAYAR (di TV): *"Bagaimana kalau ilmunya bisa ikut… di mata kita?"*
 - Founder memakai kacamata, potong ke judul: **BelajarTenun** (logo muncul dengan garis benang yang menenun dirinya sendiri).
 
-### Babak 2 — Dari penenun senior ke data (0:20–0:55)
+### Babak 2 — Dari data terbuka ke pelajaran (0:20–0:55)
 
 **Adegan 4 (0:20–0:28)** · Founder berdiri, talking head.
-- VO: "Kami mulai dari sumber ilmunya: penenun senior. Kami merekam mereka bekerja, dengan izin mereka."
-- B-ROLL: senior memakai kacamata/kamera saat menenun. Insert layar HP halaman **Rekam**: pilihan izin *Demo / Latih AI / Publikasi* dicentang.
-- LAYAR kecil: *"Izin bisa dicabut kapan saja."*
+- VO: "Ilmu tenun sebenarnya sudah ada di mana-mana: ribuan video dan arsip yang dibagikan terbuka di internet."
+- LAYAR: grid potongan video tenun dari berbagai sumber terbuka (YouTube berlisensi Creative Commons, Wikimedia Commons, arsip museum/budaya, dataset riset) muncul satu per satu sampai memenuhi layar, tiap kartu diberi label kecil lisensinya (*CC BY*, *Domain publik*).
 
-**Adegan 5 (0:28–0:35)** · Rekam layar halaman **Sumber**: beberapa video dari tradisi berbeda didaftarkan (Tidore, Sumba, Toraja…), status izin terlihat.
-- VO: "Bukan cuma rekaman kami. Video tenun dari tradisi mana pun bisa dijadikan bahan belajar."
+**Adegan 5 (0:28–0:35)** · Rekam layar halaman **Sumber**: link video dari tradisi berbeda didaftarkan (Tidore, Sumba, Toraja…), kolom lisensi/izin dan atribusi pembuat terisi.
+- VO: "Kami kumpulkan video yang lisensinya mengizinkan, dari tradisi tenun mana pun, dan selalu mencatat siapa pembuatnya."
 
 **Adegan 6 (0:35–0:45)** · Animasi (motion graphic, latar krem).
-- LAYAR: video senior → keyframe berjajar → garis waktu dengan label tahap muncul satu per satu:
+- LAYAR: banyak video → keyframe berjajar → garis waktu dengan label tahap muncul satu per satu:
   `1 Mengenal alat` · `2 Membuka mulut lungsi` · `3 Memasukkan pakan` · `4 Merapatkan pakan` · `5 Mengulang baris`
 - Kartu kecil melayang: *"Istilah: lungsi, pakan, belida"*, *"Kesalahan umum: pakan terlalu kencang"*.
-- Beberapa video bergabung jadi satu modul ("modul dasar lintas tradisi").
-- VO: "AI memecah setiap gerakan jadi tahap, istilah, dan kesalahan yang sering terjadi, lalu menggabungkan pola dari banyak penenun."
+- Tahap yang sama dari video-video berbeda ditarik jadi satu → *"Modul dasar"*.
+- VO: "AI memecah setiap gerakan jadi tahap, istilah, dan kesalahan yang sering terjadi, lalu menggabungkan pola dari banyak penenun di banyak video."
 
-**Adegan 7 (0:45–0:55)** · Penenun senior di depan laptop/HP, halaman **Editor** (mode tinjau).
-- Senior menekan tahap → video bukti diputar tepat di detik itu → senior mengubah satu kata → menekan ✔.
-- LAYAR: label 🤖 *Usulan AI* → ✏️ *Diubah* → ✔ *Tervalidasi penenun*. Nama senior muncul sebagai atribusi.
-- VO: "Lalu penenunnya sendiri yang memeriksa. AI hanya mengajarkan yang sudah mereka setujui, dan nama mereka tercatat sebagai sumber."
+**Adegan 7 (0:45–0:55)** · Partner penenun di depan laptop/HP, halaman **Editor** (mode tinjau).
+- Partner menekan tahap → potongan video sumber diputar tepat di detik itu → mengubah satu kata → menekan ✔.
+- LAYAR: label 🤖 *Usulan AI* → ✏️ *Diubah* → ✔ *Tervalidasi penenun*. Sumber video tetap tercantum sebagai atribusi.
+- VO: "Tapi AI bisa salah. Jadi setiap tahap diperiksa penenun sebelum diajarkan."
 
 ### Babak 3 — Kacamata membimbing (0:55–1:45) · inti demo
 
@@ -73,8 +72,8 @@ Keterangan: **VO** = suara/ucapan, **LAYAR** = teks/animasi overlay, **B-ROLL** 
 - VO tutor: "Halo. Kita mulai dari mengenal alat. Lihat ke arah belida."
 
 **Adegan 9 (1:02–1:10)** · Murid menengok sebentar ke video demo tahap (di HP / layar kecil), lalu ke alat tenun.
-- LAYAR: kartu kecil berisi potongan video senior melakukan tahap ini.
-- VO tutor: "Begini cara Ibu ___ melakukannya. Sekarang giliranmu."
+- LAYAR: kartu kecil berisi potongan video sumber (open source) yang menunjukkan tahap ini, dengan atribusi kecil di bawahnya.
+- VO tutor: "Begini cara penenun di video ini melakukannya. Sekarang giliranmu."
 
 **Adegan 10 (1:10–1:18)** · **POV kacamata** dengan bingkai HUD.
 - LAYAR (kartu kanan atas): `Tahap 2/5 · Membuka mulut lungsi` + bilah keyakinan yang naik.
@@ -88,7 +87,7 @@ Keterangan: **VO** = suara/ucapan, **LAYAR** = teks/animasi overlay, **B-ROLL** 
 
 **Adegan 12 (1:27–1:36)** · Close-up wajah samping murid, tangan tetap sibuk menenun, teks pertanyaan melayang.
 - LAYAR (teks serif melayang): *"Kenapa harus dirapatkan setiap baris?"*
-- VO tutor: "Supaya kain padat dan motifnya tidak bergeser. Begitu kata penenun senior di modul ini."
+- VO tutor: "Supaya kain padat dan motifnya tidak bergeser. Begitu yang diajarkan di modul yang sudah divalidasi."
 - LAYAR kecil: *Sumber: modul tervalidasi*.
 
 **Adegan 13 (1:36–1:45)** · Murid bertanya hal yang belum ada di modul.
@@ -125,7 +124,7 @@ Keterangan: **VO** = suara/ucapan, **LAYAR** = teks/animasi overlay, **B-ROLL** 
 
 ### Babak 6 — Penutup (2:35–3:00)
 
-**Adegan 20 (2:35–2:45)** · Montase cepat (1 detik per shot): tangan senior → garis waktu tahap → POV kacamata → kartu hijau ✔ → senior & murid tertawa → kain jadi.
+**Adegan 20 (2:35–2:45)** · Montase cepat (1 detik per shot): grid video open source → garis waktu tahap → POV kacamata → kartu hijau ✔ → senior & murid tertawa → kain jadi.
 - Musik naik.
 
 **Adegan 21 (2:45–2:53)** · Founder (atau dua founder) berdiri berdampingan.
@@ -133,7 +132,7 @@ Keterangan: **VO** = suara/ucapan, **LAYAR** = teks/animasi overlay, **B-ROLL** 
 
 **Adegan 22 (2:53–3:00)** · Kartu penutup krem.
 - LAYAR: logo, sketsa garis kacamata digambar bertahap, motif tenun tipis sebagai latar.
-- Teks: *"Belajar menenun, dipandu ilmu penenun senior."* + CTA (situs/kontak/ajakan jadi partner penenun).
+- Teks: *"Belajar menenun, dipandu ilmu tenun dari seluruh Nusantara."* + CTA (situs/kontak/ajakan jadi partner penenun).
 
 ## Apa yang benar-benar terjadi di sistem (untuk adegan demo)
 
@@ -141,12 +140,12 @@ Setiap adegan memakai fitur yang memang ada di repo ini:
 
 | Adegan | Yang terjadi | Halaman/berkas |
 |---|---|---|
-| 4 | Rekam video senior dengan persetujuan berjenjang, bisa dicabut | `/rekam.html` |
-| 5 | Daftar video lintas tradisi dengan status izin | `/sumber.html`, `lib/sources.js` |
+| 4 | (Animasi) kumpulan video open source | — |
+| 5 | Daftar video open source lintas tradisi dengan status lisensi & atribusi | `/sumber.html`, `lib/sources.js` |
 | 6 | ffmpeg → Gemini menandai tahap, alat, istilah, kesalahan → kelompokkan → draf modul | `lib/pipeline.js`, `lib/alignment.js` |
 | 7 | Mode tinjau: bukti video per detik, label 🤖/✏️/✔, riwayat atribusi | `/editor.html` |
 | 8–11 | Kacamata/HP kirim frame, deteksi tahap, earcon, kartu, koreksi suara | `/kacamata.html`, `/` |
-| 9 | Demo per tahap dari video senior | `/`, `/anotasi.html` |
+| 9 | Demo per tahap dari potongan video sumber | `/`, `/anotasi.html` |
 | 12–13 | Jawaban hanya dari knowledge base tervalidasi; pertanyaan yang belum terjawab dicatat | `lib/knowledge.js`, `/editor.html` |
 | 14 | Senior melihat POV murid lewat WebRTC dan mengirim arahan yang dibacakan | `/pendamping.html` |
 | 16 | Catatan belajar + kuesioner akhir | `/` |
@@ -160,7 +159,7 @@ Catatan: modul Tidore masih **DRAFT**. Untuk video publik, pastikan tahap yang d
 
 ### Orang
 - **Founder** (1–2 orang) untuk talking head.
-- **Penenun senior** (dengan surat persetujuan rekam & publikasi).
+- **Partner penenun** untuk adegan validasi (7) dan pendamping (14–15). Mereka tidak direkam sebagai sumber data, hanya tampil di video demo (tetap minta izin tampil).
 - **Murid/pemula** yang memakai kacamata.
 - Pengisi suara tutor: pakai suara Gemini Live asli dari aplikasi (lebih meyakinkan) atau rekam ulang dengan TTS.
 
@@ -175,16 +174,16 @@ Catatan: modul Tidore masih **DRAFT**. Untuk video publik, pastikan tahap yang d
 ### Aplikasi (sebelum syuting)
 - Server berjalan lewat **HTTPS** (deploy atau `ngrok http 3000`) dengan `GEMINI_API_KEY` aktif.
 - Akun sudah dibuat, kode akses perangkat sudah dipasang di kacamata.
-- Satu video senior **sudah diproses** di `/sumber.html` supaya adegan 4–5 tinggal direkam layarnya (prosesnya butuh waktu).
+- **Kumpulkan 5–10 video tenun open source** dan cek lisensinya satu per satu (lihat bagian *Mencari data open source*). Daftarkan dan **proses lebih dulu** di `/sumber.html` supaya adegan 5–7 tinggal direkam layarnya (prosesnya butuh waktu).
 - Modul punya video demo per tahap, plus istilah & kesalahan yang muncul di skrip (pakan terlalu kencang, dll.).
 - Siapkan 2–3 video dari tradisi lain di `/sumber.html` (adegan 5), beberapa sesi latihan agar `/progres.html` berisi data (adegan 17), isi `/arsip.html` (adegan 19), dan model offline jika adegan 18 dipakai.
 - Uji coba sekali penuh: deteksi tahap, koreksi, pertanyaan adegan 12–13, pesan pendamping adegan 14.
 
 ### Rekaman yang harus diambil
 1. **Rekam layar POV kacamata** (dari `/kacamata.html` atau `/pendamping.html`) — ini bahan HUD adegan 7–8.
-2. **Rekam layar HP** untuk Rekam, Sumber, Editor, Pendamping (aktifkan perekam layar bawaan HP).
+2. **Rekam layar HP** untuk Sumber, Editor, Pendamping (aktifkan perekam layar bawaan HP).
 3. **Audio tutor** asli dari aplikasi (rekam terpisah agar jernih).
-4. Footage kamera: talking head, B-roll tangan senior, close-up makro, wajah samping murid, split screen.
+4. Footage kamera: talking head, B-roll tangan penenun (boleh dari video open source berlisensi), close-up makro, wajah samping murid, split screen.
 5. Ambil setiap adegan 2–3 kali, plus 5 detik diam sebelum/sesudah untuk transisi.
 
 ### Editing & animasi
@@ -193,6 +192,21 @@ Catatan: modul Tidore masih **DRAFT**. Untuk video publik, pastikan tahap yang d
 - Musik instrumental pelan; bisa memasukkan bunyi alat tenun asli sebagai ritme.
 - Subtitle Bahasa Indonesia + versi Inggris.
 
+## Mencari data open source
+
+Tempat mencari video/data tenun yang boleh dipakai:
+- **YouTube** → filter *Creative Commons* (Filter → Fitur → Creative Commons). Kata kunci: "tenun ikat", "menenun", "backstrap loom", "gedogan", "tenun Sumba", "tenun Tidore".
+- **Wikimedia Commons** → kategori *Weaving in Indonesia*, *Ikat*, *Backstrap looms*.
+- **Internet Archive** (archive.org) → film dokumenter budaya yang berstatus domain publik.
+- **Arsip museum & budaya terbuka** → Europeana, koleksi digital museum tekstil, Warisan Budaya Takbenda Kemdikbud (cek ketentuan pakainya).
+- **Dataset riset video tangan / egocentric** (mis. Ego4D, EPIC-KITCHENS) untuk melatih deteksi gerakan tangan umum. Cek lisensinya: banyak yang hanya untuk riset non-komersial.
+- **Data teks/gambar motif** → dataset motif di Kaggle/GitHub, bisa diimpor dengan `npm run import-motif`.
+
+Aturan pakai:
+- Simpan link, nama pembuat, dan jenis lisensi di kolom izin halaman Sumber. Jangan pakai video tanpa lisensi jelas.
+- CC BY-NC / NC-ND: aman untuk melatih dan riset, tapi **jangan ditampilkan** di video promosi/komersial. Untuk cuplikan yang muncul di video demo, pilih CC BY, CC0, atau domain publik, dan tulis atribusinya di kartu kecil atau di akhir video.
+- Menghormati komunitas: walau lisensinya terbuka, beberapa motif punya makna adat. Tetap minta partner penenun memvalidasi isinya.
+
 ## Daftar shot ringkas
 
 | # | Shot | Durasi | Sumber |
@@ -200,10 +214,10 @@ Catatan: modul Tidore masih **DRAFT**. Untuk video publik, pastikan tahap yang d
 | 1 | Founder + TV teks | 7 dtk | Kamera |
 | 2 | Tangan senior, ruang tenun sepi | 7 dtk | Kamera makro |
 | 3 | Founder pakai kacamata + logo | 6 dtk | Kamera + motion |
-| 4 | Senior direkam + layar Rekam | 8 dtk | Kamera + rekam layar |
+| 4 | Founder + grid video open source | 8 dtk | Kamera + motion |
 | 5 | Halaman Sumber, banyak tradisi | 7 dtk | Rekam layar |
 | 6 | Animasi garis waktu tahap | 10 dtk | Remotion/motion |
-| 7 | Senior memvalidasi di Editor | 10 dtk | Kamera + rekam layar |
+| 7 | Partner penenun memvalidasi di Editor | 10 dtk | Kamera + rekam layar |
 | 8 | Murid pakai kacamata, "mulai belajar" | 7 dtk | Kamera |
 | 9 | Video demo tahap | 8 dtk | Kamera + rekam layar |
 | 10 | POV kacamata + kartu tahap | 8 dtk | Rekam layar + overlay |
