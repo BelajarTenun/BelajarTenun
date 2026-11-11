@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anotasi · BelajarTenun</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page">
+  <header class="brand">
+    <div class="account" id="account"></div>
+    <a href="./">← BelajarTenun</a>
+    <h1>Anotasi Rekaman</h1>
+    <p>Tandai kapan tiap tahap dikerjakan dalam video (seperti anotasi <i>step detection</i> di dataset Watch-Talk-and-Guide). Hasilnya diekspor menjadi frame berlabel untuk uji akurasi, contoh untuk AI, dan data latih model.</p>
+  </header>
+
+  <section class="card">
+    <label>Rekaman <select id="rec"></select></label>
+    <video id="video" controls playsinline></video>
+    <div class="timeline" id="timeline"></div>
+    <p class="hint">Waktu sekarang: <b id="now">0.0</b> dtk. Pilih tahap & label, tekan <b>Mulai</b> saat tahap dimulai dan <b>Akhir</b> saat selesai.</p>
+    <div class="row">
+      <select id="step"></select>
+      <select id="label"><option value="not_yet">⏳ sedang dikerjakan</option><option value="done">✅ berhasil/selesai</option><option value="mistake">⚠️ kesalahan</option></select>
+      <select id="mistake" hidden></select>
+      <button id="mark-start">⏱ Mulai</button>
+      <button id="mark-end" class="primary">⏱ Akhir</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Segmen</h2>
+    <div class="row">
+      <button id="auto">🤖 Usulan AI</button>
+      <button id="save" class="primary">💾 Simpan segmen</button>
+      <button id="export">🖼️ Ekspor frame berlabel</button>
+    </div>
+    <p id="status" class="feedback"></p>
+    <div id="segments"></div>
+  </section>
+
+<script type="module">
+import { api, $, esc, requireLogin, accountBadge } from './js/api.js';
+import { assessFrame } from './js/quality.js';
+const cfg = await requireLogin(['partner']);
+accountBadge($('account'), cfg.user);
+let recs = [], rec, mod, segments = [], pendingStart = null;
+const status = (t, k = 'info') => { $('status').textContent = t; $('status').className = `feedback ${k}`; };
+const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+const stepTitle = (id) => mod.steps.find((s) => s.id === id)?.title ?? id;
+
+function renderSegments() {
+  const d = $('video').duration;
+  const dur = Number.isFinite(d) && d > 0 ? d : Math.max(1, ...segments.map((s) => s.end));
+  $('timeline').innerHTML = segments.map((s) => `<span class="${s.label}" title="${esc(stepTitle(s.stepId))}" style="left:${(s.start / dur) * 100}%;width:${((s.end - s.start) / dur) * 100}%"></span>`).join('');
+  $('segments').innerHTML = segments.map((s, i) => `<div class="seg" data-i="${i}">
+    <b>${esc(stepTitle(s.stepId))}</b> <span class="pill">${s.label}${s.mistakeIndex ? ' #' + s.mistakeIndex : ''}</span> ${s.by === 'ai' ? '<span class="pill">usulan AI</span>' : ''}
+    <input type="number" step="0.1" data-k="start" value="${s.start}"> – <input type="number" step="0.1" data-k="end" value="${s.end}"> dtk
+    <button data-act="play">▶ ${fmt(s.start)}</button>
+    ${s.label === 'done' ? '<button data-act="demo">Jadikan demo</button>' : ''}
+    <button data-act="del">Hapus</button></div>`).join('') || '<p class="hint">Belum ada segmen.</p>';
+}
+
+function fillStep() {
+  $('step').innerHTML = mod.steps.map((s) => `<option value="${s.id}">${esc(s.title)}</option>`).join('');
+  fillMistake();
+}
+function fillMistake() {
+  const s = mod.steps.find((x) => x.id === $('step').value);
+  $('mistake').innerHTML = s.common_mistakes.map((m, i) => `<option value="${i + 1}">${esc(m.mistake)}</option>`).join('');
+  $('mistake').hidden = $('label').value !== 'mistake';
+}
+
+async function selectRec(id) {
+  rec = recs.find((r) => r.id === id);
+  mod = await api(`/api/module?id=${rec.module}`);
+  fillStep();
+  const video = rec.files.find((f) => /\.(webm|mp4)$/.test(f));
+  $('video').src = video ? `recordings/${rec.id}/${video}` : '';
+  segments = structuredClone(rec.segments || []);
+  renderSegments();
+}
+
+$('video').ontimeupdate = () => { $('now').textContent = $('video').currentTime.toFixed(1); };
+// Video dari MediaRecorder (webm) sering tidak punya durasi (Infinity): lompat ke akhir agar browser menghitungnya.
+$('video').onloadedmetadata = () => {
+  const v = $('video');
+  if (v.duration === Infinity || Number.isNaN(v.duration)) {
+    const fix = () => { if (v.duration !== Infinity) { v.removeEventListener('durationchange', fix); if (v.currentTime >= v.duration - 0.05) v.currentTime = 0; renderSegments(); } };
+    v.addEventListener('durationchange', fix);
+    v.currentTime = 1e7;
+  } else renderSegments();
+};
+$('step').onchange = fillMistake; $('label').onchange = fillMistake;
+$('mark-start').onclick = () => { pendingStart = $('video').currentTime; status(`Mulai ditandai di ${fmt(pendingStart)}. Tekan "Akhir" saat tahap selesai.`); };
+$('mark-end').onclick = () => {
+  const end = $('video').currentTime, start = pendingStart ?? Math.max(0, end - 3);
+  if (end <= start) return status('Waktu akhir harus setelah waktu mulai.', 'warn');
+  segments.push({ stepId: $('step').value, label: $('label').value, mistakeIndex: $('label').value === 'mistake' ? Number($('mistake').value) : null, start: +start.toFixed(1), end: +end.toFixed(1), by: 'manusia' });
+  segments.sort((a, b) => a.start - b.start); pendingStart = null; renderSegments();
+};
+$('segments').oninput = (e) => { const i = e.target.closest('[data-i]')?.dataset.i; if (i != null && e.target.dataset.k) segments[i][e.target.dataset.k] = Number(e.target.value); };
+$('segments').onclick = async (e) => {
+  const i = e.target.closest('[data-i]')?.dataset.i, act = e.target.dataset.act;
+  if (i == null || !act) return;
+  if (act === 'del') { segments.splice(i, 1); renderSegments(); }
+  if (act === 'play') { $('video').currentTime = segments[i].start; $('video').play(); }
+  if (act === 'demo') {
+    try { await api('/api/recordings/use-as-demo', { id: rec.id, stepId: segments[i].stepId, start: segments[i].start }); status('Segmen dijadikan video demo tahap.', 'ok'); }
+    catch (err) { status(err.message, 'warn'); }
+  }
+};
+$('save').onclick = async () => {
+  if (!segments.length && !confirm('Belum ada segmen. Simpan kosong (menghapus segmen lama)?')) return;
+  try { rec = await api('/api/recordings/segments', { id: rec.id, segments }); recs = recs.map((r) => (r.id === rec.id ? rec : r)); status('Segmen tersimpan ✔', 'ok'); }
+  catch (e) { status(e.message, 'warn'); }
+};
+$('auto').onclick = async () => {
+  status('AI sedang menonton video… (bisa 10–60 detik)');
+  try { const { segments: s } = await api('/api/recordings/auto-annotate', { id: rec.id }); segments.push(...s); segments.sort((a, b) => a.start - b.start); renderSegments(); status(`${s.length} segmen diusulkan. Periksa & koreksi, lalu simpan.`, 'ok'); }
+  catch (e) { status(e.message, 'warn'); }
+};
+
+// Ekspor: putar ke beberapa titik di setiap segmen, ambil frame jelas, unggah dengan label.
+$('export').onclick = async () => {
+  const v = $('video');
+  if (!segments.length) return status('Belum ada segmen.', 'warn');
+  let n = 0, skipped = 0;
+  for (const s of segments) {
+    const points = s.label === 'done' ? [s.end - 0.5, s.end - 1.5, (s.start + s.end) / 2] : [s.start + 0.5, (s.start + s.end) / 2, s.end - 0.5];
+    const uniq = [...new Set(points.map((t) => +t.toFixed(1)))].filter((t) => t >= s.start && t <= s.end);
+    for (const t of uniq) {
+      if (Math.abs(v.currentTime - t) > 0.05) { v.currentTime = t; await new Promise((r) => { v.onseeked = r; setTimeout(r, 3000); }); }
+      if (!assessFrame(v).ok) { skipped++; continue; }
+      const c = document.createElement('canvas'); c.width = 640; c.height = Math.round((v.videoHeight / v.videoWidth) * 640);
+      c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+      const blob = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.85));
+      const name = `seg-${s.stepId}-${s.label}-${Math.round(t * 10)}.jpg`;
+      const r = await fetch(`/api/recordings/upload?id=${rec.id}&name=${name}&stepId=${s.stepId}&label=${s.label}&mistakeIndex=${s.mistakeIndex ?? ''}&t=${t.toFixed(1)}`, { method: 'POST', body: blob });
+      if (r.ok) n++;
+      status(`Mengekspor… ${n} frame`);
+    }
+  }
+  status(`${n} frame berlabel diekspor (${skipped} dilewati karena buram/gelap).`, 'ok');
+};
+
+recs = (await api('/api/recordings')).recordings.filter((r) => r.files.some((f) => /\.(webm|mp4)$/.test(f)));
+if (!recs.length) { status('Belum ada rekaman video. Rekam dulu di halaman Rekam.', 'warn'); }
+else {
+  $('rec').innerHTML = recs.map((r) => `<option value="${r.id}">${r.stepId === 'full' ? '🎬 ' : ''}${esc(r.id)} · ${esc(r.weaver || '')}</option>`).join('');
+  const want = new URLSearchParams(location.search).get('id');
+  if (want && recs.some((r) => r.id === want)) $('rec').value = want;
+  $('rec').onchange = (e) => selectRec(e.target.value);
+  selectRec($('rec').value);
+}
+</script>
+</body>
+</html>

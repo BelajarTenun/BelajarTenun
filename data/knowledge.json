@@ -1,0 +1,61 @@
+{
+  "status": "DRAFT – semua entri wajib direview penenun profesional sebelum dipakai pengguna",
+  "entries": [
+    {
+      "id": "lungsi-pakan",
+      "topic": "teknik",
+      "question": "Apa beda benang lungsi dan benang pakan?",
+      "keywords": ["lungsi", "pakan", "beda", "benang"],
+      "answer": "Benang lungsi adalah benang yang dipasang memanjang dan tegang di alat tenun. Benang pakan adalah benang yang dimasukkan melintang di antara benang lungsi. Kain terbentuk dari silangan keduanya.",
+      "source": null, "validated_by": null
+    },
+    {
+      "id": "kenapa-celah",
+      "topic": "teknik",
+      "question": "Kenapa benang pakan harus dimasukkan lewat celah?",
+      "keywords": ["kenapa", "celah", "mulut", "masuk", "dari sini"],
+      "answer": "Celah membagi lungsi menjadi lapisan atas dan bawah. Saat pakan lewat di antaranya lalu celah ditukar, pakan terkunci naik-turun di antara lungsi. Itulah yang membuat anyaman kain menjadi kuat.",
+      "source": null, "validated_by": null
+    },
+    {
+      "id": "tidak-rata",
+      "topic": "perbaikan",
+      "question": "Bagaimana memperbaiki tenunan yang tidak rata?",
+      "keywords": ["tidak rata", "miring", "perbaiki", "jelek", "renggang", "rata"],
+      "answer": "Biasanya karena hentakan tidak sama kuat atau pakan ditarik terlalu kencang. Rapatkan setiap baris dengan kekuatan yang sama dan biarkan pakan sedikit melengkung sebelum dirapatkan. Baris yang terlanjur miring bisa dibuka lalu diulang.",
+      "source": null, "validated_by": null
+    },
+    {
+      "id": "tepi-menyempit",
+      "topic": "perbaikan",
+      "question": "Kenapa tepi kainku makin menyempit?",
+      "keywords": ["tepi", "menyempit", "sempit", "pinggir", "mengecil"],
+      "answer": "Tepi menyempit karena benang pakan ditarik terlalu kencang di ujung. Letakkan pakan membentuk busur kecil sebelum dirapatkan, supaya ada kelonggaran.",
+      "source": null, "validated_by": null
+    },
+    {
+      "id": "fungsi-pedang",
+      "topic": "alat",
+      "question": "Apa fungsi pedang atau belida?",
+      "keywords": ["pedang", "belida", "fungsi", "alat"],
+      "answer": "Pedang (belida) dipakai untuk membuka celah lungsi dan untuk merapatkan benang pakan setelah dimasukkan.",
+      "source": null, "validated_by": null
+    },
+    {
+      "id": "fungsi-sekoci",
+      "topic": "alat",
+      "question": "Apa fungsi sekoci?",
+      "keywords": ["sekoci", "teropong", "fungsi", "gulungan"],
+      "answer": "Sekoci adalah wadah gulungan benang pakan, supaya pakan mudah dilewatkan di antara celah lungsi.",
+      "source": null, "validated_by": null
+    },
+    {
+      "id": "filosofi-tidore",
+      "topic": "budaya",
+      "question": "Apa makna motif tenun Tidore?",
+      "keywords": ["motif", "makna", "filosofi", "arti", "tidore", "sejarah"],
+      "answer": "[PERLU DIISI OLEH PARTNER] Makna motif dan pakem Tenun Tidore harus diisi langsung dari penenun dan pemangku budaya, bukan dikarang oleh AI.",
+      "source": null, "validated_by": null
+    }
+  ]
+}

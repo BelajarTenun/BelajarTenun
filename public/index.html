@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>BelajarTenun</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#a3361f">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Layar 1: pilih modul -->
+  <section id="home" class="screen active">
+    <header class="brand">
+      <div class="account" id="account"></div>
+      <h1>BelajarTenun</h1>
+      <p>Tutor AI pendamping belajar menenun, langsung di alat tenunmu.</p>
+    </header>
+    <div id="modules"></div>
+    <article class="card" id="module-card">
+      <span class="tag" id="module-status"></span>
+      <h2 id="module-title">Memuat…</h2>
+      <p id="module-desc"></p>
+      <ol id="module-steps"></ol>
+      <label class="toggle"><input type="checkbox" id="handsfree"> Mode hands-free (perintah suara terus aktif)</label>
+      <label class="toggle" id="live-wrap" hidden><input type="checkbox" id="live"> Ngobrol langsung dengan tutor (Gemini Live)</label>
+      <button id="start" class="primary" disabled>Mulai latihan</button>
+      <p class="hint">Pasang HP di kepala (head strap) atau pakai kacamata, dengan kamera mengarah ke benang lungsi. Punya kacamata? Buka <a href="kacamata.html">mode kacamata</a>.</p>
+    </article>
+    <p class="mode" id="mode"></p>
+    <nav class="links"><a href="progres.html">📈 Progres</a> · <a href="pendamping.html">🧑‍🏫 Jadi pendamping</a> · <a href="editor.html">✏️ Editor</a> · <a href="rekam.html">🎥 Rekam</a> · <a href="anotasi.html">🏷️ Anotasi</a></nav>
+  </section>
+
+  <!-- Layar 2: sesi latihan (tampilan HUD ala kacamata) -->
+  <section id="session" class="screen">
+    <video id="cam" autoplay playsinline muted></video>
+    <div class="hud">
+      <div class="progress"><div id="bar"></div></div>
+      <p class="step-count"><span class="rec-dot" title="Kamera aktif"></span> <span id="step-count"></span> <span id="badges"></span></p>
+      <h2 id="step-title"></h2>
+      <p id="step-instruction"></p>
+      <p id="feedback" class="feedback" aria-live="polite"></p>
+    </div>
+    <div id="cards" class="cards"></div>
+    <div id="transcript" class="transcript" hidden></div>
+    <div id="answer" class="answer" hidden></div>
+    <div id="demo" class="demo" hidden>
+      <p class="step-count">Lihat dulu contohnya</p>
+      <h3 id="demo-title"></h3>
+      <div id="demo-media"></div>
+      <ul id="demo-tips"></ul>
+      <button id="demo-go" class="primary">Saya coba sekarang</button>
+    </div>
+    <p id="hf-status" class="hf-status" hidden>🎙️ Hands-free aktif · ucapkan "sudah", "ulangi", "contoh", "catat …", atau tanya apa saja</p>
+    <nav class="controls">
+      <button id="btn-repeat" title="Lihat contoh">🔁</button>
+      <button id="btn-pin" title="Bekukan tampilan">📌</button>
+      <button id="btn-ask" title="Tanya tutor">🎙️ Tanya</button>
+      <button id="btn-share" title="Undang pendamping">🧑‍🏫</button>
+      <button id="btn-done" class="primary">✅ Sudah</button>
+    </nav>
+    <form id="ask-form" class="ask-form" hidden>
+      <input id="ask-input" placeholder="Ketik pertanyaanmu…" autocomplete="off">
+      <button>Kirim</button>
+    </form>
+    <button id="btn-exit" class="exit" aria-label="Keluar">✕</button>
+  </section>
+
+  <!-- Layar 3: selesai + kuesioner (learning validation) -->
+  <section id="finish" class="screen">
+    <div class="card">
+      <h2>🎉 Latihan selesai!</h2>
+      <p id="summary"></p>
+      <ul id="summary-list"></ul>
+      <form id="survey" class="survey">
+        <h3>Bantu kami (30 detik)</h3>
+        <label>Seberapa mudah mengikuti panduan? <span class="scale" data-q="mudah"></span></label>
+        <label>Seberapa paham kamu alasan tiap tahap? <span class="scale" data-q="paham"></span></label>
+        <label>Seberapa percaya diri mencoba sendiri? <span class="scale" data-q="percaya_diri"></span></label>
+        <label>Saran / bagian yang membingungkan <textarea id="survey-text" rows="2"></textarea></label>
+        <button class="primary">Kirim</button>
+      </form>
+      <button id="again">Kembali ke awal</button>
+    </div>
+  </section>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

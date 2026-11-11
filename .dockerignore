@@ -1,0 +1,13 @@
+.git
+node_modules
+logs
+data/recordings
+data/users.json
+data/cache
+data/logs
+dataset
+clients
+scripts/train
+docs
+test
+.env

@@ -1,0 +1,72 @@
+{
+  "id": "tidore-dasar",
+  "title": "Tenun Tidore – Modul Dasar",
+  "tradition": "Tenun Tidore",
+  "level": "pemula",
+  "status": "DRAFT – belum divalidasi penenun profesional",
+  "description": "Latihan dasar menenun polos dengan alat tenun gedogan: dari mengenal alat hingga merapatkan beberapa baris pakan.",
+  "steps": [
+    {
+      "id": "kenal-alat",
+      "title": "Mengenal alat tenun",
+      "instruction": "Lihat alat tenunmu. Temukan benang lungsi yang terbentang memanjang, balok dada di dekat badanmu, sisir, dan sekoci berisi benang pakan.",
+      "tips": ["Benang lungsi adalah benang yang sudah terpasang memanjang di alat.", "Benang pakan adalah benang yang akan kamu masukkan melintang."],
+      "success_criteria": "Pengguna memegang atau menunjuk bagian-bagian alat tenun; alat tenun dengan benang lungsi terbentang terlihat jelas di kamera.",
+      "common_mistakes": [
+        { "mistake": "Kamera tidak mengarah ke alat tenun", "fix": "Arahkan pandanganmu ke tengah benang lungsi agar kamera bisa melihat alat." }
+      ],
+      "auto_detect": false,
+      "validated_by": null
+    },
+    {
+      "id": "buka-mulut-lungsi",
+      "title": "Membuka celah (mulut) lungsi",
+      "instruction": "Angkat atau putar pedang (belida) supaya benang lungsi terbelah menjadi dua lapisan atas dan bawah, sehingga terbentuk celah.",
+      "tips": ["Celah yang cukup lebar memudahkan sekoci lewat tanpa tersangkut."],
+      "success_criteria": "Benang lungsi terlihat terbagi dua lapisan dengan celah terbuka di antaranya; pedang/belida berdiri atau terangkat.",
+      "common_mistakes": [
+        { "mistake": "Celah terlalu sempit", "fix": "Putar pedang hingga berdiri tegak agar celah lebih lebar." },
+        { "mistake": "Benang lungsi kendur", "fix": "Condongkan badan sedikit ke belakang untuk menegangkan lungsi." }
+      ],
+      "auto_detect": true,
+      "validated_by": null
+    },
+    {
+      "id": "masukkan-pakan",
+      "title": "Memasukkan benang pakan",
+      "instruction": "Masukkan sekoci berisi benang pakan melalui celah benang lungsi, dari satu sisi ke sisi lainnya.",
+      "tips": ["Sisakan sedikit ekor benang di tepi awal.", "Jangan menarik benang pakan terlalu kencang di tepi."],
+      "success_criteria": "Satu baris benang pakan melintang terlihat di dalam celah lungsi, dari tepi ke tepi.",
+      "common_mistakes": [
+        { "mistake": "Benang pakan ditarik terlalu kencang sehingga tepi kain menyempit", "fix": "Letakkan benang pakan sedikit miring (membentuk busur) sebelum dirapatkan." },
+        { "mistake": "Sekoci keluar dari celah di tengah jalan", "fix": "Tarik kembali sekoci dan pastikan celah terbuka penuh sebelum memasukkan." }
+      ],
+      "auto_detect": true,
+      "validated_by": null
+    },
+    {
+      "id": "rapatkan",
+      "title": "Merapatkan pakan",
+      "instruction": "Tutup celah, lalu hentakkan pedang atau sisir ke arah badanmu secara perlahan dan merata untuk merapatkan benang pakan.",
+      "tips": ["Hentakan yang sama kuat di setiap baris membuat kain rata."],
+      "success_criteria": "Benang pakan baru sudah rapat dengan baris sebelumnya, tanpa celah terlihat.",
+      "common_mistakes": [
+        { "mistake": "Hentakan tidak merata sehingga baris miring", "fix": "Pegang pedang di kedua ujungnya dan tarik lurus sejajar dengan baris sebelumnya." }
+      ],
+      "auto_detect": true,
+      "validated_by": null
+    },
+    {
+      "id": "ulangi-baris",
+      "title": "Mengulang beberapa baris",
+      "instruction": "Ganti posisi celah lungsi, lalu ulangi memasukkan dan merapatkan pakan sampai terbentuk lima baris.",
+      "tips": ["Perhatikan tepi kain: usahakan lebarnya tetap sama."],
+      "success_criteria": "Terlihat beberapa baris pakan (sekitar lima) yang rapat dan tepi kain lurus.",
+      "common_mistakes": [
+        { "mistake": "Tepi kain makin menyempit", "fix": "Kurangi tarikan benang pakan di tepi pada baris berikutnya." }
+      ],
+      "auto_detect": true,
+      "validated_by": null
+    }
+  ]
+}
