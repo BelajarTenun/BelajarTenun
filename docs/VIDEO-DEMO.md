@@ -2,6 +2,23 @@
 
 Durasi target **±3 menit (maks 3:00)**, rasio 16:9. Dari footage yang sama, potong juga versi pendek 60 detik dalam 9:16 untuk Reels/TikTok (pakai babak 1, 3, dan 6).
 
+## Fokus lomba: Pembelajaran dan Edukasi Digital Berbasis Budaya
+
+Bidang lomba meminta solusi digital yang meningkatkan **akses**, **kualitas**, dan **efektivitas** pembelajaran budaya, dengan contoh platform edukasi budaya, pembelajaran bahasa daerah, sistem pembelajaran adaptif, dan media interaktif untuk pelestarian. Video ini harus membuat juri bisa mencentang kelima poin itu tanpa menebak. Karena itu:
+
+- Ceritanya adalah **cara belajar budaya**, bukan gadget. Kacamata hanya alat; bintangnya murid yang akhirnya bisa menenun.
+- Setiap babak ditandai satu kata kunci di pojok layar (chip kecil) yang sama dengan bahasa juri: **AKSES**, **KUALITAS**, **EFEKTIVITAS**, **ADAPTIF**, **BAHASA DAERAH**, **PELESTARIAN**.
+- Kalimat founder memakai kata-kata itu secara eksplisit.
+
+| Kriteria lomba | Ditunjukkan di | Buktinya di video |
+|---|---|---|
+| Akses | Babak 2, 4, 5 | Belajar tanpa harus tinggal dekat penenun; data dari video terbuka; pendamping jarak jauh; jalan offline di desa |
+| Kualitas | Babak 2 | Hanya isi yang divalidasi penenun yang diajarkan; atribusi sumber; tidak mengarang jawaban |
+| Efektivitas | Babak 3, 5 | Koreksi langsung saat salah; catatan belajar & progres menunjukkan murid menyelesaikan 5/5 tahap |
+| Sistem pembelajaran adaptif | Babak 3 | Tutor menyesuaikan dengan tahap yang terlihat kamera, hanya bicara saat perlu, memberi petunjuk tambahan saat murid ragu |
+| Bahasa daerah | Babak 3 | Istilah alat dan gerakan diajarkan dalam bahasa daerah tradisinya, lalu dijelaskan dalam Bahasa Indonesia |
+| Media interaktif & pelestarian | Babak 2, 5 | Murid bertanya dengan suara; arsip tenun publik lintas tradisi |
+
 ## Gaya yang ditiru dari video referensi
 
 Video referensi (kacamata subvocal, ±77 detik) bekerja karena:
@@ -21,7 +38,7 @@ Karena durasi kita 3 menit, ada ruang untuk menunjukkan **lebih banyak fitur nya
 |---|---|---|
 | 1. Masalah | 0:00–0:20 | Ilmu tenun diwariskan dari tangan ke tangan, penenun senior makin sedikit. |
 | 2. Dari data terbuka ke pelajaran | 0:20–0:55 | Video & arsip tenun open source (tradisi mana pun) diolah AI jadi tahap, istilah, kesalahan, lalu divalidasi penenun. |
-| 3. Kacamata membimbing | 0:55–1:45 | Pemula belajar dengan kacamata: dipandu, dikoreksi, bertanya, tanpa tangan. |
+| 3. Belajar adaptif | 0:55–1:45 | Pemula belajar dengan kacamata: dipandu sesuai tahapnya, istilah bahasa daerah, dikoreksi, bertanya. |
 | 4. Tetap terhubung | 1:45–2:05 | Penenun senior mendampingi dari jauh lewat HP. |
 | 5. Belajar jadi data | 2:05–2:35 | Catatan belajar, progres, mode offline, arsip publik untuk komunitas. |
 | 6. Penutup | 2:35–3:00 | Visi + CTA. |
@@ -37,7 +54,7 @@ Keterangan: **VO** = suara/ucapan, **LAYAR** = teks/animasi overlay, **B-ROLL** 
 - VO: "Selama ratusan tahun, menenun diajarkan dari tangan ke tangan."
 
 **Adegan 2 (0:07–0:14)** · B-roll (cuplikan dari video open source atau footage sendiri): tangan keriput penenun senior di alat tenun, close-up benang, lalu ruang tenun yang sepi.
-- VO: "Tapi penenun senior makin sedikit, dan anak muda sulit belajar tanpa didampingi langsung."
+- VO: "Tapi penenun senior makin sedikit. Anak muda yang ingin belajar sering tidak punya akses ke guru, dan pengetahuannya pelan-pelan hilang."
 
 **Adegan 3 (0:14–0:20)** · Kembali ke founder, TV berganti teks.
 - LAYAR (di TV): *"Bagaimana kalau ilmunya bisa ikut… di mata kita?"*
@@ -62,7 +79,8 @@ Keterangan: **VO** = suara/ucapan, **LAYAR** = teks/animasi overlay, **B-ROLL** 
 **Adegan 7 (0:45–0:55)** · Partner penenun di depan laptop/HP, halaman **Editor** (mode tinjau).
 - Partner menekan tahap → potongan video sumber diputar tepat di detik itu → mengubah satu kata → menekan ✔.
 - LAYAR: label 🤖 *Usulan AI* → ✏️ *Diubah* → ✔ *Tervalidasi penenun*. Sumber video tetap tercantum sebagai atribusi.
-- VO: "Tapi AI bisa salah. Jadi setiap tahap diperiksa penenun sebelum diajarkan."
+- VO: "Tapi AI bisa salah. Untuk menjaga kualitas, setiap tahap diperiksa penenun sebelum diajarkan."
+- Chip pojok: **KUALITAS**
 
 ### Babak 3 — Kacamata membimbing (0:55–1:45) · inti demo
 
@@ -70,6 +88,7 @@ Keterangan: **VO** = suara/ucapan, **LAYAR** = teks/animasi overlay, **B-ROLL** 
 - VO murid: "Mulai belajar."
 - LAYAR: titik biru kecil berdenyut = AI mendengar. Bunyi earcon pendek.
 - VO tutor: "Halo. Kita mulai dari mengenal alat. Lihat ke arah belida."
+- Chip pojok: **ADAPTIF**
 
 **Adegan 9 (1:02–1:10)** · Murid menengok sebentar ke video demo tahap (di HP / layar kecil), lalu ke alat tenun.
 - LAYAR: kartu kecil berisi potongan video sumber (open source) yang menunjukkan tahap ini, dengan atribusi kecil di bawahnya.
@@ -77,12 +96,15 @@ Keterangan: **VO** = suara/ucapan, **LAYAR** = teks/animasi overlay, **B-ROLL** 
 
 **Adegan 10 (1:10–1:18)** · **POV kacamata** dengan bingkai HUD.
 - LAYAR (kartu kanan atas): `Tahap 2/5 · Membuka mulut lungsi` + bilah keyakinan yang naik.
-- VO tutor: "Bagus. Mulut lungsinya sudah terbuka. Lanjut masukkan benang pakan."
+- VO tutor: "Bagus. Mulut lungsinya sudah terbuka. Lanjut masukkan benang pakan. Dalam bahasa [daerah], benang pakan disebut *[istilah daerah]*."
+- LAYAR: kartu kosakata muncul: **[istilah daerah]** → *benang pakan* + tombol putar pelafalan. Chip pojok: **BAHASA DAERAH**.
+- Catatan: isi istilah aslinya dari modul yang sudah divalidasi penenun Tidore. Jangan menebak istilah.
 - Earcon "naik tahap" + kartu berganti `Tahap 3/5`.
 
 **Adegan 11 (1:18–1:27)** · Close-up makro tangan murid melakukan kesalahan (pakan ditarik terlalu kencang).
 - LAYAR: lingkaran sorot di tepi kain + kartu oranye *"Pinggir kain menyempit"*.
 - VO tutor: "Pinggirnya mulai menyempit. Longgarkan sedikit benang pakannya."
+- Murid ragu (diam beberapa detik) → tutor menambah petunjuk lebih rinci: "Coba tarik pelan sampai pinggirnya lurus dengan baris sebelumnya." Inilah sisi **adaptif**: petunjuk makin rinci hanya saat murid butuh.
 - Murid membetulkan → kartu berubah hijau ✔.
 
 **Adegan 12 (1:27–1:36)** · Close-up wajah samping murid, tangan tetap sibuk menenun, teks pertanyaan melayang.
@@ -104,7 +126,8 @@ Keterangan: **VO** = suara/ucapan, **LAYAR** = teks/animasi overlay, **B-ROLL** 
 - VO tutor (membacakan): "Pesan dari Ibu ___: coba tekan lebih pelan."
 
 **Adegan 15 (1:55–2:05)** · Senior tersenyum, melihat hasil murid membaik.
-- VO founder: "Penenun senior tidak tergantikan. Mereka justru bisa mengajar lebih banyak murid, dari mana saja."
+- VO founder: "Penenun senior tidak tergantikan. Dengan BelajarTenun, akses ke mereka terbuka untuk lebih banyak murid, dari mana saja."
+- Chip pojok: **AKSES**
 
 ### Babak 5 — Belajar jadi data (2:05–2:35)
 
@@ -113,14 +136,16 @@ Keterangan: **VO** = suara/ucapan, **LAYAR** = teks/animasi overlay, **B-ROLL** 
 - VO: "Setiap sesi meninggalkan catatan: apa yang sudah bisa, apa yang membingungkan."
 
 **Adegan 17 (2:13–2:20)** · Rekam layar halaman **Progres**: grafik tingkat selesai, tahap yang paling membingungkan disorot.
-- VO: "Dari situ kami tahu tahap mana yang perlu diajarkan lebih baik."
+- VO: "Dari situ kami bisa mengukur efektivitasnya: tahap mana yang sudah dikuasai, dan mana yang perlu diajarkan lebih baik."
+- Chip pojok: **EFEKTIVITAS**
 
 **Adegan 18 (2:20–2:27)** · Desa dengan sinyal lemah: murid belajar, ikon sinyal di HP mati, tutor tetap jalan.
 - LAYAR: ikon *"Offline · model lokal"*.
 - VO: "Di tempat tanpa sinyal pun, deteksi tahap tetap berjalan langsung di HP."
 
 **Adegan 19 (2:27–2:35)** · Rekam layar halaman **Arsip**: kartu motif & tahap tervalidasi, nama penenun sebagai sumber, tombol unduh.
-- VO: "Yang sudah divalidasi kami buka sebagai arsip tenun publik, dengan nama penenunnya."
+- VO: "Yang sudah divalidasi kami buka sebagai arsip tenun publik, supaya pengetahuan ini terus lestari."
+- Chip pojok: **PELESTARIAN**
 
 ### Babak 6 — Penutup (2:35–3:00)
 
@@ -128,7 +153,7 @@ Keterangan: **VO** = suara/ucapan, **LAYAR** = teks/animasi overlay, **B-ROLL** 
 - Musik naik.
 
 **Adegan 21 (2:45–2:53)** · Founder (atau dua founder) berdiri berdampingan.
-- VO: "BelajarTenun menjaga ilmu tenun tetap hidup, dan membawanya ke generasi berikutnya."
+- VO: "BelajarTenun adalah cara baru belajar budaya: terbuka untuk siapa saja, menyesuaikan setiap murid, dan dijaga oleh penenunnya sendiri. Dimulai dari tenun, dan bisa dipakai untuk warisan budaya lain."
 
 **Adegan 22 (2:53–3:00)** · Kartu penutup krem.
 - LAYAR: logo, sketsa garis kacamata digambar bertahap, motif tenun tipis sebagai latar.
