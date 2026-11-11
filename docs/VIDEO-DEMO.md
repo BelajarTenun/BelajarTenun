@@ -177,7 +177,7 @@ Catatan: modul Tidore masih **DRAFT**. Untuk video publik, pastikan tahap yang d
 - Akun sudah dibuat, kode akses perangkat sudah dipasang di kacamata.
 - Satu video senior **sudah diproses** di `/sumber.html` supaya adegan 4–5 tinggal direkam layarnya (prosesnya butuh waktu).
 - Modul punya video demo per tahap, plus istilah & kesalahan yang muncul di skrip (pakan terlalu kencang, dll.).
-- Siapkan 2–3 video dari tradisi lain di  (adegan 5), beberapa sesi latihan agar  berisi data (adegan 17), isi  (adegan 19), dan model offline jika adegan 18 dipakai.
+- Siapkan 2–3 video dari tradisi lain di `/sumber.html` (adegan 5), beberapa sesi latihan agar `/progres.html` berisi data (adegan 17), isi `/arsip.html` (adegan 19), dan model offline jika adegan 18 dipakai.
 - Uji coba sekali penuh: deteksi tahap, koreksi, pertanyaan adegan 12–13, pesan pendamping adegan 14.
 
 ### Rekaman yang harus diambil
