@@ -139,4 +139,4 @@ test/                     Tes unit + integrasi (npm test)
 - WebRTC pendamping hanya memakai STUN. Di jaringan yang ketat perlu server TURN (LiveKit punya TURN bawaan).
 - LiveKit lokal + agen sudah diuji sampai agen bergabung ke ruang; percakapan Gemini Live belum diuji karena butuh API key.
 
-Dokumentasi lain: [Referensi data](docs/REFERENSI-DATA.md) · [LiveKit lokal](docs/LIVEKIT.md) · [Kacamata](docs/KACAMATA.md) · [Deploy](docs/DEPLOY.md) · [Privasi](docs/PRIVASI.md) · [Rencana implementasi](docs/RENCANA-IMPLEMENTASI.md) · [Panduan anotasi](docs/PANDUAN-ANOTASI.md) · [Validasi](docs/VALIDASI.md) · [Referensi](docs/REFERENSI.md)
+Dokumentasi lain: [Video → data belajar](docs/RENCANA-VIDEO-KE-DATA.md) · [Referensi data](docs/REFERENSI-DATA.md) · [LiveKit lokal](docs/LIVEKIT.md) · [Kacamata](docs/KACAMATA.md) · [Deploy](docs/DEPLOY.md) · [Privasi](docs/PRIVASI.md) · [Rencana implementasi](docs/RENCANA-IMPLEMENTASI.md) · [Panduan anotasi](docs/PANDUAN-ANOTASI.md) · [Validasi](docs/VALIDASI.md) · [Referensi](docs/REFERENSI.md)
