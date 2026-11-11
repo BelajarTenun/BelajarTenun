@@ -11,7 +11,13 @@ import * as kb from './lib/knowledge.js';
 import * as data from './lib/data.js';
 import { buildStepCheckPrompt, interpretStepCheck, summarizeLogs, STEP_CHECK_SCHEMA } from './lib/core.js';
 import { createSession } from './lib/session.js';
-import { liveSetup } from './lib/live.js';
+import { liveSetup, liveInstructions, LIVE_TOOLS } from './lib/live.js';
+import * as sources from './lib/sources.js';
+import * as pipeline from './lib/pipeline.js';
+import { getAnalysis } from './lib/video-analysis.js';
+import { generateDialogs, evaluateDialog, listDialogs } from './lib/dialog-gen.js';
+import { pairsForModule } from './lib/exo-ego.js';
+import { createAccessToken, livekitEnabled, roomForSession, toJsonSchema } from './lib/livekit.js';
 
 const fail = (code, message) => Object.assign(new Error(message), { code });
 const b64 = (img) => String(img || '').replace(/^data:image\/\w+;base64,/, '');
@@ -68,7 +74,8 @@ const sessionRoutes = (prefix) => ({
 const routes = {
   'GET /api/health': async () => ({ ok: true }),
   'GET /api/config': async (b, req) => ({
-    ai: aiEnabled(), tts: Boolean(config.ttsKey), model: config.geminiModel, live: aiEnabled(), liveModel: config.liveModel,
+    ai: aiEnabled(), tts: Boolean(config.ttsKey), model: config.geminiModel, live: aiEnabled() || livekitEnabled(), liveModel: config.liveModel,
+    livekit: livekitEnabled(),
     user: await auth.currentUser(req), authDisabled: config.authDisabled,
   }),
 
@@ -96,7 +103,7 @@ const routes = {
   // ----- Kurikulum -----
   'GET /api/modules': async () => ({ modules: await data.listModules() }),
   'GET /api/module': async (b, req, res, url) => data.getModule(url.searchParams.get('id')),
-  'POST /api/module': async (b, req) => { await auth.requireRole(req, ...PARTNER); await data.saveModule(b); return { ok: true }; },
+  'POST /api/module': async (b, req) => { await data.saveModule(b, await auth.requireRole(req, ...PARTNER)); return { ok: true }; },
 
   // ----- Knowledge base -----
   'GET /api/knowledge': async (b, req) => { await auth.requireRole(req, ...PARTNER); return kb.loadKnowledge(); },
@@ -153,6 +160,65 @@ const routes = {
     return { ...out, ui: out.ui ? await withAudio(out.ui, {}) : undefined };
   },
 
+  // ----- LiveKit lokal + agen Gemini Live (docs/LIVEKIT.md) -----
+  'POST /api/livekit/token': async (b, req) => {
+    if (!livekitEnabled()) throw fail(501, 'LiveKit belum dikonfigurasi (LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET)');
+    const user = await auth.currentUser(req);
+    const session = getSession(b.sessionId, user);
+    const room = roomForSession(session.state.id);
+    const token = createAccessToken({
+      identity: `murid-${(user?.id ?? 'tamu').slice(0, 12)}-${Math.random().toString(36).slice(2, 6)}`,
+      name: user?.name ?? 'Murid', room,
+      metadata: { sessionId: session.state.id, source: session.state.source, audioOnly: session.state.audioOnly },
+    });
+    return { url: config.livekitPublicUrl, token, room };
+  },
+  // Dipanggil agen Python saat bergabung ke ruang: instruksi + tools sesuai modul & mode sesi.
+  'GET /api/agent/session-config': async (b, req, res, url) => {
+    const user = await auth.requireRole(req, 'admin');
+    if (user.id !== 'agent' && !config.authDisabled) throw fail(403, 'Khusus agen');
+    const session = getSession(url.searchParams.get('sessionId'), user);
+    return {
+      sessionId: session.state.id, model: config.liveModel, voice: config.liveVoice,
+      instructions: liveInstructions(session.state.module, { audioOnly: session.state.audioOnly }),
+      tools: LIVE_TOOLS.map((t) => ({ name: t.name, description: t.description, parameters: toJsonSchema(t.parameters) })),
+    };
+  },
+
+  // ----- Video → data belajar (lintas tradisi) -----
+  'GET /api/licenses': async () => sources.LICENSES,
+  'GET /api/sources': async (b, req) => { await auth.requireRole(req, ...PARTNER); return pipeline.sourcesOverview(); },
+  'POST /api/sources': async (b, req) => sources.createSource(b, await auth.requireRole(req, ...PARTNER)),
+  'POST /api/sources/update': async (b, req) => { await auth.requireRole(req, ...PARTNER); return sources.updateSource(b.id, b); },
+  'POST /api/sources/delete': async (b, req) => { await auth.requireRole(req, ...PARTNER); await sources.removeSource(b.id); return { ok: true }; },
+  'POST /api/sources/process': async (b, req) => { await auth.requireRole(req, ...PARTNER); await sources.getSource(b.id); pipeline.enqueue(b.id, { analyze: b.analyze !== false }); return { queued: true }; },
+  'GET /api/sources/analysis': async (b, req, res, url) => { await auth.requireRole(req, ...PARTNER); return (await getAnalysis(url.searchParams.get('id'))) ?? {}; },
+  'POST /api/curriculum/rebuild': async (b, req) => { await auth.requireRole(req, ...PARTNER); return pipeline.rebuildCurricula(); },
+  'POST /api/dialogs/generate': async (b, req) => {
+    await auth.requireRole(req, ...PARTNER);
+    const module = await data.getModule(b.moduleId);
+    const dialogs = await generateDialogs(module, { count: Math.min(10, Number(b.count) || 2) });
+    const results = [];
+    for (const d of dialogs) results.push(await evaluateDialog(d, () => createSession(module, { checkStep: async () => ({ status: 'uncertain', confidence: 0 }), ask: (q, step) => kb.answer(q, { step, moduleId: module.id }), log: () => {} })));
+    return { dialogs, results };
+  },
+  'GET /api/dialogs': async (b, req, res, url) => { await auth.requireRole(req, ...PARTNER); return { dialogs: await listDialogs(url.searchParams.get('moduleId')) }; },
+  'GET /api/exo-ego': async (b, req, res, url) => { await auth.requireRole(req, ...PARTNER); return pairsForModule(url.searchParams.get('moduleId')); },
+  'GET /api/module/history': async (b, req, res, url) => { await auth.requireRole(req, ...PARTNER); return { history: (await store.readLines(`modules/${url.searchParams.get('id')}.history.jsonl`)).map((l) => JSON.parse(l)).reverse().slice(0, 200) }; },
+
+  // ----- Arsip konservasi publik: hanya isi tervalidasi + atribusi; video hanya bila izinnya membolehkan -----
+  'GET /api/arsip': async () => {
+    const mods = [];
+    for (const m of await data.listModules()) {
+      const mod = await data.getModule(m.id);
+      const steps = mod.steps.filter((s) => s.validated_by).map((s) => ({ title: s.title, instruction: s.instruction, success_criteria: s.success_criteria, tips: s.tips, common_mistakes: s.common_mistakes, validated_by: s.validated_by, genericStepId: s.genericStepId ?? null, provenance: s.provenance ?? [] }));
+      if (steps.length) mods.push({ id: mod.id, title: mod.title, tradition: mod.tradition, region: mod.region ?? null, steps });
+    }
+    const knowledge = (await kb.loadKnowledge()).entries.filter((e) => e.status === 'tervalidasi').map(({ id, topic, question, answer, source, validated_by, module }) => ({ id, topic, question, answer, source, validated_by, module }));
+    const srcs = (await sources.listSources()).map((s) => ({ id: s.id, title: s.title, channel: s.channel, url: s.url, tradition: s.tradition, region: s.region, loomType: s.loomType, technique: s.technique, license: s.license.status, video: sources.allows(s, 'arsip_video') && s.files?.includes('video.mp4') ? `sources/${s.id}/video.mp4` : null }));
+    return { generatedAt: new Date().toISOString(), modules: mods, knowledge, sources: srcs };
+  },
+
   'POST /api/tts': async (b) => ({ audio: await tts(b.text) }),
 
   // ----- Tracer & progres -----
@@ -194,7 +260,10 @@ async function serveRecording(req, res, path) {
   const user = await auth.currentUser(req);
   const allowed = rec && (rec.consent?.scopes?.includes('pembelajaran') || PARTNER.includes(user?.role));
   if (!allowed || !rec.files.includes(file)) return res.writeHead(404).end('Not found');
-  const buf = await store.readFile(`recordings/${id}/${file}`);
+  return serveRecordingBuffer(req, res, await store.readFile(`recordings/${id}/${file}`), file);
+}
+
+function serveRecordingBuffer(req, res, buf, file) {
   const headers = { 'content-type': MIME[extname(file)] || 'application/octet-stream', 'cache-control': 'private, max-age=3600', 'accept-ranges': 'bytes' };
   // Range request (206) wajib agar video bisa di-seek (anotasi, demo mulai di detik tertentu).
   const m = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || '');
@@ -208,7 +277,18 @@ async function serveRecording(req, res, path) {
   res.writeHead(200, { ...headers, 'content-length': buf.length }).end(buf);
 }
 
-const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.webm': 'video/webm', '.mp4': 'video/mp4', '.jpg': 'image/jpeg', '.png': 'image/png', '.bin': 'application/octet-stream', '.webmanifest': 'application/manifest+json' };
+// Berkas sumber video: partner selalu; publik hanya bila izinnya membolehkan demo/arsip.
+async function serveSourceFile(req, res, path) {
+  const parts = path.split('/').filter(Boolean);
+  const src = await sources.getSource(parts[1]).catch(() => null);
+  const file = parts.slice(2).join('/');
+  const user = await auth.currentUser(req);
+  const ok = src && /^(video\.mp4|keyframes\/kf-\d+\.jpg)$/.test(file) && (PARTNER.includes(user?.role) || sources.allows(src, 'demo'));
+  if (!ok) return res.writeHead(404).end('Not found');
+  return serveRecordingBuffer(req, res, await store.readFile(`sources/${src.id}/${file}`), file);
+}
+
+const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.webm': 'video/webm', '.mp4': 'video/mp4', '.jpg': 'image/jpeg', '.png': 'image/png', '.bin': 'application/octet-stream', '.webmanifest': 'application/manifest+json' };
 const SECURITY_HEADERS = { 'x-content-type-options': 'nosniff', 'referrer-policy': 'same-origin', 'permissions-policy': 'camera=(self), microphone=(self), bluetooth=(self)' };
 const sendJson = (res, code, obj) => res.writeHead(code, { 'content-type': 'application/json', ...SECURITY_HEADERS }).end(JSON.stringify(obj));
 
@@ -216,6 +296,13 @@ export const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
   try {
     if (req.method === 'POST' && url.pathname === '/api/recordings/upload') return sendJson(res, 200, await handleUpload(req, res, url));
+    if (req.method === 'POST' && url.pathname === '/api/sources/upload') {
+      await auth.requireRole(req, ...PARTNER);
+      const m = await sources.attachVideoStream(url.searchParams.get('id'), req, String(url.searchParams.get('ext') || '').toLowerCase());
+      if (url.searchParams.get('process') === '1') pipeline.enqueue(m.id);
+      return sendJson(res, 200, m);
+    }
+    if (url.pathname.startsWith('/sources/')) return await serveSourceFile(req, res, url.pathname);
     const handler = routes[`${req.method} ${url.pathname}`];
     if (handler) {
       let body = {};

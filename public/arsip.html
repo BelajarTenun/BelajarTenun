@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arsip Tenun · BelajarTenun</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page">
+  <header class="brand">
+    <a href="./">← BelajarTenun</a>
+    <h1>Arsip Tenun Nusantara</h1>
+    <p>Dokumentasi proses menenun berbagai tradisi yang sudah <b>divalidasi penenun</b>, lengkap dengan atribusi sumber. Video hanya ditampilkan bila pemiliknya mengizinkan; selain itu kami menautkan ke sumber aslinya.</p>
+    <p><a id="dl-json" href="#">⬇ Unduh JSON</a> · <a id="dl-csv" href="#">⬇ Unduh CSV</a></p>
+  </header>
+  <label class="picker">Tradisi <select id="trad"></select></label>
+  <div id="content"></div>
+  <section class="card">
+    <h2>Sumber video</h2>
+    <div id="sources"></div>
+  </section>
+<script type="module">
+import { api, $, esc } from './js/api.js';
+const data = await api('/api/arsip');
+const trads = [...new Set([...data.modules.map((m) => m.tradition), ...data.sources.map((s) => s.tradition)])].sort();
+$('trad').innerHTML = `<option value="">Semua tradisi</option>` + trads.map((t) => `<option>${esc(t)}</option>`).join('');
+const srcById = Object.fromEntries(data.sources.map((s) => [s.id, s]));
+function render() {
+  const t = $('trad').value;
+  const mods = data.modules.filter((m) => !t || m.tradition === t);
+  $('content').innerHTML = mods.map((m) => `<section class="card"><h2>${esc(m.title)}</h2><p class="hint">${esc(m.tradition)}${m.region ? ` · ${esc(m.region)}` : ''}</p>
+    <ol>${m.steps.map((s) => `<li><b>${esc(s.title)}</b> — ${esc(s.instruction)}
+      <br><small class="hint">Berhasil bila: ${esc(s.success_criteria)} · divalidasi: ${esc(s.validated_by)}</small>
+      ${s.provenance.map((p) => { const src = srcById[p.sourceId]; if (!src) return ''; return src.video ? `<br><video src="${esc(src.video)}#t=${Math.floor(p.start)},${Math.ceil(p.end)}" controls preload="none" style="max-width:360px"></video>` : src.url ? `<br><a href="${esc(src.url)}" target="_blank" rel="noopener">▶ lihat di sumber asli (${Math.floor(p.start)} dtk)</a>` : ''; }).join('')}
+    </li>`).join('')}</ol></section>`).join('') || '<p class="hint">Belum ada isi tervalidasi untuk tradisi ini.</p>';
+  const kb = data.knowledge.filter((k) => !t || (k.question + k.answer).includes(t) || !k.module);
+  if (kb.length) $('content').insertAdjacentHTML('beforeend', `<section class="card"><h2>Pengetahuan</h2><dl>${kb.map((k) => `<dt><b>${esc(k.question)}</b></dt><dd>${esc(k.answer)}<br><small class="hint">Sumber: ${esc(k.source || '-')} · divalidasi: ${esc(k.validated_by || '-')}</small></dd>`).join('')}</dl></section>`);
+  const srcs = data.sources.filter((s) => !t || s.tradition === t);
+  $('sources').innerHTML = `<table><tr><th>Judul</th><th>Pembuat</th><th>Tradisi</th><th>Lisensi</th></tr>${srcs.map((s) => `<tr><td>${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title || s.url)}</a>` : esc(s.title || s.id)}</td><td>${esc(s.channel || '-')}</td><td>${esc(s.tradition)}</td><td>${esc(s.license)}</td></tr>`).join('')}</table>`;
+}
+$('trad').onchange = render;
+const download = (name, text, type) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); };
+$('dl-json').onclick = (e) => { e.preventDefault(); download('arsip-tenun.json', JSON.stringify(data, null, 2), 'application/json'); };
+$('dl-csv').onclick = (e) => {
+  e.preventDefault();
+  const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const rows = [['tradisi', 'modul', 'urutan', 'tahap', 'instruksi', 'kriteria_berhasil', 'divalidasi_oleh', 'sumber']];
+  for (const m of data.modules) m.steps.forEach((s, i) => rows.push([m.tradition, m.title, i + 1, s.title, s.instruction, s.success_criteria, s.validated_by, s.provenance.map((p) => srcById[p.sourceId]?.url || p.sourceId).join(' ')]));
+  download('arsip-tenun.csv', rows.map((r) => r.map(q).join(',')).join('\n'), 'text/csv');
+};
+render();
+</script>
+</body>
+</html>

@@ -32,9 +32,9 @@ function showDemo(url, intent) {
   if (!step) return;
   if (intent === 'instruksi' && !url && !step.tips?.length) return;
   $('demo-title').textContent = step.title;
-  const start = step.demo_start ? `#t=${step.demo_start}` : '';
+  const start = step.demo_start && !String(url).includes('#') ? `#t=${step.demo_start}` : '';
   $('demo-media').innerHTML = url ? `<video src="${esc(url)}${start}" controls autoplay muted playsinline loop></video>` : '<p class="step-count">(Video demonstrasi dari penenun belum tersedia untuk tahap ini.)</p>';
-  $('demo-tips').innerHTML = (step.tips || []).map((t) => `<li>${esc(t)}</li>`).join('');
+  $('demo-tips').innerHTML = (step.tips || []).map((t) => `<li>${esc(t)}</li>`).join('') + (url && step.demo_attribution ? `<li class="step-count">Sumber video: ${esc(step.demo_attribution)}</li>` : '');
   $('demo').hidden = false;
 }
 const closeDemo = () => { $('demo').hidden = true; $('demo-media').innerHTML = ''; };

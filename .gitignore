@@ -8,3 +8,10 @@ data/users.json
 data/cache/
 data/logs/
 public/models/
+bin/
+agent/.venv/
+__pycache__/
+data/sources/
+data/analyses/
+data/dialogs/
+data/modules/*.history.jsonl

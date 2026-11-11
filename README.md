@@ -10,13 +10,12 @@ Kamera kacamata melihat alat tenun dari sudut pandang mata. AI mengenali tahap y
 ## Arsitektur
 
 ```
-┌──────────────── Perangkat ────────────────┐
-│ Kacamata: OpenGlass (Web Bluetooth) ·     │        ┌──────────── Gemini Live ────────────┐
-│ Brilliant Frame (bridge Python) ·         │  WSS   │ suara real-time + video POV          │
-│ MentraOS (miniapp) · HP / webcam          │◄──────►│ token sementara, function tools      │
-│  └ filter kualitas frame, sampler suara,  │        └───────────────┬─────────────────────┘
-│    earcons, kartu, tracer, model lokal    │                        │ tool call
-└──────────────┬────────────────────────────┘                        ▼
+┌──────────────── Perangkat ────────────────┐ WebRTC ┌─ LiveKit lokal ─┐   ┌── agent/main.py ──┐
+│ Kacamata rakitan (ESP32-S3, Bluetooth) ·  │◄──────►│ ruang per sesi  │◄─►│ Gemini Live       │
+│ Brilliant Frame · MentraOS · HP / webcam  │        └─────────────────┘   │ suara+video, tools│
+│  └ filter kualitas frame, sampler suara,  │  (cadangan: browser langsung │ tracer, relay     │
+│    earcons, kartu, tracer, model lokal    │   ke Gemini Live)            └─────────┬─────────┘
+└──────────────┬────────────────────────────┘                                        │ tool call
                │ HTTPS: Glasses API / Session API / Live tools
 ┌──────────────▼───────────────────────────── Server Node.js (tanpa dependency) ───────────────┐
 │ Mesin sesi (lib/session.js) ── sumber kebenaran tahap; AI tidak bisa melompati kurikulum     │
@@ -33,7 +32,7 @@ Kamera kacamata melihat alat tenun dari sudut pandang mata. AI mengenali tahap y
         modules/ · knowledge.json · recordings/ · users.json · logs/ · cache/
 ```
 
-Arsitektur tutornya meniru pola [VisionClaw](https://github.com/sseanliu/VisionClaw): Gemini Live dengan tools, sampling video yang menyesuaikan dengan suara, protokol kartu, tracer, earcons, dan berbagi tampilan POV. Pembacaan kamera kacamata DIY mengikuti protokol Bluetooth [OpenGlass](https://github.com/BasedHardware/OpenGlass). Cara tutor memutuskan kapan bicara dan format anotasinya meniru [Watch-Talk-and-Guide](https://github.com/sled-group/Watch-Talk-and-Guide). Rinciannya ada di [docs/RENCANA-IMPLEMENTASI.md](docs/RENCANA-IMPLEMENTASI.md).
+Arsitektur tutornya meniru pola [VisionClaw](https://github.com/sseanliu/VisionClaw): Gemini Live dengan tools, sampling video yang menyesuaikan dengan suara, protokol kartu, tracer, earcons, dan berbagi tampilan POV. Pembacaan kamera kacamata DIY mengikuti protokol Bluetooth [OpenGlass](https://github.com/BasedHardware/OpenGlass). Cara tutor memutuskan kapan bicara dan format anotasinya meniru [Watch-Talk-and-Guide](https://github.com/sled-group/Watch-Talk-and-Guide).
 
 ## Fitur
 
@@ -41,9 +40,14 @@ Arsitektur tutornya meniru pola [VisionClaw](https://github.com/sseanliu/VisionC
 |---|---|---|
 | 👓 | **Mode kacamata**: HP/webcam atau OpenGlass via Bluetooth, mode suara saja, Gemini Live | `/kacamata.html`, `public/js/sources.js` |
 | 🧵 | **Latihan pemula**: demo per tahap, deteksi kamera, koreksi, petunjuk proaktif, hands-free, bekukan tampilan, catatan belajar, kuesioner akhir | `/` |
-| 🎧 | **Tutor suara real-time** (Gemini Live): bisa disela, transkrip, tools ke mesin sesi | `public/js/live.js`, `lib/live.js` |
+| 🎧 | **Tutor suara real-time**: **LiveKit lokal + agen Gemini Live** (atau Gemini Live langsung). Bisa disela, ada transkrip, tools ke mesin sesi | `agent/main.py`, `public/js/livekit-tutor.js`, `docs/LIVEKIT.md` |
 | 🧑‍🏫 | **Pendamping jarak jauh**: penenun senior melihat POV murid lewat WebRTC dan mengirim arahan yang dibacakan | `/pendamping.html`, `public/js/rtc.js` |
 | 🎥 | **Rekam data** dengan persetujuan berjenjang (demo / AI / publikasi) dan bisa dicabut | `/rekam.html` |
+| 🎞️ | **Video → data belajar (lintas tradisi)**: daftarkan video tenun dari tradisi apa pun dengan status izin → ffmpeg (normalisasi, audio, keyframe, adegan) → Gemini menandai tahap bercap waktu, alat, istilah, kesalahan → tahap dari banyak video dikelompokkan → draf modul per tradisi + modul dasar lintas tradisi | `/sumber.html`, `lib/sources.js`, `lib/preprocess.js`, `lib/video-analysis.js`, `lib/alignment.js`, `lib/pipeline.js` |
+| 🔎 | **Mode tinjau penenun**: label 🤖 usulan AI / ✏️ diubah / ✔ tervalidasi per kolom, putar bukti video di detik terkait, riwayat perubahan untuk atribusi | `/editor.html` |
+| 💬 | **Dialog tutor sintetis** (pola HowToDIV): skenario normal & kesalahan → uji otomatis tutor + kandidat knowledge base | `lib/dialog-gen.js`, `npm run dialogs` |
+| 🔁 | **Pasangan video luar ↔ kacamata** (pola EgoExoLearn) per tahap | `lib/exo-ego.js` |
+| 🏛️ | **Arsip tenun publik**: hanya isi tervalidasi, atribusi sumber, unduh JSON/CSV | `/arsip.html` |
 | 🏷️ | **Anotasi timeline**: tandai tahap di video panjang, usulan AI, ekspor frame berlabel, jadikan demo | `/anotasi.html` |
 | ✏️ | **Editor partner**: multi-modul, validasi tahap & tanya jawab, pertanyaan pemula yang belum terjawab | `/editor.html` |
 | 📈 | **Progres & validasi**: tingkat selesai, tahap yang membingungkan, hasil kuesioner | `/progres.html` |
@@ -102,8 +106,14 @@ public/
   js/                     api, tutor (klien bersama), live, sources (HP/OpenGlass), quality, earcons,
                           cards, tracer, rtc, local-model
   *.html                  Halaman (lihat tabel fitur)  ·  sw.js + manifest (PWA, tetap terbuka saat sinyal lemah)
+agent/                    Agen tutor real-time (LiveKit + Gemini Live, Python)
+scripts/livekit/          Unduh & jalankan LiveKit server lokal (livekit.yaml)
+public/vendor/            livekit-client (disajikan lokal, tanpa CDN)
 clients/frame/            Bridge Python Brilliant Labs Frame
 clients/mentra/           Miniapp MentraOS
+lib/sources.js · preprocess.js · video-analysis.js · alignment.js · pipeline.js · dialog-gen.js · exo-ego.js
+                          Alur video → data belajar
+data/taxonomy.json        Kosakata alat & aksi lintas tradisi (draft, divalidasi penenun)
 scripts/evaluate.js       Uji akurasi deteksi
 scripts/train/            Ekspor dataset + pelatihan model offline
 data/modules/             Kurikulum (JSON)  ·  data/knowledge.json  Knowledge base
@@ -120,6 +130,25 @@ test/                     Tes unit + integrasi (npm test)
 | `npm test` | Semua tes |
 | `npm run evaluate -- --min-accuracy 0.8` | Uji akurasi deteksi kamera (butuh `GEMINI_API_KEY`) |
 | `npm run export-dataset` | Ekspor frame berlabel untuk melatih model offline |
+| `npm run import-sources -- daftar.csv [--analyze]` | Daftarkan banyak video sekaligus dari CSV |
+| `npm run import-motif -- motif.csv --dataset "…"` | Impor dataset motif ke knowledge base (draft) |
+| `npm run dialogs -- --module <id> [--kb]` | Buat dialog tutor sintetis & uji tutor |
+| `npm run livekit:setup` / `npm run livekit` | Unduh lalu jalankan LiveKit server lokal |
+| `npm run agent` | Jalankan agen tutor real-time (lihat [docs/LIVEKIT.md](docs/LIVEKIT.md)) |
+
+## Alur video tenun → data belajar
+1. **Daftarkan video** di `/sumber.html` (atau massal: `npm run import-sources -- daftar.csv`). Isi tradisi, daerah, alat, sudut kamera, dan **status izin**:
+   | Status izin | Analisis & draf | Demo untuk pemula | Latih model | Video di arsip publik |
+   |---|---|---|---|---|
+   | `riset_internal` (internet tanpa izin) | ✅ | ❌ | ❌ | ❌ (hanya tautan) |
+   | `cc_by` / `izin_tertulis` / `milik_sendiri` | ✅ | ✅ | ✅ | ✅ dengan atribusi |
+2. **Proses**: ffmpeg menormalkan video, mengekstrak audio dan keyframe tajam, lalu Gemini menganalisis dua kali. Tahap yang tidak konsisten antar analisis ditandai "ragu".
+3. **Bangun kurikulum**: tahap serupa dari berbagai video dan tradisi digabung lewat taksonomi alat/aksi (`data/taxonomy.json`, mis. pedang = belida, sekoci = teropong). Hasilnya draf modul per tradisi dan modul dasar lintas tradisi. Istilah lokal masuk knowledge base sebagai draft.
+4. **Tinjau** di editor: putar bukti video, perbaiki, lalu terima. Kolom yang sudah diubah atau divalidasi tidak akan ditimpa saat kurikulum dibangun ulang.
+5. **Uji tutor** dengan dialog sintetis, lalu terbitkan modul (centang "Tampilkan ke pemula").
+6. **Arsip**: isi tervalidasi otomatis tampil di `/arsip.html`. Dataset motif bisa ditambahkan dengan `npm run import-motif -- motif.csv --dataset "Nama" --license "…" --url …`.
+
+Butuh `ffmpeg` dan `GEMINI_API_KEY`. Tanpa key, video tetap bisa didaftarkan dan dipra-proses, lalu menunggu analisis.
 
 ## Alur data partner → AI
 1. **Rekam** penenun dari sudut pandang mata (`/rekam.html`), per tahap atau satu sesi penuh, dengan persetujuan tertulis.
@@ -131,7 +160,9 @@ test/                     Tes unit + integrasi (npm test)
 ## Status & keterbatasan
 - Deteksi kamera, Gemini Live, embedding, dan anotasi otomatis **belum diuji dengan API key sungguhan** (key di lingkungan pengembangan ditolak). Kode mengikuti dokumentasi API Gemini dan pola VisionClaw.
 - Klien Frame dan Mentra **belum diuji di perangkat**. Frame SDK Python berlabel *deprecated*.
-- Isi kurikulum dan knowledge base masih **DRAFT** dan harus divalidasi penenun Tidore.
-- WebRTC hanya memakai STUN. Di jaringan yang ketat perlu server TURN.
+- Isi kurikulum dan knowledge base masih **DRAFT** dan harus divalidasi penenun tiap tradisi.
+- Analisis video oleh Gemini belum diuji dengan API key sungguhan; alurnya diuji dengan ffmpeg asli dan jawaban Gemini simulasi.
+- WebRTC pendamping hanya memakai STUN. Di jaringan yang ketat perlu server TURN (LiveKit punya TURN bawaan).
+- LiveKit lokal + agen sudah diuji sampai agen bergabung ke ruang; percakapan Gemini Live belum diuji karena butuh API key.
 
-Dokumentasi lain: [Kacamata](docs/KACAMATA.md) · [Deploy](docs/DEPLOY.md) · [Privasi](docs/PRIVASI.md) · [Rencana implementasi](docs/RENCANA-IMPLEMENTASI.md) · [Panduan anotasi](docs/PANDUAN-ANOTASI.md) · [Validasi](docs/VALIDASI.md) · [Referensi](docs/REFERENSI.md)
+Dokumentasi lain: [LiveKit lokal](docs/LIVEKIT.md) · [Kacamata](docs/KACAMATA.md) · [Deploy](docs/DEPLOY.md) · [Privasi](docs/PRIVASI.md) · [Panduan anotasi](docs/PANDUAN-ANOTASI.md) · [Validasi](docs/VALIDASI.md) · [Referensi](docs/REFERENSI.md)
