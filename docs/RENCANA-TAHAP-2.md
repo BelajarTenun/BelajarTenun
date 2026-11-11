@@ -160,7 +160,7 @@ Prinsip: **setiap lapis model hanya dipakai bila terbukti lebih baik dari lapis 
 **Kriteria selesai:** satu modul selesai dikerjakan memakai kacamata rakitan; foto diterima ≥1 per 2 detik lewat BLE (≥3 fps lewat Wi-Fi); tombol & suara berfungsi; baterai ≥ 2 jam.
 **Perkiraan:** 2 minggu (firmware + web), +1 minggu (casing & uji sudut), +3 minggu bila aplikasi Android native diperlukan.
 
-### VC-2. LiveKit (server media + agen tutor di server)
+### VC-2. LiveKit (server media + agen tutor di server) — ✅ sudah diimplementasikan (lokal/self-hosted, lihat [LIVEKIT.md](LIVEKIT.md))
 **Kenapa:** koneksi langsung browser → Gemini rapuh di sinyal jelek. VisionClaw memakai LiveKit (SFU) + `agent/main.py` (livekit-agents).
 
 **Cara kerja**
@@ -178,7 +178,7 @@ Pola dari `gateway/src/auth.ts` VisionClaw: OAuth Google → akun dibuat/diperba
 **Butuh:** OAuth client ID Google Cloud.
 **Perkiraan:** 3–4 hari.
 
-### VC-4. Cek "hasil sudah diucapkan"
+### VC-4. Cek "hasil sudah diucapkan" — ✅ sudah ada di agen LiveKit
 Pola `_relay_keywords` VisionClaw: setelah tool penting (jawaban knowledge, koreksi), periksa transkrip ucapan tutor. Kalau kata kunci hasil tidak terucap, kirim ulang hasilnya sebagai konteks agar tutor menyampaikannya.
 **Berkas:** `lib/relay.js`, integrasi di agen LiveKit / `public/js/live.js`.
 **Perkiraan:** 2–3 hari.

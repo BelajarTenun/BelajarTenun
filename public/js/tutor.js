@@ -5,6 +5,7 @@ import { assessFrame, motionBetween, toJpeg } from './quality.js';
 import { earcon } from './earcons.js';
 import { createTracer } from './tracer.js';
 import { LiveTutor } from './live.js';
+import { api as apiFn } from './api.js';
 import { loadLocalModel, predictLocal } from './local-model.js';
 
 export class TutorClient {
@@ -97,22 +98,33 @@ export class TutorClient {
   }
 
   /** Mode Gemini Live (percakapan suara real-time). */
-  async startLive() {
-    this.live = new LiveTutor({
-      sessionId: this.sessionId, api,
-      grabFrame: async () => { const f = this.grab(); return f?.jpeg ? f : null; },
-    });
+  async startLive({ engine = 'auto' } = {}) {
+    const cfg = await apiFn('/api/config');
+    const useLiveKit = engine === 'livekit' || (engine === 'auto' && cfg.livekit);
+    if (useLiveKit) {
+      // LiveKit lokal + agen Gemini Live: lebih stabil di jaringan putus-sambung (pola VisionClaw).
+      const { LiveKitTutor } = await import('./livekit-tutor.js');
+      this.live = new LiveKitTutor({ sessionId: this.sessionId, source: this.source, api });
+    } else {
+      this.live = new LiveTutor({
+        sessionId: this.sessionId, api,
+        grabFrame: async () => { const f = this.grab(); return f?.jpeg ? f : null; },
+      });
+    }
+    this.liveEngine = useLiveKit ? 'livekit' : 'gemini-langsung';
     const on = (t, fn) => this.live.addEventListener(t, (e) => fn(e.detail));
     on('user', (d) => { this.ui.transcript?.('user', d.text); this.tracer.emit('user_said', { text: d.text }); });
     on('tutor', (d) => { this.ui.transcript?.('tutor', d.text); this.tracer.emit('tutor_said', { text: d.text }); });
     on('tool', (d) => this.tracer.emit('tool_call', { name: d.name }));
     on('ui', (r) => this.handle({ ...r, speak: '' }));
     on('frame', (d) => d.gapMs && this.tracer.emit('view_gap', { ms: d.gapMs, speaking: d.speaking }));
+    on('status', (d) => this.ui.status?.(d.text));
+    on('agent', () => this.ui.status?.('Tutor bergabung'));
     on('close', (d) => { this.ui.status?.(`Live berhenti (${d.code})`); earcon('lost'); this.live = null; });
     speechSynthesis.cancel(); this.audio?.pause();
     await this.live.connect();
     earcon('connected');
-    this.tracer.emit('live_start', {});
+    this.tracer.emit('live_start', { engine: this.liveEngine });
   }
   stopLive() { this.live?.stop(); this.live = null; this.tracer.emit('live_stop', {}); }
 }

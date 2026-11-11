@@ -11,7 +11,8 @@ import * as kb from './lib/knowledge.js';
 import * as data from './lib/data.js';
 import { buildStepCheckPrompt, interpretStepCheck, summarizeLogs, STEP_CHECK_SCHEMA } from './lib/core.js';
 import { createSession } from './lib/session.js';
-import { liveSetup } from './lib/live.js';
+import { liveSetup, liveInstructions, LIVE_TOOLS } from './lib/live.js';
+import { createAccessToken, livekitEnabled, roomForSession, toJsonSchema } from './lib/livekit.js';
 
 const fail = (code, message) => Object.assign(new Error(message), { code });
 const b64 = (img) => String(img || '').replace(/^data:image\/\w+;base64,/, '');
@@ -68,7 +69,8 @@ const sessionRoutes = (prefix) => ({
 const routes = {
   'GET /api/health': async () => ({ ok: true }),
   'GET /api/config': async (b, req) => ({
-    ai: aiEnabled(), tts: Boolean(config.ttsKey), model: config.geminiModel, live: aiEnabled(), liveModel: config.liveModel,
+    ai: aiEnabled(), tts: Boolean(config.ttsKey), model: config.geminiModel, live: aiEnabled() || livekitEnabled(), liveModel: config.liveModel,
+    livekit: livekitEnabled(),
     user: await auth.currentUser(req), authDisabled: config.authDisabled,
   }),
 
@@ -153,6 +155,31 @@ const routes = {
     return { ...out, ui: out.ui ? await withAudio(out.ui, {}) : undefined };
   },
 
+  // ----- LiveKit lokal + agen Gemini Live (docs/LIVEKIT.md) -----
+  'POST /api/livekit/token': async (b, req) => {
+    if (!livekitEnabled()) throw fail(501, 'LiveKit belum dikonfigurasi (LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET)');
+    const user = await auth.currentUser(req);
+    const session = getSession(b.sessionId, user);
+    const room = roomForSession(session.state.id);
+    const token = createAccessToken({
+      identity: `murid-${(user?.id ?? 'tamu').slice(0, 12)}-${Math.random().toString(36).slice(2, 6)}`,
+      name: user?.name ?? 'Murid', room,
+      metadata: { sessionId: session.state.id, source: session.state.source, audioOnly: session.state.audioOnly },
+    });
+    return { url: config.livekitPublicUrl, token, room };
+  },
+  // Dipanggil agen Python saat bergabung ke ruang: instruksi + tools sesuai modul & mode sesi.
+  'GET /api/agent/session-config': async (b, req, res, url) => {
+    const user = await auth.requireRole(req, 'admin');
+    if (user.id !== 'agent' && !config.authDisabled) throw fail(403, 'Khusus agen');
+    const session = getSession(url.searchParams.get('sessionId'), user);
+    return {
+      sessionId: session.state.id, model: config.liveModel, voice: config.liveVoice,
+      instructions: liveInstructions(session.state.module, { audioOnly: session.state.audioOnly }),
+      tools: LIVE_TOOLS.map((t) => ({ name: t.name, description: t.description, parameters: toJsonSchema(t.parameters) })),
+    };
+  },
+
   'POST /api/tts': async (b) => ({ audio: await tts(b.text) }),
 
   // ----- Tracer & progres -----
@@ -208,7 +235,7 @@ async function serveRecording(req, res, path) {
   res.writeHead(200, { ...headers, 'content-length': buf.length }).end(buf);
 }
 
-const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.webm': 'video/webm', '.mp4': 'video/mp4', '.jpg': 'image/jpeg', '.png': 'image/png', '.bin': 'application/octet-stream', '.webmanifest': 'application/manifest+json' };
+const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.webm': 'video/webm', '.mp4': 'video/mp4', '.jpg': 'image/jpeg', '.png': 'image/png', '.bin': 'application/octet-stream', '.webmanifest': 'application/manifest+json' };
 const SECURITY_HEADERS = { 'x-content-type-options': 'nosniff', 'referrer-policy': 'same-origin', 'permissions-policy': 'camera=(self), microphone=(self), bluetooth=(self)' };
 const sendJson = (res, code, obj) => res.writeHead(code, { 'content-type': 'application/json', ...SECURITY_HEADERS }).end(JSON.stringify(obj));
 

@@ -8,7 +8,10 @@
     "dev": "AUTH_DISABLED=1 node --watch server.js",
     "test": "node --test test/*.test.js",
     "evaluate": "node scripts/evaluate.js",
-    "export-dataset": "node scripts/train/export_dataset.js"
+    "export-dataset": "node scripts/train/export_dataset.js",
+    "livekit": "bash scripts/livekit/run.sh",
+    "livekit:setup": "bash scripts/livekit/setup.sh",
+    "agent": "python3 agent/main.py dev"
   },
   "engines": {
     "node": ">=20"

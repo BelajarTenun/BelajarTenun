@@ -9,6 +9,7 @@ const dir = mkdtempSync(join(tmpdir(), 'bt-test-'));
 process.env.DATA_DIR = dir;
 process.env.GEMINI_API_KEY = '';
 process.env.AUTH_SECRET = 'rahasia-tes';
+process.env.AGENT_TOKEN = 'rahasia-agen-untuk-tes-integrasi';
 const { server } = await import('../server.js');
 const { seedDataDir } = await import('../lib/store.js');
 let base;
@@ -94,4 +95,15 @@ test('tracer membuang data gambar', async () => {
   const log = readFileSync(join(dir, 'logs/sessions.jsonl'), 'utf8');
   assert.ok(log.includes('"note":"ok"'));
   assert.ok(!log.includes('AAAAAAAAAA'));
+});
+
+test('agen LiveKit: hanya rahasia bersama yang benar boleh mengambil konfigurasi sesi', async () => {
+  const s = (await call('/api/session/start', {})).body;
+  const get = (token) => fetch(`${base}/api/agent/session-config?sessionId=${s.sessionId}`, { headers: token ? { 'x-agent-token': token } : {} });
+  assert.equal((await get()).status, 401);
+  assert.equal((await get('salah-tapi-panjangnya-sama-x')).status, 401);
+  const ok = await (await get('rahasia-agen-untuk-tes-integrasi')).json();
+  assert.match(ok.instructions, /tutor menenun/);
+  assert.ok(ok.tools.some((t) => t.name === 'check_my_work' && t.parameters.type === 'object'));
+  assert.equal((await call('/api/livekit/token', { sessionId: s.sessionId })).status, 501, 'LiveKit tidak dikonfigurasi di tes ini');
 });

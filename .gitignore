@@ -8,3 +8,6 @@ data/users.json
 data/cache/
 data/logs/
 public/models/
+bin/
+agent/.venv/
+__pycache__/

@@ -1,0 +1,3 @@
+livekit-agents[google,images]~=1.8
+aiohttp>=3.9
+Pillow>=10.0
