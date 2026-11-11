@@ -5,7 +5,7 @@ Bangun "otak" tutornya dulu di perangkat murah, lalu pindahkan ke kacamata. Nila
 
 | Tahap | Perangkat | Status |
 |---|---|---|
-| v0 | HP di head strap / tripod, atau laptop + webcam | ✅ prototipe di repo ini |
+| v0 | HP di head strap / tripod, atau laptop + webcam; simulator kacamata | ✅ prototipe + Glasses API di repo ini |
 | v1 | Kacamata kamera (mis. Meta Ray-Ban via SDK, Brilliant Labs Frame/Halo, Mentra) streaming ke HP | berikutnya |
 | v2 | Smart glasses dengan display (HUD) | nanti |
 
@@ -24,9 +24,15 @@ Ya, produk ini butuh computer vision. Kita bangun bertahap:
 | 5 | Review jawaban Q&A oleh penenun; lengkapi knowledge base (motif, filosofi) | Knowledge |
 | 6 | Uji ke 5–10 pemula; analisis `logs/sessions.jsonl` | Learning |
 
-## Backlog setelah v0
-- Klip video demonstrasi per tahap (STEP 2 di konsep) diputar sebelum latihan.
-- Mode "hands-free penuh": wake word dan perintah suara terus-menerus.
-- Integrasi kacamata v1 (lihat docs/REFERENSI.md).
-- Website pendamping: katalog modul, video, progres belajar.
-- Editor kurikulum untuk partner (tanpa mengedit JSON).
+## Sudah dikerjakan
+- ✅ Demo per tahap sebelum praktik, mode hands-free (perintah suara terus aktif)
+- ✅ Glasses API + simulator kacamata (docs/KACAMATA.md)
+- ✅ Alat rekam dataset POV berlabel + persetujuan; jadikan rekaman sebagai demo
+- ✅ Skrip evaluasi akurasi deteksi (technical validation)
+- ✅ Editor kurikulum & knowledge base untuk partner; halaman progres belajar
+
+## Backlog berikutnya
+- Klien kacamata nyata (mulai dari Brilliant Labs Frame atau MentraOS) memakai Glasses API.
+- Penyimpanan sesi & dataset di cloud (sekarang di disk server) + login partner.
+- Model CV ringan di perangkat (offline) dilatih dari dataset rekaman.
+- Dukungan beberapa modul & tradisi tenun.

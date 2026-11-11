@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Progres · BelajarTenun</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page">
+  <header class="brand">
+    <a href="./">← BelajarTenun</a>
+    <h1>Progres Belajar</h1>
+    <p>Ringkasan semua sesi latihan, dipakai untuk learning validation.</p>
+  </header>
+  <section class="stats" id="stats"></section>
+  <section class="card">
+    <h2>Per tahap</h2>
+    <p class="hint">Tahap dengan banyak pertanyaan atau kesalahan adalah tahap yang paling membingungkan pemula. Prioritaskan untuk diperbaiki instruksinya.</p>
+    <div id="steps"></div>
+  </section>
+  <section class="card">
+    <h2>Riwayat sesi</h2>
+    <div id="sessions"></div>
+  </section>
+<script type="module">
+const $ = (id) => document.getElementById(id);
+const pct = (x) => `${Math.round(x * 100)}%`;
+const [p, mod] = await Promise.all([fetch('/api/progress').then((r) => r.json()), fetch('/api/module').then((r) => r.json())]);
+const title = (id) => mod.steps.find((s) => s.id === id)?.title ?? id;
+const stat = (v, l) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`;
+$('stats').innerHTML = stat(p.totalSessions, 'sesi') + stat(p.completed, 'selesai') + stat(pct(p.completionRate), 'tingkat selesai');
+const order = mod.steps.map((s) => s.id);
+const steps = p.steps.sort((a, b) => order.indexOf(a.step) - order.indexOf(b.step));
+$('steps').innerHTML = steps.length ? `<table><tr><th>Tahap</th><th>Selesai</th><th>Dikenali kamera</th><th>Pertanyaan</th><th>Kesalahan terdeteksi</th></tr>${steps.map((s) =>
+  `<tr><td>${title(s.step)}</td><td>${s.done}</td><td>${s.done ? pct(s.vision / s.done) : '-'}</td><td>${s.questions}</td><td>${s.mistakes}</td></tr>`).join('')}</table>` : '<p>Belum ada data.</p>';
+$('sessions').innerHTML = p.sessions.length ? `<table><tr><th>Mulai</th><th>Tahap selesai</th><th>Durasi</th><th>Status</th></tr>${p.sessions.map((s) =>
+  `<tr><td>${String(s.start).slice(0, 16).replace('T', ' ')}</td><td>${s.stepsDone}</td><td>${s.minutes} mnt</td><td>${s.done ? '✅' : '—'}</td></tr>`).join('')}</table>` : '<p>Belum ada sesi.</p>';
+</script>
+</body>
+</html>

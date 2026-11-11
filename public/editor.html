@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Editor Kurikulum · BelajarTenun</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page">
+  <header class="brand">
+    <a href="./">← BelajarTenun</a>
+    <h1>Editor Kurikulum</h1>
+    <p>Untuk partner penenun: isi dan validasi setiap tahap serta jawaban tutor, tanpa perlu mengedit file.</p>
+    <p><a href="rekam.html">🎥 Rekam data tenun</a></p>
+  </header>
+  <label id="token-wrap" hidden class="card">Token editor <input id="token" type="password"></label>
+
+  <section class="card">
+    <h2>Modul</h2>
+    <label>Judul <input id="m-title"></label>
+    <label>Deskripsi <textarea id="m-desc" rows="2"></textarea></label>
+    <label>Status <input id="m-status"></label>
+  </section>
+
+  <div id="steps"></div>
+  <button id="add-step">+ Tambah tahap</button>
+
+  <h2 class="section-title">Knowledge base (tanya jawab)</h2>
+  <div id="kb"></div>
+  <button id="add-kb">+ Tambah tanya jawab</button>
+
+  <div class="savebar">
+    <span id="msg" class="feedback"></span>
+    <button id="save" class="primary">💾 Simpan semua</button>
+  </div>
+
+<script type="module">
+const $ = (id) => document.getElementById(id);
+let mod, kb;
+const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+const field = (label, key, val, rows) => rows
+  ? `<label>${label}<textarea data-k="${key}" rows="${rows}">${esc(val)}</textarea></label>`
+  : `<label>${label}<input data-k="${key}" value="${esc(val)}"></label>`;
+
+function stepCard(s, i) {
+  const mistakes = (s.common_mistakes || []).map((m) => `${m.mistake} => ${m.fix}`).join('\n');
+  return `<section class="card" data-step="${i}">
+    <h3>Tahap ${i + 1} ${s.validated_by ? '<span class="tag ok-tag">✔ tervalidasi</span>' : '<span class="tag">belum divalidasi</span>'}</h3>
+    ${field('ID (huruf kecil-tanda-hubung)', 'id', s.id)}
+    ${field('Judul', 'title', s.title)}
+    ${field('Instruksi (seperti diucapkan ke murid)', 'instruction', s.instruction, 3)}
+    ${field('Tips (satu per baris)', 'tips', (s.tips || []).join('\n'), 2)}
+    ${field('Seperti apa kalau BERHASIL (yang terlihat kamera)', 'success_criteria', s.success_criteria, 2)}
+    ${field('Kesalahan umum (format: kesalahan => cara memperbaiki, satu per baris)', 'common_mistakes', mistakes, 3)}
+    ${field('Video demo (path, bisa dipilih dari halaman Rekam)', 'demo_video', s.demo_video)}
+    <label class="toggle"><input type="checkbox" data-k="auto_detect" ${s.auto_detect ? 'checked' : ''}> Deteksi otomatis dengan kamera</label>
+    ${field('Divalidasi oleh (nama penenun; kosongkan jika belum)', 'validated_by', s.validated_by)}
+    <div class="row"><button data-act="up">↑</button><button data-act="down">↓</button><button data-act="del">Hapus</button></div>
+  </section>`;
+}
+function kbCard(e, i) {
+  return `<section class="card" data-kb="${i}">
+    ${field('ID', 'id', e.id)} ${field('Pertanyaan', 'question', e.question)}
+    ${field('Jawaban', 'answer', e.answer, 3)} ${field('Kata kunci (pisahkan koma)', 'keywords', (e.keywords || []).join(', '))}
+    ${field('Sumber', 'source', e.source)} ${field('Divalidasi oleh', 'validated_by', e.validated_by)}
+    <button data-act="del-kb">Hapus</button></section>`;
+}
+function render() {
+  $('m-title').value = mod.title; $('m-desc').value = mod.description || ''; $('m-status').value = mod.status || '';
+  $('steps').innerHTML = mod.steps.map(stepCard).join('');
+  $('kb').innerHTML = kb.entries.map(kbCard).join('');
+}
+// Baca kembali form ke objek.
+function collect() {
+  mod.title = $('m-title').value; mod.description = $('m-desc').value; mod.status = $('m-status').value;
+  document.querySelectorAll('[data-step]').forEach((card) => {
+    const s = mod.steps[card.dataset.step], v = (k) => card.querySelector(`[data-k="${k}"]`);
+    for (const k of ['id', 'title', 'instruction', 'success_criteria']) s[k] = v(k).value.trim();
+    s.tips = v('tips').value.split('\n').map((x) => x.trim()).filter(Boolean);
+    s.common_mistakes = v('common_mistakes').value.split('\n').filter((l) => l.trim()).map((l) => {
+      const [mistake, fix = ''] = l.split('=>'); return { mistake: mistake.trim(), fix: fix.trim() };
+    });
+    s.demo_video = v('demo_video').value.trim() || undefined;
+    s.auto_detect = v('auto_detect').checked;
+    s.validated_by = v('validated_by').value.trim() || null;
+  });
+  document.querySelectorAll('[data-kb]').forEach((card) => {
+    const e = kb.entries[card.dataset.kb], v = (k) => card.querySelector(`[data-k="${k}"]`).value.trim();
+    Object.assign(e, { id: v('id'), question: v('question'), answer: v('answer'), source: v('source') || null, validated_by: v('validated_by') || null,
+      keywords: v('keywords').split(',').map((x) => x.trim()).filter(Boolean) });
+  });
+}
+const msg = (t, k = 'info') => { $('msg').textContent = t; $('msg').className = `feedback ${k}`; };
+
+document.body.addEventListener('click', (e) => {
+  const act = e.target.dataset?.act; if (!act) return;
+  collect();
+  const si = Number(e.target.closest('[data-step]')?.dataset.step), ki = Number(e.target.closest('[data-kb]')?.dataset.kb);
+  if (act === 'del' && confirm('Hapus tahap ini?')) mod.steps.splice(si, 1);
+  if (act === 'up' && si > 0) mod.steps.splice(si - 1, 0, ...mod.steps.splice(si, 1));
+  if (act === 'down' && si < mod.steps.length - 1) mod.steps.splice(si + 1, 0, ...mod.steps.splice(si, 1));
+  if (act === 'del-kb' && confirm('Hapus entri ini?')) kb.entries.splice(ki, 1);
+  render();
+});
+$('add-step').onclick = () => { collect(); mod.steps.push({ id: `tahap-${mod.steps.length + 1}`, title: '', instruction: '', tips: [], success_criteria: '', common_mistakes: [], auto_detect: true, validated_by: null }); render(); };
+$('add-kb').onclick = () => { collect(); kb.entries.push({ id: `qa-${kb.entries.length + 1}`, question: '', answer: '', keywords: [], source: null, validated_by: null }); render(); };
+$('save').onclick = async () => {
+  collect();
+  const headers = { 'content-type': 'application/json', 'x-editor-token': $('token').value };
+  try {
+    for (const [url, body] of [['/api/module', mod], ['/api/knowledge', kb]]) {
+      const r = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
+      if (!r.ok) throw new Error((await r.json()).error);
+    }
+    msg('Tersimpan ✔', 'ok'); render();
+  } catch (e) { msg(e.message, 'warn'); }
+};
+
+[mod, kb] = await Promise.all([fetch('/api/module').then((r) => r.json()), fetch('/api/knowledge').then((r) => r.json())]);
+$('token-wrap').hidden = !(await (await fetch('/api/editor-auth')).json()).required;
+render();
+</script>
+</body>
+</html>

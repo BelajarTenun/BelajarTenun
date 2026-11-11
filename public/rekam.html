@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rekam Data · BelajarTenun</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page">
+  <header class="brand">
+    <a href="./">← BelajarTenun</a>
+    <h1>Rekam Data Tenun</h1>
+    <p>Rekam penenun dari sudut pandang mata (POV). Setiap rekaman diberi label tahap, sehingga bisa dipakai sebagai video demonstrasi, bahan uji akurasi kamera, dan data latih model.</p>
+  </header>
+
+  <section class="card">
+    <h2>1. Info rekaman</h2>
+    <label>Tahap <select id="step"></select></label>
+    <label>Apa yang direkam?
+      <select id="label">
+        <option value="done">✅ Contoh BENAR (tahap dikerjakan sampai selesai)</option>
+        <option value="mistake">⚠️ Contoh KESALAHAN umum (sengaja)</option>
+        <option value="not_yet">⏳ Tahap BELUM selesai / sedang dikerjakan</option>
+      </select>
+    </label>
+    <label id="mistake-wrap" hidden>Kesalahan yang dicontohkan <select id="mistake"></select></label>
+    <label>Nama penenun <input id="weaver" placeholder="mis. Ibu …"></label>
+    <label>Direkam oleh <input id="recordedBy"></label>
+    <label>Catatan <textarea id="notes" rows="2" placeholder="cahaya, jenis alat, istilah lokal…"></textarea></label>
+    <label class="toggle"><input type="checkbox" id="consent"> Penenun sudah memberi izin rekaman ini dipakai untuk pembelajaran &amp; pengembangan AI BelajarTenun</label>
+    <label id="token-wrap" hidden>Token editor <input id="token" type="password"></label>
+  </section>
+
+  <section class="card">
+    <h2>2. Rekam</h2>
+    <video id="preview" autoplay playsinline muted></video>
+    <p class="hint">Tips: pasang HP di dahi/head strap, lungsi terlihat penuh, cahaya terang. Rekam satu tahap per klip (10–60 detik).</p>
+    <div class="row">
+      <button id="cam">📷 Nyalakan kamera</button>
+      <button id="rec" class="primary" disabled>⏺ Mulai rekam</button>
+    </div>
+    <p id="status" class="feedback"></p>
+  </section>
+
+  <section class="card">
+    <h2>3. Dataset</h2>
+    <div id="coverage"></div>
+    <ul id="list" class="rec-list"></ul>
+  </section>
+
+<script type="module">
+const $ = (id) => document.getElementById(id);
+const FRAME_EVERY_MS = 2000;
+let mod, stream, recorder, chunks = [], frames = [], frameTimer, startedAt;
+
+const headers = () => ({ 'content-type': 'application/json', 'x-editor-token': $('token').value });
+const post = async (url, body) => {
+  const r = await fetch(url, { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+  const j = await r.json(); if (!r.ok) throw new Error(j.error); return j;
+};
+const upload = async (id, name, blob) => {
+  const r = await fetch(`/api/recordings/upload?id=${id}&name=${name}`, { method: 'POST', headers: { 'x-editor-token': $('token').value }, body: blob });
+  if (!r.ok) throw new Error((await r.json()).error);
+};
+const status = (t, kind = 'info') => { $('status').textContent = t; $('status').className = `feedback ${kind}`; };
+const step = () => mod.steps.find((s) => s.id === $('step').value);
+
+function fillMistakes() {
+  $('mistake').innerHTML = step().common_mistakes.map((m, i) => `<option value="${i + 1}">${m.mistake}</option>`).join('');
+  $('mistake-wrap').hidden = $('label').value !== 'mistake';
+}
+
+$('cam').onclick = async () => {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: 1280, height: 720 }, audio: true });
+  } catch { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); }
+  $('preview').srcObject = stream; $('rec').disabled = false; status('Kamera siap.');
+};
+
+function grabFrame() {
+  const v = $('preview'), c = document.createElement('canvas');
+  c.width = 640; c.height = Math.round((v.videoHeight / v.videoWidth) * 640) || 360;
+  c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+  c.toBlob((b) => b && frames.push(b), 'image/jpeg', 0.8);
+}
+
+$('rec').onclick = async () => {
+  if (recorder?.state === 'recording') return stopRecording();
+  if (!$('consent').checked) return status('Centang persetujuan penenun dulu.', 'warn');
+  chunks = []; frames = [];
+  const type = MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : 'video/mp4';
+  recorder = new MediaRecorder(stream, { mimeType: type });
+  recorder.ondataavailable = (e) => e.data.size && chunks.push(e.data);
+  recorder.onstop = () => save(type);
+  recorder.start(1000); startedAt = Date.now();
+  frameTimer = setInterval(grabFrame, FRAME_EVERY_MS);
+  $('rec').textContent = '⏹ Selesai rekam';
+  status('Merekam…', 'warn');
+};
+function stopRecording() { clearInterval(frameTimer); grabFrame(); recorder.stop(); $('rec').textContent = '⏺ Mulai rekam'; }
+
+async function save(type) {
+  try {
+    status('Menyimpan…');
+    await new Promise((r) => setTimeout(r, 300)); // tunggu frame terakhir
+    const { id } = await post('/api/recordings', {
+      stepId: $('step').value, label: $('label').value, mistakeIndex: Number($('mistake').value) || null,
+      weaver: $('weaver').value, recordedBy: $('recordedBy').value, notes: $('notes').value, consent: $('consent').checked,
+    });
+    await upload(id, type === 'video/webm' ? 'video.webm' : 'video.mp4', new Blob(chunks, { type }));
+    for (const [i, f] of frames.entries()) await upload(id, `frame-${String(i).padStart(3, '0')}.jpg`, f);
+    status(`Tersimpan: ${id} (${Math.round((Date.now() - startedAt) / 1000)} detik, ${frames.length} frame).`, 'ok');
+    refresh();
+  } catch (e) { status(`Gagal menyimpan: ${e.message}`, 'warn'); }
+}
+
+async function refresh() {
+  const { recordings } = await (await fetch('/api/recordings')).json();
+  // Cakupan dataset: target 3 contoh benar + 2 contoh salah per tahap (lihat PANDUAN-ANOTASI).
+  $('coverage').innerHTML = `<table><tr><th>Tahap</th><th>Benar</th><th>Salah</th><th>Belum</th></tr>${mod.steps.map((s) => {
+    const n = (l) => recordings.filter((r) => r.stepId === s.id && r.label === l).length;
+    const cell = (v, t) => `<td class="${v >= t ? 'ok' : 'todo'}">${v}/${t}</td>`;
+    return `<tr><td>${s.title}</td>${cell(n('done'), 3)}${cell(n('mistake'), 2)}<td>${n('not_yet')}</td></tr>`;
+  }).join('')}</table>`;
+  $('list').innerHTML = recordings.map((r) => {
+    const s = mod.steps.find((x) => x.id === r.stepId);
+    const video = r.files.find((f) => /\.(webm|mp4)$/.test(f));
+    const isDemo = s?.demo_video === `recordings/${r.id}/${video}`;
+    return `<li><b>${s?.title ?? r.stepId}</b> · ${r.label}${r.mistakeIndex ? ' #' + r.mistakeIndex : ''} · ${r.weaver || '-'}
+      <small>${r.createdAt.slice(0, 16).replace('T', ' ')} · ${r.files.length} file</small>
+      ${video ? `<a href="recordings/${r.id}/${video}" target="_blank">▶ lihat</a>` : ''}
+      ${video && r.label === 'done' ? (isDemo ? ' <span class="tag">demo aktif</span>' : ` <button data-demo="${r.id}">Jadikan demo</button>`) : ''}</li>`;
+  }).join('') || '<li>Belum ada rekaman.</li>';
+}
+
+$('list').onclick = async (e) => {
+  const id = e.target.dataset?.demo; if (!id) return;
+  try { await post('/api/recordings/use-as-demo', { id }); mod = await (await fetch('/api/module')).json(); refresh(); }
+  catch (err) { alert(err.message); }
+};
+$('step').onchange = fillMistakes; $('label').onchange = fillMistakes;
+
+mod = await (await fetch('/api/module')).json();
+$('step').innerHTML = mod.steps.map((s) => `<option value="${s.id}">${s.title}</option>`).join('');
+fillMistakes();
+$('token-wrap').hidden = !(await (await fetch('/api/editor-auth')).json()).required;
+refresh();
+</script>
+</body>
+</html>

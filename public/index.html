@@ -18,10 +18,12 @@
       <h2 id="module-title">Memuat…</h2>
       <p id="module-desc"></p>
       <ol id="module-steps"></ol>
+      <label class="toggle"><input type="checkbox" id="handsfree"> Mode hands-free (perintah suara terus aktif)</label>
       <button id="start" class="primary" disabled>Mulai latihan</button>
       <p class="hint">Pasang HP di kepala (head strap) atau di atas alat tenun, dengan kamera mengarah ke benang lungsi.</p>
     </article>
     <p class="mode" id="mode"></p>
+    <nav class="links"><a href="progres.html">📈 Progres belajar</a> · <a href="editor.html">✏️ Editor kurikulum</a> · <a href="rekam.html">🎥 Rekam data</a></nav>
   </section>
 
   <!-- Layar 2: sesi latihan (tampilan HUD ala kacamata) -->
@@ -36,8 +38,17 @@
       <p id="feedback" class="feedback" aria-live="polite"></p>
     </div>
     <div id="answer" class="answer" hidden></div>
+    <!-- Demonstrasi sebelum praktik (STEP 2 konsep) -->
+    <div id="demo" class="demo" hidden>
+      <p class="step-count">Lihat dulu contohnya</p>
+      <h3 id="demo-title"></h3>
+      <div id="demo-media"></div>
+      <ul id="demo-tips"></ul>
+      <button id="demo-go" class="primary">Saya coba sekarang</button>
+    </div>
+    <p id="hf-status" class="hf-status" hidden>🎙️ Hands-free aktif · ucapkan "sudah", "ulangi", "contoh", atau tanya apa saja</p>
     <nav class="controls">
-      <button id="btn-repeat" title="Ulangi instruksi">🔁 Ulangi</button>
+      <button id="btn-repeat" title="Lihat contoh lagi">🔁 Contoh</button>
       <button id="btn-ask" title="Tanya tutor">🎙️ Tanya</button>
       <button id="btn-done" class="primary">✅ Sudah</button>
     </nav>

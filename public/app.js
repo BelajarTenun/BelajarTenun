@@ -2,7 +2,7 @@
 const $ = (id) => document.getElementById(id);
 const CHECK_INTERVAL_MS = 6000;
 
-const state = { config: {}, module: null, index: 0, events: [], sessionId: crypto.randomUUID(), timer: null, busy: false, stream: null };
+const state = { handsfree: false, demoOpen: false, config: {}, module: null, index: 0, events: [], sessionId: crypto.randomUUID(), timer: null, busy: false, stream: null };
 
 const api = async (path, body) => {
   const res = await fetch(path, body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) } : {});
@@ -19,8 +19,10 @@ const show = (id) => document.querySelectorAll('.screen').forEach((s) => s.class
 
 // ---------- Suara ----------
 let audio;
+let speakingUntil = 0;
 async function speak(text) {
   audio?.pause(); speechSynthesis.cancel();
+  speakingUntil = Date.now() + 400 + text.length * 70; // perkiraan durasi agar mic tidak menangkap suara sendiri
   if (state.config.tts) {
     try {
       const { audio: b64 } = await api('/api/tts', { text });
@@ -56,11 +58,34 @@ function renderStep() {
   $('step-instruction').textContent = s.instruction;
   feedback(state.config.ai && s.auto_detect ? 'Aku sedang memperhatikan… tekan "Sudah" kalau kamu selesai.' : 'Tekan "Sudah" atau ucapkan "sudah" kalau selesai.');
   $('answer').hidden = true;
-  speak(s.instruction);
   log('step_start');
+  showDemo();
+}
+
+// Demonstrasi tahap: video/gambar dari penenun (field demo_video / demo_image) + tips.
+function showDemo() {
+  const s = currentStep();
+  state.demoOpen = true;
+  $('demo-title').textContent = s.title;
+  const media = s.demo_video
+    ? `<video src="${s.demo_video}" controls autoplay muted playsinline loop></video>`
+    : s.demo_image ? `<img src="${s.demo_image}" alt="Contoh ${s.title}">`
+    : '<p class="step-count">(Video demonstrasi dari penenun belum tersedia untuk tahap ini.)</p>';
+  $('demo-media').innerHTML = media;
+  $('demo-tips').innerHTML = (s.tips || []).map((t) => `<li>${t}</li>`).join('');
+  $('demo').hidden = false;
+  speak(`${s.title}. ${s.instruction}`);
+}
+function closeDemo() {
+  if (!state.demoOpen) return;
+  state.demoOpen = false; $('demo').hidden = true; $('demo-media').innerHTML = '';
+  log('demo_closed');
+  speak('Silakan dicoba. Aku memperhatikan.');
 }
 
 function nextStep(source) {
+  if (state.index >= state.module.steps.length) return;
+  closeDemoSilently();
   log('step_done', { source });
   state.index++;
   if (state.index >= state.module.steps.length) return finish();
@@ -68,9 +93,11 @@ function nextStep(source) {
   setTimeout(renderStep, 1200);
 }
 
+function closeDemoSilently() { state.demoOpen = false; $('demo').hidden = true; $('demo-media').innerHTML = ''; }
+
 async function checkStep() {
   const s = currentStep();
-  if (!state.config.ai || !s?.auto_detect || state.busy || document.hidden) return;
+  if (!state.config.ai || !s?.auto_detect || state.busy || state.demoOpen || document.hidden) return;
   state.busy = true;
   try {
     const v = $('cam'), c = $('snap');
@@ -103,8 +130,28 @@ function handleUtterance(text) {
   const t = text.toLowerCase().trim();
   if (/^(sudah|selesai|lanjut)\b/.test(t)) return nextStep('voice');
   if (/^(ulang|ulangi)\b/.test(t)) return speak(currentStep().instruction);
+  if (/^(contoh|lihat contoh|demo)\b/.test(t)) return showDemo();
+  if (/^(coba|mulai|siap)\b/.test(t)) return closeDemo();
   return ask(text);
 }
+
+// Hands-free: pengenalan suara terus-menerus, dimulai ulang otomatis.
+let hfRec = null;
+function startHandsfree() {
+  if (!Recognition) { alert('Browser ini belum mendukung pengenalan suara. Coba Chrome.'); return; }
+  hfRec = new Recognition();
+  hfRec.lang = 'id-ID'; hfRec.continuous = true; hfRec.interimResults = false;
+  hfRec.onresult = (e) => {
+    const text = e.results[e.results.length - 1][0].transcript;
+    if (Date.now() < speakingUntil) return;
+    log('voice', { text });
+    handleUtterance(text);
+  };
+  hfRec.onend = () => { if (hfRec) try { hfRec.start(); } catch {} };
+  hfRec.start();
+  $('hf-status').hidden = false;
+}
+function stopHandsfree() { const r = hfRec; hfRec = null; r?.stop(); $('hf-status').hidden = true; }
 
 // ---------- Layar ----------
 async function start() {
@@ -115,10 +162,11 @@ async function start() {
   state.index = 0; state.events = []; state.sessionId = crypto.randomUUID();
   show('session'); log('session_start'); renderStep();
   state.timer = setInterval(checkStep, CHECK_INTERVAL_MS);
+  if ($('handsfree').checked) startHandsfree();
 }
 
 function stop() {
-  clearInterval(state.timer); state.stream?.getTracks().forEach((t) => t.stop());
+  clearInterval(state.timer); stopHandsfree(); state.stream?.getTracks().forEach((t) => t.stop());
   speechSynthesis.cancel(); audio?.pause();
 }
 
@@ -133,8 +181,9 @@ function finish() {
 }
 
 $('start').onclick = start;
+$('demo-go').onclick = closeDemo;
 $('btn-done').onclick = () => nextStep('button');
-$('btn-repeat').onclick = () => speak(currentStep().instruction);
+$('btn-repeat').onclick = () => showDemo();
 $('btn-exit').onclick = () => { log('session_exit'); stop(); show('home'); };
 $('again').onclick = () => show('home');
 $('btn-ask').onclick = async () => {

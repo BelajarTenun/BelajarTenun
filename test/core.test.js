@@ -35,3 +35,26 @@ test('setiap tahap modul punya field wajib', () => {
     assert.match(buildStepCheckPrompt(s), /Kriteria berhasil/);
   }
 });
+
+import { validateModule, summarizeLogs, scoreEvaluation } from '../lib/core.js';
+
+test('validasi modul menangkap kesalahan editor', () => {
+  assert.deepEqual(validateModule(mod), []);
+  const bad = structuredClone(mod);
+  bad.steps[1].id = bad.steps[0].id; bad.steps[2].instruction = ''; bad.steps[3].common_mistakes = [{ mistake: 'x' }];
+  const errs = validateModule(bad).join('\n');
+  assert.match(errs, /dobel/); assert.match(errs, /instruction/); assert.match(errs, /fix/);
+});
+
+test('ringkasan log progres', () => {
+  const L = (o) => JSON.stringify({ sessionId: 'a', at: '2026-11-11T10:00:00Z', ...o });
+  const p = summarizeLogs([L({ type: 'session_start' }), L({ type: 'step_done', step: 's1', source: 'vision' }),
+    L({ type: 'question', step: 's1' }), L({ type: 'session_done', at: '2026-11-11T10:12:00Z' }), 'rusak']);
+  assert.equal(p.completed, 1); assert.equal(p.sessions[0].minutes, 12);
+  assert.deepEqual(p.steps[0], { step: 's1', done: 1, vision: 1, manual: 0, questions: 1, mistakes: 0, checks: 0 });
+});
+
+test('skor evaluasi', () => {
+  const s = scoreEvaluation([{ label: 'done', predicted: 'done' }, { label: 'not_yet', predicted: 'done' }, { label: 'done', predicted: 'uncertain' }, { label: 'mistake', predicted: 'mistake' }]);
+  assert.equal(s.accuracy, 0.5); assert.equal(s.doneRecall, 0.5); assert.equal(s.falseDoneRate, 0.5); assert.equal(s.uncertainRate, 0.25);
+});
