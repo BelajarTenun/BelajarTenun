@@ -1,0 +1,27 @@
+{
+  "status": "DRAFT – nama lokal wajib dilengkapi & divalidasi penenun tiap tradisi",
+  "tools": [
+    { "id": "lungsi", "name": "benang lungsi", "synonyms": ["lungsi", "lusi", "benang lungsi", "warp"] },
+    { "id": "pakan", "name": "benang pakan", "synonyms": ["pakan", "benang pakan", "weft"] },
+    { "id": "pedang", "name": "pedang", "synonyms": ["pedang", "belida", "beam pedang", "batten", "sword"] },
+    { "id": "sekoci", "name": "sekoci", "synonyms": ["sekoci", "teropong", "torak", "shuttle", "palet pakan"] },
+    { "id": "sisir", "name": "sisir", "synonyms": ["sisir", "suri", "reed"] },
+    { "id": "gun", "name": "gun / pengangkat lungsi", "synonyms": ["gun", "heddle", "pengangkat lungsi"] },
+    { "id": "balok-dada", "name": "balok dada / apit", "synonyms": ["balok dada", "apit", "breast beam"] },
+    { "id": "sabuk-punggung", "name": "sabuk punggung", "synonyms": ["sabuk punggung", "back strap", "backstrap", "pengikat punggung"] },
+    { "id": "lidi-motif", "name": "lidi / bilah motif", "synonyms": ["lidi", "bilah motif", "lidi motif", "pick-up stick"] },
+    { "id": "alat-ikat", "name": "rafia / tali ikat motif", "synonyms": ["rafia", "tali ikat", "tali gebang", "ikat motif"] },
+    { "id": "pewarna", "name": "pewarna", "synonyms": ["pewarna", "pewarna alami", "celup", "indigo", "tarum"] }
+  ],
+  "actions": [
+    { "id": "buka-mulut-lungsi", "verb": "membuka mulut lungsi", "synonyms": ["membuka mulut", "membuka celah", "mengangkat lungsi", "membuka lungsi", "shed"] },
+    { "id": "masukkan-pakan", "verb": "memasukkan pakan", "synonyms": ["memasukkan pakan", "meluncurkan sekoci", "melewatkan sekoci", "memasukkan benang pakan"] },
+    { "id": "rapatkan-pakan", "verb": "merapatkan pakan", "synonyms": ["merapatkan", "menghentak", "memadatkan", "beat"] },
+    { "id": "ganti-mulut-lungsi", "verb": "mengganti mulut lungsi", "synonyms": ["mengganti celah", "menukar mulut", "menukar celah"] },
+    { "id": "menghani", "verb": "menghani / menyusun lungsi", "synonyms": ["menghani", "menyusun lungsi", "memasang lungsi", "warping"] },
+    { "id": "mengikat-motif", "verb": "mengikat motif", "synonyms": ["mengikat motif", "mengikat", "ikat"] },
+    { "id": "mencelup", "verb": "mencelup / mewarnai", "synonyms": ["mencelup", "mewarnai", "celup"] },
+    { "id": "memintal", "verb": "memintal / menggulung benang", "synonyms": ["memintal", "menggulung benang", "mengelos"] },
+    { "id": "membuat-motif-songket", "verb": "mencukit motif tambahan", "synonyms": ["mencukit", "songket", "menyungkit", "pakan tambahan"] }
+  ]
+}

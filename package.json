@@ -11,7 +11,10 @@
     "export-dataset": "node scripts/train/export_dataset.js",
     "livekit": "bash scripts/livekit/run.sh",
     "livekit:setup": "bash scripts/livekit/setup.sh",
-    "agent": "python3 agent/main.py dev"
+    "agent": "python3 agent/main.py dev",
+    "import-sources": "node scripts/import_sources.js",
+    "import-motif": "node scripts/import_motif_dataset.js",
+    "dialogs": "node scripts/generate_dialogs.js"
   },
   "engines": {
     "node": ">=20"

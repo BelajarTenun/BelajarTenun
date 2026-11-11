@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sumber Video · BelajarTenun</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page">
+  <header class="brand">
+    <div class="account" id="account"></div>
+    <a href="./">← BelajarTenun</a>
+    <h1>Sumber Video Tenun</h1>
+    <p>Kumpulkan video tenun dari semua tradisi, lalu AI menyusun tahap, alat, istilah, dan draf kurikulum. Penenun meninjaunya di <a href="editor.html">Editor</a>. Status izin menentukan ke mana data boleh dipakai.</p>
+  </header>
+
+  <section class="stats" id="stats"></section>
+
+  <section class="card">
+    <h2>1. Tambah video</h2>
+    <div class="grid2">
+      <label>Tradisi tenun* <input id="f-tradition" placeholder="mis. Tenun ikat Sikka" list="traditions" required></label>
+      <label>Daerah <input id="f-region" placeholder="mis. Sikka, NTT"></label>
+      <label>Jenis alat <input id="f-loom" placeholder="gedogan / ATBM / …"></label>
+      <label>Teknik <input id="f-tech" placeholder="ikat lungsi / songket / polos …"></label>
+      <label>Judul video <input id="f-title"></label>
+      <label>Kanal / pembuat <input id="f-channel"></label>
+      <label>URL asli <input id="f-url" placeholder="https://…"></label>
+      <label>Sudut kamera <select id="f-view"><option value="exo">Dari luar (direkam orang lain)</option><option value="ego">Dari kepala penenun (POV/kacamata)</option><option value="campuran">Campuran</option></select></label>
+      <label>Jenis sumber <select id="f-kind"><option value="internet">Internet</option><option value="partner">Partner penenun</option><option value="kacamata">Kacamata BelajarTenun</option></select></label>
+      <label>Status izin* <select id="f-license"></select></label>
+    </div>
+    <label>Bukti izin / catatan lisensi <input id="f-proof" placeholder="mis. CC BY 4.0, atau 'izin lewat email 12 Nov'"></label>
+    <label>Berkas video <input id="f-file" type="file" accept="video/*"></label>
+    <label class="toggle"><input type="checkbox" id="f-auto" checked> Langsung proses (pra-proses + analisis AI) setelah diunggah</label>
+    <datalist id="traditions"></datalist>
+    <button id="add" class="primary">Tambah</button>
+    <p id="add-status" class="feedback"></p>
+  </section>
+
+  <section class="card">
+    <h2>2. Daftar sumber</h2>
+    <div id="list"></div>
+  </section>
+
+  <section class="card" id="detail" hidden>
+    <h2 id="d-title"></h2>
+    <p id="d-meta" class="hint"></p>
+    <video id="d-video" controls playsinline></video>
+    <div class="timeline" id="d-timeline"></div>
+    <div id="d-steps"></div>
+    <h3>Istilah lokal (dugaan AI)</h3>
+    <ul id="d-terms" class="rec-list"></ul>
+  </section>
+
+  <section class="card">
+    <h2>3. Bangun kurikulum dari semua video</h2>
+    <p class="hint">Tahap dari semua video dikelompokkan (mis. "membuka mulut lungsi" di berbagai tradisi), lalu dibuat draf modul per tradisi + modul dasar lintas tradisi. Kolom yang sudah divalidasi penenun tidak akan ditimpa.</p>
+    <button id="rebuild" class="primary">🧩 Bangun / perbarui draf kurikulum</button>
+    <div id="report"></div>
+  </section>
+
+  <section class="card">
+    <h2>4. Uji tutor dengan dialog (pola HowToDIV)</h2>
+    <div class="row"><select id="dlg-module"></select><input id="dlg-count" type="number" value="2" min="1" max="10" style="width:5rem"><button id="dlg-run">💬 Buat & uji dialog</button></div>
+    <div id="dlg-out"></div>
+  </section>
+
+<script type="module">
+import { api, $, esc, requireLogin, accountBadge } from './js/api.js';
+const cfg = await requireLogin(['partner']);
+accountBadge($('account'), cfg.user);
+let overview, current;
+const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+const status = (el, t, k = 'info') => { $(el).textContent = t; $(el).className = `feedback ${k}`; };
+const licenses = await api('/api/licenses');
+$('f-license').innerHTML = Object.entries(licenses).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join('');
+
+async function refresh() {
+  overview = await api('/api/sources');
+  const s = overview.sources, stat = (v, l) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`;
+  $('stats').innerHTML = stat(s.length, 'video') + stat(Object.keys(overview.byTradition).length, 'tradisi') + stat(s.filter((x) => x.status === 'teranalisis').length, 'teranalisis');
+  $('traditions').innerHTML = Object.keys(overview.byTradition).map((t) => `<option value="${esc(t)}">`).join('');
+  $('list').innerHTML = s.length ? `<table><tr><th>Video</th><th>Tradisi</th><th>Izin</th><th>Status</th><th></th></tr>${s.map((x) => {
+    const q = overview.queue[x.id] ?? x.pipeline;
+    const st = q?.stage && q.stage !== 'selesai' ? `${q.stage}${q.detail ? ` · ${q.detail}` : ''}${q.error ? ` – ${q.error}` : ''}` : x.status;
+    return `<tr><td>${esc(x.title || x.url || x.id)}<br><small class="hint">${x.durationSec ? fmt(x.durationSec) : ''} · ${x.viewpoint}</small></td><td>${esc(x.tradition)}<br><small class="hint">${esc(x.region || '')}</small></td>
+      <td><span class="pill">${x.license.status}</span></td><td>${esc(st)}${x.analysisSummary ? `<br><small class="hint">${x.analysisSummary.steps} tahap · ${x.analysisSummary.ragu} ragu · ${x.analysisSummary.terms} istilah</small>` : ''}</td>
+      <td><button data-open="${x.id}">Lihat</button> <button data-process="${x.id}" ${x.original ? '' : 'disabled'}>Proses</button> <button class="danger" data-del="${x.id}">Hapus</button></td></tr>`;
+  }).join('')}</table>` : '<p class="hint">Belum ada sumber.</p>';
+  const busy = Object.values(overview.queue).some((q) => !['selesai', 'gagal', 'menunggu-ai'].includes(q.stage));
+  if (busy) setTimeout(refresh, 3000);
+  if (overview.report) renderReport(overview.report);
+}
+
+$('add').onclick = async () => {
+  try {
+    status('add-status', 'Menyimpan…');
+    const src = await api('/api/sources', {
+      tradition: $('f-tradition').value, region: $('f-region').value, loomType: $('f-loom').value, technique: $('f-tech').value,
+      title: $('f-title').value, channel: $('f-channel').value, url: $('f-url').value || null, viewpoint: $('f-view').value, kind: $('f-kind').value,
+      license: { status: $('f-license').value, proof: $('f-proof').value },
+    });
+    const file = $('f-file').files[0];
+    if (file) {
+      const ext = file.name.split('.').pop().toLowerCase();
+      await new Promise((resolve, reject) => {
+        const x = new XMLHttpRequest();
+        x.open('POST', `/api/sources/upload?id=${src.id}&ext=${ext}${$('f-auto').checked ? '&process=1' : ''}`);
+        x.upload.onprogress = (e) => status('add-status', `Mengunggah… ${Math.round((e.loaded / e.total) * 100)}%`);
+        x.onload = () => (x.status < 300 ? resolve() : reject(new Error(JSON.parse(x.responseText).error)));
+        x.onerror = () => reject(new Error('Unggah gagal'));
+        x.send(file);
+      });
+    }
+    status('add-status', `Tersimpan: ${src.id}`, 'ok');
+    $('f-file').value = '';
+    refresh();
+  } catch (e) { status('add-status', e.message, 'warn'); }
+};
+
+$('list').onclick = async (e) => {
+  const { open, process, del } = e.target.dataset;
+  try {
+    if (process) { await api('/api/sources/process', { id: process }); refresh(); }
+    if (del && confirm('Hapus sumber ini beserta hasil analisisnya?')) { await api('/api/sources/delete', { id: del }); $('detail').hidden = true; refresh(); }
+    if (open) showDetail(open);
+  } catch (err) { alert(err.message); }
+};
+
+async function showDetail(id) {
+  current = overview.sources.find((x) => x.id === id);
+  const a = await api(`/api/sources/analysis?id=${id}`);
+  $('detail').hidden = false;
+  $('d-title').textContent = current.title || current.url || id;
+  $('d-meta').innerHTML = `${esc(current.tradition)} · ${esc(current.region || '-')} · alat: ${esc(current.loomType || a.loomType || '-')} · sudut: ${esc(a.viewpoint || current.viewpoint)} · izin: ${current.license.status}${current.url ? ` · <a href="${esc(current.url)}" target="_blank" rel="noopener">sumber asli</a>` : ''}`;
+  $('d-video').src = current.files?.includes('video.mp4') ? `sources/${id}/video.mp4` : '';
+  const dur = current.durationSec || Math.max(1, ...(a.steps || []).map((s) => s.end));
+  $('d-timeline').innerHTML = (a.steps || []).map((s) => `<span class="${s.ragu ? 'mistake' : 'done'}" title="${esc(s.title)}" style="left:${(s.start / dur) * 100}%;width:${((s.end - s.start) / dur) * 100}%"></span>`).join('');
+  $('d-steps').innerHTML = a.steps?.length ? a.steps.map((s) => `<div class="seg"><button data-seek="${s.start}">▶ ${fmt(s.start)}</button> <b>${esc(s.title)}</b> ${s.ragu ? '<span class="pill">ragu</span>' : ''}
+    <small class="hint">${esc((s.tools || []).join(', '))}${s.instruction ? ` — ${esc(s.instruction)}` : ''}</small></div>`).join('') : '<p class="hint">Belum dianalisis.</p>';
+  $('d-terms').innerHTML = (a.terms || []).map((t) => `<li><b>${esc(t.term)}</b>: ${esc(t.meaning_guess)} ${t.said_at != null ? `<button data-seek="${t.said_at}">▶ ${fmt(t.said_at)}</button>` : ''}</li>`).join('') || '<li class="hint">-</li>';
+  $('detail').scrollIntoView({ behavior: 'smooth' });
+}
+$('detail').onclick = (e) => { const t = e.target.dataset.seek; if (t != null) { $('d-video').currentTime = Number(t); $('d-video').play(); } };
+
+function renderReport(r) {
+  $('report').innerHTML = `<p class="hint">Dibangun ${r.builtAt.slice(0, 16).replace('T', ' ')} dari ${r.analyses} video · ${r.termsAdded} istilah baru ke knowledge base (draft).</p>
+    <ul class="rec-list">${r.modules.map((m) => `<li><b>${esc(m.title)}</b> — ${m.steps} tahap dari ${m.sources} video · <a href="editor.html?module=${m.id}">tinjau di editor</a></li>`).join('')}</ul>
+    <details><summary>Kelompok tahap (${r.clusters.length})</summary><table><tr><th>Tahap</th><th>Tradisi</th><th>Contoh</th></tr>${r.clusters.map((c) => `<tr><td>${esc(c.title)}</td><td>${esc(c.traditions.join(', '))}</td><td>${c.size}</td></tr>`).join('')}</table></details>`;
+}
+$('rebuild').onclick = async () => {
+  $('report').innerHTML = '<p class="hint">Menyusun…</p>';
+  try { renderReport(await api('/api/curriculum/rebuild', {})); loadModules(); } catch (e) { $('report').innerHTML = `<p class="feedback warn">${esc(e.message)}</p>`; }
+};
+
+async function loadModules() {
+  const { modules } = await api('/api/modules');
+  $('dlg-module').innerHTML = modules.map((m) => `<option value="${m.id}">${esc(m.title)}</option>`).join('');
+}
+$('dlg-run').onclick = async () => {
+  $('dlg-out').innerHTML = '<p class="hint">Membuat dialog & menguji tutor…</p>';
+  try {
+    const { dialogs, results } = await api('/api/dialogs/generate', { moduleId: $('dlg-module').value, count: Number($('dlg-count').value) });
+    $('dlg-out').innerHTML = results.map((r, i) => `<details><summary>${dialogs[i].scenario} · skor tutor ${(r.score * 100).toFixed(0)}% (${r.passed}/${r.checks}) · ${dialogs[i].generatedBy}</summary>
+      ${dialogs[i].turns.map((t) => `<p><b>${t.role === 'tutor' ? '🧵 Tutor' : '🙋 Murid'}</b> <small class="pill">${t.intent}</small> ${esc(t.text)}</p>`).join('')}
+      ${r.failures.length ? `<p class="feedback warn">Gagal: ${esc(r.failures.map((f) => f.turn + (f.reason ? ` (${f.reason})` : '')).join('; '))}</p>` : ''}</details>`).join('');
+  } catch (e) { $('dlg-out').innerHTML = `<p class="feedback warn">${esc(e.message)}</p>`; }
+};
+
+loadModules();
+refresh();
+</script>
+</body>
+</html>

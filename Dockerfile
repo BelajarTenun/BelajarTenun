@@ -1,12 +1,13 @@
 # BelajarTenun – image produksi (Cloud Run). Tanpa dependency npm.
 FROM node:22-slim
 ENV NODE_ENV=production PORT=8080 DATA_DIR=/data
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY package.json server.js ./
 COPY lib ./lib
 COPY public ./public
 COPY data/modules ./data/modules
-COPY data/knowledge.json ./data/knowledge.json
+COPY data/knowledge.json data/taxonomy.json ./data/
 RUN mkdir -p /data && chown node:node /data
 USER node
 EXPOSE 8080

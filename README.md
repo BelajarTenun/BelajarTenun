@@ -43,6 +43,11 @@ Arsitektur tutornya meniru pola [VisionClaw](https://github.com/sseanliu/VisionC
 | 🎧 | **Tutor suara real-time**: **LiveKit lokal + agen Gemini Live** (atau Gemini Live langsung). Bisa disela, ada transkrip, tools ke mesin sesi | `agent/main.py`, `public/js/livekit-tutor.js`, `docs/LIVEKIT.md` |
 | 🧑‍🏫 | **Pendamping jarak jauh**: penenun senior melihat POV murid lewat WebRTC dan mengirim arahan yang dibacakan | `/pendamping.html`, `public/js/rtc.js` |
 | 🎥 | **Rekam data** dengan persetujuan berjenjang (demo / AI / publikasi) dan bisa dicabut | `/rekam.html` |
+| 🎞️ | **Video → data belajar (lintas tradisi)**: daftarkan video tenun dari tradisi apa pun dengan status izin → ffmpeg (normalisasi, audio, keyframe, adegan) → Gemini menandai tahap bercap waktu, alat, istilah, kesalahan → tahap dari banyak video dikelompokkan → draf modul per tradisi + modul dasar lintas tradisi | `/sumber.html`, `lib/sources.js`, `lib/preprocess.js`, `lib/video-analysis.js`, `lib/alignment.js`, `lib/pipeline.js` |
+| 🔎 | **Mode tinjau penenun**: label 🤖 usulan AI / ✏️ diubah / ✔ tervalidasi per kolom, putar bukti video di detik terkait, riwayat perubahan untuk atribusi | `/editor.html` |
+| 💬 | **Dialog tutor sintetis** (pola HowToDIV): skenario normal & kesalahan → uji otomatis tutor + kandidat knowledge base | `lib/dialog-gen.js`, `npm run dialogs` |
+| 🔁 | **Pasangan video luar ↔ kacamata** (pola EgoExoLearn) per tahap | `lib/exo-ego.js` |
+| 🏛️ | **Arsip tenun publik**: hanya isi tervalidasi, atribusi sumber, unduh JSON/CSV | `/arsip.html` |
 | 🏷️ | **Anotasi timeline**: tandai tahap di video panjang, usulan AI, ekspor frame berlabel, jadikan demo | `/anotasi.html` |
 | ✏️ | **Editor partner**: multi-modul, validasi tahap & tanya jawab, pertanyaan pemula yang belum terjawab | `/editor.html` |
 | 📈 | **Progres & validasi**: tingkat selesai, tahap yang membingungkan, hasil kuesioner | `/progres.html` |
@@ -106,6 +111,9 @@ scripts/livekit/          Unduh & jalankan LiveKit server lokal (livekit.yaml)
 public/vendor/            livekit-client (disajikan lokal, tanpa CDN)
 clients/frame/            Bridge Python Brilliant Labs Frame
 clients/mentra/           Miniapp MentraOS
+lib/sources.js · preprocess.js · video-analysis.js · alignment.js · pipeline.js · dialog-gen.js · exo-ego.js
+                          Alur video → data belajar
+data/taxonomy.json        Kosakata alat & aksi lintas tradisi (draft, divalidasi penenun)
 scripts/evaluate.js       Uji akurasi deteksi
 scripts/train/            Ekspor dataset + pelatihan model offline
 data/modules/             Kurikulum (JSON)  ·  data/knowledge.json  Knowledge base
@@ -122,8 +130,25 @@ test/                     Tes unit + integrasi (npm test)
 | `npm test` | Semua tes |
 | `npm run evaluate -- --min-accuracy 0.8` | Uji akurasi deteksi kamera (butuh `GEMINI_API_KEY`) |
 | `npm run export-dataset` | Ekspor frame berlabel untuk melatih model offline |
+| `npm run import-sources -- daftar.csv [--analyze]` | Daftarkan banyak video sekaligus dari CSV |
+| `npm run import-motif -- motif.csv --dataset "…"` | Impor dataset motif ke knowledge base (draft) |
+| `npm run dialogs -- --module <id> [--kb]` | Buat dialog tutor sintetis & uji tutor |
 | `npm run livekit:setup` / `npm run livekit` | Unduh lalu jalankan LiveKit server lokal |
 | `npm run agent` | Jalankan agen tutor real-time (lihat [docs/LIVEKIT.md](docs/LIVEKIT.md)) |
+
+## Alur video tenun → data belajar
+1. **Daftarkan video** di `/sumber.html` (atau massal: `npm run import-sources -- daftar.csv`). Isi tradisi, daerah, alat, sudut kamera, dan **status izin**:
+   | Status izin | Analisis & draf | Demo untuk pemula | Latih model | Video di arsip publik |
+   |---|---|---|---|---|
+   | `riset_internal` (internet tanpa izin) | ✅ | ❌ | ❌ | ❌ (hanya tautan) |
+   | `cc_by` / `izin_tertulis` / `milik_sendiri` | ✅ | ✅ | ✅ | ✅ dengan atribusi |
+2. **Proses**: ffmpeg menormalkan video, mengekstrak audio dan keyframe tajam, lalu Gemini menganalisis dua kali. Tahap yang tidak konsisten antar analisis ditandai "ragu".
+3. **Bangun kurikulum**: tahap serupa dari berbagai video dan tradisi digabung lewat taksonomi alat/aksi (`data/taxonomy.json`, mis. pedang = belida, sekoci = teropong). Hasilnya draf modul per tradisi dan modul dasar lintas tradisi. Istilah lokal masuk knowledge base sebagai draft.
+4. **Tinjau** di editor: putar bukti video, perbaiki, lalu terima. Kolom yang sudah diubah atau divalidasi tidak akan ditimpa saat kurikulum dibangun ulang.
+5. **Uji tutor** dengan dialog sintetis, lalu terbitkan modul (centang "Tampilkan ke pemula").
+6. **Arsip**: isi tervalidasi otomatis tampil di `/arsip.html`. Dataset motif bisa ditambahkan dengan `npm run import-motif -- motif.csv --dataset "Nama" --license "…" --url …`.
+
+Butuh `ffmpeg` dan `GEMINI_API_KEY`. Tanpa key, video tetap bisa didaftarkan dan dipra-proses, lalu menunggu analisis.
 
 ## Alur data partner → AI
 1. **Rekam** penenun dari sudut pandang mata (`/rekam.html`), per tahap atau satu sesi penuh, dengan persetujuan tertulis.
@@ -135,7 +160,8 @@ test/                     Tes unit + integrasi (npm test)
 ## Status & keterbatasan
 - Deteksi kamera, Gemini Live, embedding, dan anotasi otomatis **belum diuji dengan API key sungguhan** (key di lingkungan pengembangan ditolak). Kode mengikuti dokumentasi API Gemini dan pola VisionClaw.
 - Klien Frame dan Mentra **belum diuji di perangkat**. Frame SDK Python berlabel *deprecated*.
-- Isi kurikulum dan knowledge base masih **DRAFT** dan harus divalidasi penenun Tidore.
+- Isi kurikulum dan knowledge base masih **DRAFT** dan harus divalidasi penenun tiap tradisi.
+- Analisis video oleh Gemini belum diuji dengan API key sungguhan; alurnya diuji dengan ffmpeg asli dan jawaban Gemini simulasi.
 - WebRTC pendamping hanya memakai STUN. Di jaringan yang ketat perlu server TURN (LiveKit punya TURN bawaan).
 - LiveKit lokal + agen sudah diuji sampai agen bergabung ke ruang; percakapan Gemini Live belum diuji karena butuh API key.
 
