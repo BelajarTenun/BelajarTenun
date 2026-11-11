@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>BelajarTenun</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Layar 1: pilih modul -->
+  <section id="home" class="screen active">
+    <header class="brand">
+      <h1>BelajarTenun</h1>
+      <p>Tutor AI pendamping belajar menenun, langsung di alat tenunmu.</p>
+    </header>
+    <article class="card" id="module-card">
+      <span class="tag" id="module-status"></span>
+      <h2 id="module-title">Memuat…</h2>
+      <p id="module-desc"></p>
+      <ol id="module-steps"></ol>
+      <button id="start" class="primary" disabled>Mulai latihan</button>
+      <p class="hint">Pasang HP di kepala (head strap) atau di atas alat tenun, dengan kamera mengarah ke benang lungsi.</p>
+    </article>
+    <p class="mode" id="mode"></p>
+  </section>
+
+  <!-- Layar 2: sesi latihan (tampilan HUD ala kacamata) -->
+  <section id="session" class="screen">
+    <video id="cam" autoplay playsinline muted></video>
+    <canvas id="snap" hidden></canvas>
+    <div class="hud">
+      <div class="progress"><div id="bar"></div></div>
+      <p class="step-count" id="step-count"></p>
+      <h2 id="step-title"></h2>
+      <p id="step-instruction"></p>
+      <p id="feedback" class="feedback" aria-live="polite"></p>
+    </div>
+    <div id="answer" class="answer" hidden></div>
+    <nav class="controls">
+      <button id="btn-repeat" title="Ulangi instruksi">🔁 Ulangi</button>
+      <button id="btn-ask" title="Tanya tutor">🎙️ Tanya</button>
+      <button id="btn-done" class="primary">✅ Sudah</button>
+    </nav>
+    <form id="ask-form" class="ask-form" hidden>
+      <input id="ask-input" placeholder="Ketik pertanyaanmu…" autocomplete="off">
+      <button>Kirim</button>
+    </form>
+    <button id="btn-exit" class="exit" aria-label="Keluar">✕</button>
+  </section>
+
+  <!-- Layar 3: selesai -->
+  <section id="finish" class="screen">
+    <div class="card">
+      <h2>🎉 Latihan selesai!</h2>
+      <p id="summary"></p>
+      <ul id="summary-list"></ul>
+      <button id="again" class="primary">Kembali ke awal</button>
+    </div>
+  </section>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
