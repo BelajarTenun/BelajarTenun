@@ -9,7 +9,7 @@ Batasan dari juknis: produk harus **berfungsi sungguhan**, bukan mockup. Jadi an
 |---|---|---|
 | **A. Animasi** | Masalah, cara kerja AI, validasi, perbandingan, bisnis, peta | Motion graphic (Remotion/After Effects/Canva) |
 | **B. Demo asli dengan video sumber** | Inti demo: deteksi tahap, kartu, koreksi, tanya jawab | Aplikasi diputar dengan **video POV tenun open source sebagai kamera** (fitur baru, lihat bawah) lalu layar direkam |
-| **C. Footage manusia** | Andrew, murid memakai kacamata, tangan memegang benang | Shot tanpa alat tenun besar: close-up, benang, alat tenun mini |
+| **C. Footage manusia** | Andrew, murid memakai kacamata, tangan di HP | Shot ketat, latar blur, tanpa properti tenun |
 
 ## Fitur baru: "Berkas video (uji/demo)"
 
@@ -25,34 +25,44 @@ Cara merekam:
 
 Tips memilih video sumber: sudut pandang dari atas atau dari mata penenun, tangan dan benang jelas, cahaya terang, tahapnya terlihat berurutan. Cari "backstrap loom POV", "weaving first person", "tenun gedogan".
 
-## Peta adegan: apa yang dipakai
+## Peta adegan (tanpa alat tenun, tanpa benang, tanpa kain)
 
-| Adegan | Sebelumnya | Sekarang |
+Yang dibutuhkan hanya: **Andrew, satu orang sebagai "murid", kacamata, HP, laptop.** Semua gambar tenun berasal dari video open source berlisensi atau animasi.
+
+| Adegan | Isi | Bahan |
 |---|---|---|
-| 1, 3, 15, 20, 27 | Andrew | **C** tetap, di Tokopedia |
-| 2 | Animasi | **A** ilustrasi penenun senior + ruang tenun memudar |
-| 4 | Cuplikan produk | **C** close-up kacamata + **A** logo |
-| 5 | Grid video | **A** grid cuplikan video open source |
-| 6 | Computer vision | **B** rekam layar aplikasi dengan video sumber + **A** kotak deteksi/label di atasnya |
-| 7 | Validasi | **B** rekam layar halaman Editor + **A** chip KUALITAS |
-| 8 | Murid menekan Start | **C** tangan murid menekan Start di HP (tanpa alat tenun) + **B** layar HP |
-| 9–11 | POV menenun | **B** layar kacamata dengan video sumber, dibingkai HUD (**A**). Sisipan **C**: wajah murid memakai kacamata, shot ketat dari bahu ke atas, alat tenun tidak perlu terlihat |
-| 10 | Istilah daerah | **C** close-up tangan memegang benang + **A** kartu kosakata |
-| 12–13 | Bertanya | **C** close-up wajah samping (background blur, tidak perlu alat tenun) + **B** audio tutor asli |
-| 14 | Pendamping | **B** dua layar: HP penenun di `/pendamping.html` menampilkan video sumber, pesan dibacakan. Footage penenun cukup memegang HP |
-| 16–19 | Hasil | **B** rekam layar HP/laptop |
-| 21–23 | Uji coba | **C** pemula mencoba memakai mode berkas video atau alat tenun mini (lihat bawah) |
-| 24–25, 26, 28 | Bisnis, peta, penutup | **A** |
+| 1, 3 | Andrew di Tokopedia, memakai kacamata di adegan 3 | Kamera |
+| 2 | Penenun senior & ruang tenun sepi | Animasi ilustrasi, atau cuplikan video open source |
+| 4 | Logo + close-up kacamata di meja | Kamera + animasi |
+| 5 | Andrew kiri, grid video open source kanan | Kamera + animasi |
+| 6 | Video tenun open source + kotak deteksi, label tahap/istilah/kesalahan | Rekam layar aplikasi (mode berkas video) + animasi di atasnya |
+| 7 | Validasi | Rekam layar halaman Editor + animasi |
+| 8 | Murid memakai kacamata, menekan Start di HP | Kamera: wajah + tangan di HP, latar blur |
+| 9 | Tahap 2/5 | Rekam layar aplikasi dengan video POV tenun, dibingkai lensa/HUD |
+| 10 | Istilah daerah | Cuplikan video sumber yang memperlihatkan benang pakan + kartu kosakata animasi |
+| 11 | Koreksi | Cuplikan video sumber saat pinggir kain tidak rata (atau saat penenun membetulkan) + sorot oranye animasi + suara tutor asli |
+| 12–13 | Murid bertanya | Kamera: close-up wajah samping, latar blur. Suara tutor dari aplikasi asli |
+| 14 | Pendamping | Rekam layar HP `/pendamping.html` yang menampilkan video sumber; kamera: tangan seseorang memegang HP. Tidak perlu penenun sungguhan, cukup "pendamping" |
+| 15, 20, 27 | Andrew | Kamera |
+| 16–19 | Catatan, progres, offline, arsip | Rekam layar |
+| 21 | Uji coba | Teman/pengguna mencoba **aplikasinya** (mode berkas video) di laptop/HP, bukan menenun. VO: "Kami menguji tutor dengan [N] pengguna dan [M] video tenun." |
+| 22 | Akurasi | Rekam layar `npm run evaluate` + grafik animasi. Ini bukti teknis terkuat dan sama sekali tidak butuh alat tenun |
+| 23 | Testimoni | Pengguna yang mencoba aplikasi. Jika ada, rekaman video call dengan penenun/guru tenun yang memeriksa modul |
+| 24–26, 28 | Bisnis, peta, montase, penutup | Animasi + footage di atas |
 
-Kira-kira **60% animasi + rekam layar**, 40% footage orang.
+Komposisi kira-kira: **45% animasi, 35% rekam layar aplikasi, 20% footage Andrew & murid.**
 
-## Trik shot tanpa alat tenun
+## Cara membuat POV terasa nyata tanpa alat tenun
 
-- **Framing ketat**: wajah/tangan memenuhi layar, background di-blur. Penonton tidak perlu melihat alat tenun utuh.
-- **Benang sebagai properti**: gulungan benang, kain tenun jadi, sepotong kain di pangkuan. Cukup untuk close-up "tangan memegang benang pakan".
-- **Alat tenun mini/kardus**: alat tenun mini (*mini loom*, *cardboard loom*) dijual murah di Tokopedia, atau buat dari kardus + benang. Bagus untuk shot tangan dan uji coba pemula. Jangan diklaim sebagai alat tenun Tidore; sebut "alat latihan".
-- **Pinjam sebentar**: sanggar tenun, Dekranasda, atau museum tekstil (misalnya Museum Tekstil Jakarta punya kelas tenun) bisa dikunjungi 1–2 jam untuk 3–4 shot B-roll. Ini akan menambah kredibilitas besar di Akar Budaya.
-- **Kacamata di wajah, layar di HP**: untuk POV, rekam layar aplikasi lalu beri bingkai lensa/HUD di editing. Ini cara yang biasa dipakai di video produk kacamata.
+- **Bingkai lensa:** rekam layar aplikasi lalu taruh di dalam bentuk lensa kacamata dengan sudut membulat dan vignette tipis, plus HUD di atasnya. Ini cara umum di video produk kacamata.
+- **Potong bolak-balik:** 2–3 detik POV (video sumber) → 1 detik wajah murid memakai kacamata, mata melihat ke bawah seperti sedang bekerja → kembali ke POV. Otak penonton menyambungkan keduanya.
+- **Suara:** tambahkan bunyi alat tenun (bisa diambil dari audio video sumber) di bawah suara tutor.
+- **Jujur:** label pojok kecil *"Input: video tenun [lisensi] · [pembuat]"* setiap kali video sumber dipakai, dan di adegan 21 sebut bahwa uji coba memakai video. Juri menilai keandalan sistem, dan cara ini justru menunjukkan metode pengujian yang rapi.
+
+## Yang tidak bisa diakali (dan cara menyikapinya)
+
+- **Adegan murid benar-benar menenun** tidak ada. Jangan dipalsukan dengan animasi yang terlihat seperti footage asli. Cukup POV video sumber + wajah murid.
+- **Uji coba belajar menenun langsung** belum bisa. Di video dan proposal, tulis sebagai rencana tahap berikutnya ("uji coba lapangan dengan sanggar"), dan tampilkan uji yang sudah ada: akurasi deteksi dan uji pengguna aplikasi.
 
 ## Gaya animasi agar konsisten
 
@@ -63,8 +73,7 @@ Kira-kira **60% animasi + rekam layar**, 40% footage orang.
 
 ## Daftar yang perlu disiapkan (revisi)
 
-- 3–5 video POV tenun open source (CC BY/CC0/domain publik) untuk mode berkas video.
-- Kacamata (untuk dipakai di wajah) + 2 HP.
-- Benang, kain tenun, dan opsional alat tenun mini.
-- Lokasi Tokopedia untuk Andrew + sudut tenang untuk close-up murid.
-- Laptop untuk rekam layar aplikasi + OBS.
+- 3–5 video POV tenun open source (CC BY/CC0/domain publik), cari yang memperlihatkan tahap membuka lungsi, memasukkan pakan, merapatkan, dan idealnya ada momen membetulkan kesalahan.
+- Kacamata + 2 HP + laptop dengan OBS.
+- Andrew + 1 orang sebagai murid + 3–5 teman untuk uji aplikasi.
+- Lokasi Tokopedia + sudut tenang dengan latar yang bisa di-blur.
