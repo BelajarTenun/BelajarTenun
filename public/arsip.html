@@ -8,10 +8,10 @@
 </head>
 <body class="page">
   <header class="brand">
-    <a href="./">← BelajarTenun</a>
+    <a class="wordmark" href="./">BelajarTenun</a>
     <h1>Arsip Tenun Nusantara</h1>
     <p>Dokumentasi proses menenun berbagai tradisi yang sudah <b>divalidasi penenun</b>, lengkap dengan atribusi sumber. Video hanya ditampilkan bila pemiliknya mengizinkan; selain itu kami menautkan ke sumber aslinya.</p>
-    <p><a id="dl-json" href="#">⬇ Unduh JSON</a> · <a id="dl-csv" href="#">⬇ Unduh CSV</a></p>
+    <p><a id="dl-json" href="#">Unduh JSON</a> · <a id="dl-csv" href="#">Unduh CSV</a></p>
   </header>
   <label class="picker">Tradisi <select id="trad"></select></label>
   <div id="content"></div>
@@ -31,7 +31,7 @@ function render() {
   $('content').innerHTML = mods.map((m) => `<section class="card"><h2>${esc(m.title)}</h2><p class="hint">${esc(m.tradition)}${m.region ? ` · ${esc(m.region)}` : ''}</p>
     <ol>${m.steps.map((s) => `<li><b>${esc(s.title)}</b> — ${esc(s.instruction)}
       <br><small class="hint">Berhasil bila: ${esc(s.success_criteria)} · divalidasi: ${esc(s.validated_by)}</small>
-      ${s.provenance.map((p) => { const src = srcById[p.sourceId]; if (!src) return ''; return src.video ? `<br><video src="${esc(src.video)}#t=${Math.floor(p.start)},${Math.ceil(p.end)}" controls preload="none" style="max-width:360px"></video>` : src.url ? `<br><a href="${esc(src.url)}" target="_blank" rel="noopener">▶ lihat di sumber asli (${Math.floor(p.start)} dtk)</a>` : ''; }).join('')}
+      ${s.provenance.map((p) => { const src = srcById[p.sourceId]; if (!src) return ''; return src.video ? `<br><video src="${esc(src.video)}#t=${Math.floor(p.start)},${Math.ceil(p.end)}" controls preload="none" style="max-width:360px"></video>` : src.url ? `<br><a href="${esc(src.url)}" target="_blank" rel="noopener">Lihat di sumber asli (${Math.floor(p.start)} dtk)</a>` : ''; }).join('')}
     </li>`).join('')}</ol></section>`).join('') || '<p class="hint">Belum ada isi tervalidasi untuk tradisi ini.</p>';
   const kb = data.knowledge.filter((k) => !t || (k.question + k.answer).includes(t) || !k.module);
   if (kb.length) $('content').insertAdjacentHTML('beforeend', `<section class="card"><h2>Pengetahuan</h2><dl>${kb.map((k) => `<dt><b>${esc(k.question)}</b></dt><dd>${esc(k.answer)}<br><small class="hint">Sumber: ${esc(k.source || '-')} · divalidasi: ${esc(k.validated_by || '-')}</small></dd>`).join('')}</dl></section>`);

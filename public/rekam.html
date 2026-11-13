@@ -9,7 +9,7 @@
 <body class="page">
   <header class="brand">
     <div class="account" id="account"></div>
-    <a href="./">← BelajarTenun</a>
+    <a class="wordmark" href="./">BelajarTenun</a>
     <h1>Rekam Data Tenun</h1>
     <p>Rekam penenun dari sudut pandang mata (POV). Rekaman menjadi video demo, bahan uji akurasi kamera, dan data latih model. Rekam <b>per tahap</b> (langsung berlabel) atau <b>satu sesi penuh</b> (lalu ditandai di halaman <a href="anotasi.html">Anotasi</a>).</p>
   </header>
@@ -20,9 +20,9 @@
     <label>Tahap <select id="step"></select></label>
     <label id="label-wrap">Apa yang direkam?
       <select id="label">
-        <option value="done">✅ Contoh BENAR (tahap dikerjakan sampai selesai)</option>
-        <option value="mistake">⚠️ Contoh KESALAHAN umum (sengaja)</option>
-        <option value="not_yet">⏳ Tahap BELUM selesai / sedang dikerjakan</option>
+        <option value="done">Contoh BENAR (tahap dikerjakan sampai selesai)</option>
+        <option value="mistake">Contoh KESALAHAN umum (sengaja)</option>
+        <option value="not_yet">Tahap BELUM selesai / sedang dikerjakan</option>
       </select>
     </label>
     <label id="mistake-wrap" hidden>Kesalahan yang dicontohkan <select id="mistake"></select></label>
@@ -45,8 +45,8 @@
     <video id="preview" autoplay playsinline muted></video>
     <p class="hint">Pasang HP di dahi/head strap, lungsi terlihat penuh, cahaya terang. Per tahap: 10–60 detik. Sesi penuh: maks ±5 menit agar bisa dianotasi otomatis.</p>
     <div class="row">
-      <button id="cam">📷 Nyalakan kamera</button>
-      <button id="rec" class="primary" disabled>⏺ Mulai rekam</button>
+      <button id="cam">Nyalakan kamera</button>
+      <button id="rec" class="primary" disabled>Mulai rekam</button>
     </div>
     <p id="status" class="feedback"></p>
   </section>
@@ -81,7 +81,7 @@ function fillMistakes() {
 }
 async function loadModule(id) {
   mod = await api(`/api/module?id=${encodeURIComponent(id)}`);
-  $('step').innerHTML = `<option value="full">🎬 Satu sesi penuh (semua tahap, dianotasi nanti)</option>` + mod.steps.map((s) => `<option value="${s.id}">${esc(s.title)}</option>`).join('');
+  $('step').innerHTML = `<option value="full">Satu sesi penuh (semua tahap, dianotasi nanti)</option>` + mod.steps.map((s) => `<option value="${s.id}">${esc(s.title)}</option>`).join('');
   $('step').value = mod.steps[0].id;
   fillMistakes(); refresh();
 }
@@ -113,10 +113,10 @@ $('rec').onclick = async () => {
   recorder.onstop = () => save(type);
   recorder.start(1000); startedAt = Date.now();
   if (!full()) frameTimer = setInterval(grabFrame, FRAME_EVERY_MS);
-  $('rec').textContent = '⏹ Selesai rekam';
+  $('rec').textContent = 'Selesai rekam';
   status('Merekam…', 'warn');
 };
-function stopRecording() { clearInterval(frameTimer); if (!full()) grabFrame(); recorder.stop(); $('rec').textContent = '⏺ Mulai rekam'; }
+function stopRecording() { clearInterval(frameTimer); if (!full()) grabFrame(); recorder.stop(); $('rec').textContent = 'Mulai rekam'; }
 
 async function save(type) {
   try {
@@ -151,10 +151,10 @@ async function refresh() {
     const video = r.files.find((f) => /\.(webm|mp4)$/.test(f));
     const canDemo = video && r.label === 'done' && r.consent?.scopes?.includes('pembelajaran');
     const isDemo = s?.demo_video === `recordings/${r.id}/${video}`;
-    return `<li><b>${r.stepId === 'full' ? '🎬 Sesi penuh' : esc(s?.title ?? r.stepId)}</b> · ${r.label ?? `${r.segments?.length || 0} segmen`}${r.mistakeIndex ? ' #' + r.mistakeIndex : ''} · ${esc(r.weaver || '-')}
+    return `<li><b>${r.stepId === 'full' ? 'Sesi penuh' : esc(s?.title ?? r.stepId)}</b> · ${r.label ?? `${r.segments?.length || 0} segmen`}${r.mistakeIndex ? ' #' + r.mistakeIndex : ''} · ${esc(r.weaver || '-')}
       <small>${r.createdAt.slice(0, 16).replace('T', ' ')} · ${r.files.length} file · izin: ${esc((r.consent?.scopes || []).join(', '))}</small>
-      ${video ? `<a href="recordings/${r.id}/${video}" target="_blank">▶ lihat</a>` : ''}
-      ${r.stepId === 'full' ? ` · <a href="anotasi.html?id=${r.id}">🏷️ anotasi</a>` : ''}
+      ${video ? `<a href="recordings/${r.id}/${video}" target="_blank">lihat</a>` : ''}
+      ${r.stepId === 'full' ? ` · <a href="anotasi.html?id=${r.id}">anotasi</a>` : ''}
       ${canDemo ? (isDemo ? ' <span class="tag">demo aktif</span>' : ` <button data-demo="${r.id}">Jadikan demo</button>`) : ''}
       <button class="danger" data-withdraw="${r.id}">Cabut izin & hapus</button></li>`;
   }).join('') || '<li>Belum ada rekaman.</li>';

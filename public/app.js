@@ -23,7 +23,7 @@ function renderReply(r) {
   else if (r.intent === 'jawaban') { $('answer').hidden = false; $('answer').textContent = r.speak; state.events.questions++; }
   else if (r.intent === 'petunjuk' || r.intent === 'tawar_bantuan') feedback(r.speak, 'info');
   else if (r.observation) feedback(r.observation, 'info');
-  else if (r.display?.startsWith('📌')) feedback(r.display, 'info');
+  else if (r.display?.startsWith('Tampilan dibekukan')) feedback(r.display, 'info');
   else if (r.intent === 'instruksi') { feedback(state.config.ai && step?.auto_detect ? 'Aku memperhatikan… tekan "Sudah" kalau selesai.' : 'Tekan "Sudah" atau ucapkan "sudah" kalau selesai.'); $('answer').hidden = true; }
 }
 
@@ -63,7 +63,7 @@ async function start() {
   $('cam').hidden = glasses; $('cam-img').hidden = !glasses;
   const cam = glasses ? new GlassesCamera({ profile: choice, intervalMs: 2000 }) : new PhoneCamera();
   cam.onstatus = (t) => feedback(t);
-  cam.onbattery = (b) => { $('battery').textContent = `· 🔋 ${b}%`; };
+  cam.onbattery = (b) => { $('battery').textContent = `· Baterai ${b}%`; };
   try { await cam.start(glasses ? $('cam-img') : $('cam')); }
   catch (e) { alert(glasses ? `Kacamata tidak tersambung: ${e.message}` : 'Kamera tidak bisa dibuka. Latihan tetap bisa berjalan dengan konfirmasi manual.'); }
   try { localStorage.setItem('bt_camera', choice); } catch {}
@@ -78,12 +78,12 @@ async function start() {
       demo: showDemo,
       status: (t) => { if (!$('feedback').textContent) feedback(t); },
       finish,
-      transcript: (role, text) => { const t = $('transcript'); t.hidden = false; t.insertAdjacentHTML('beforeend', `<p class="${role}">${role === 'user' ? '🗣️' : '🧵'} ${esc(text)}</p>`); t.scrollTop = t.scrollHeight; },
+      transcript: (role, text) => { const t = $('transcript'); t.hidden = false; t.insertAdjacentHTML('beforeend', `<p class="${role}"><b>${role === 'user' ? 'Kamu' : 'Tutor'}</b> ${esc(text)}</p>`); t.scrollTop = t.scrollHeight; },
     },
   });
   await state.tutor.start();
   if ($('live').checked) {
-    try { await state.tutor.startLive(); $('badges').textContent = '· 🎧 Live'; } catch (e) { feedback(`Live tidak tersedia: ${e.message}. Pakai mode standar.`, 'warn'); }
+    try { await state.tutor.startLive(); $('badges').textContent = '· Live'; } catch (e) { feedback(`Live tidak tersedia: ${e.message}. Pakai mode standar.`, 'warn'); }
   }
   if ($('handsfree').checked && !state.tutor.live) startHandsfree();
 }
@@ -107,7 +107,7 @@ document.querySelectorAll('.scale').forEach((el) => {
 $('survey').onsubmit = async (e) => {
   e.preventDefault();
   await api('/api/log', { type: 'survey', sessionId: state.tutor?.sessionId, module: state.module.id, ...answers, text: $('survey-text').value }).catch(() => {});
-  $('survey').innerHTML = '<p>Terima kasih! 🙏</p>';
+  $('survey').innerHTML = '<p>Terima kasih atas masukanmu.</p>';
 };
 
 // ---------- Tombol ----------
@@ -133,8 +133,8 @@ $('btn-share').onclick = async () => {
   if (state.share) { state.share.stop(); state.share = null; $('btn-share').classList.remove('on'); return feedback('Berbagi tampilan dihentikan.'); }
   if (!state.camera?.stream) return feedback('Kamera belum aktif.', 'warn');
   state.share = await shareView(state.camera.stream, {
-    onViewers: (n) => feedback(`🧑‍🏫 ${n} pendamping melihat`, 'ok'),
-    onMessage: (m) => { earcon('captured'); feedback(`🧑‍🏫 ${m.from}: ${m.text}`, 'ok'); const u = new SpeechSynthesisUtterance(m.text); u.lang = 'id-ID'; speechSynthesis.speak(u); state.tutor.tracer.emit('companion_message', { text: m.text }); },
+    onViewers: (n) => feedback(`${n} pendamping sedang melihat`, 'ok'),
+    onMessage: (m) => { earcon('captured'); feedback(`${m.from}: ${m.text}`, 'ok'); const u = new SpeechSynthesisUtterance(m.text); u.lang = 'id-ID'; speechSynthesis.speak(u); state.tutor.tracer.emit('companion_message', { text: m.text }); },
   });
   $('btn-share').classList.add('on');
   feedback(`Kode pendamping: ${state.share.code} — bagikan ke penenun pendampingmu (halaman /pendamping.html).`, 'ok');

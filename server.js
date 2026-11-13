@@ -331,7 +331,7 @@ if (process.argv[1] === new URL(import.meta.url).pathname) {
   server.listen(config.port, () => {
     console.log(`BelajarTenun berjalan di http://localhost:${config.port}`);
     console.log(`AI: ${aiEnabled() ? `aktif (${config.geminiModel}, live: ${config.liveModel})` : 'mode manual (GEMINI_API_KEY kosong)'} | TTS: ${config.ttsKey ? 'aktif' : 'suara browser'} | data: ${config.dataDir}`);
-    if (config.authSecretIsRandom) console.warn('⚠ AUTH_SECRET belum diset: sesi login hilang setiap server restart.');
-    if (config.authDisabled) console.warn('⚠ AUTH_DISABLED=1: semua orang dianggap admin. Jangan dipakai di produksi.');
+    if (config.authSecretIsRandom) console.warn('Peringatan: AUTH_SECRET belum diset: sesi login hilang setiap server restart.');
+    if (config.authDisabled) console.warn('Peringatan: AUTH_DISABLED=1: semua orang dianggap admin. Jangan dipakai di produksi.');
   });
 }

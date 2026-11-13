@@ -26,7 +26,7 @@
 </head>
 <body>
 <div class="sim">
-  <p><a href="./">← BelajarTenun</a> · <b>Mode kacamata</b>: memakai Glasses API &amp; Gemini Live yang sama dengan kacamata sungguhan (docs/KACAMATA.md).</p>
+  <p><a class="wordmark" href="./">BelajarTenun</a> · <b>Mode kacamata</b>: memakai Glasses API &amp; Gemini Live yang sama dengan kacamata sungguhan (docs/KACAMATA.md).</p>
   <div class="lens" id="lens"><video id="cam" autoplay playsinline muted></video><img id="photo" hidden alt=""><div class="hud-text" id="hud">Pilih kamera lalu "Pakai kacamata"</div></div>
   <div class="row">
     <label>Kamera <select id="source"><option value="phone">HP / webcam</option><option value="belajartenun">Kacamata BelajarTenun (Bluetooth)</option><option value="omiglass">omiGlass (Bluetooth)</option><option value="openglass">OpenGlass (Bluetooth)</option></select></label>
@@ -35,13 +35,13 @@
     <label id="live-wrap" hidden><input type="checkbox" id="live"> Gemini Live</label>
   </div>
   <div class="row">
-    <button id="start" class="primary">👓 Pakai kacamata</button>
-    <button data-btn="next">Tap: lanjut</button>
-    <button data-btn="repeat">Tap: ulangi</button>
-    <button data-btn="pin">📌 Bekukan</button>
-    <button id="mic">🎙️ Bicara</button>
+    <button id="start" class="primary">Mulai</button>
+    <button data-btn="next">Lanjut</button>
+    <button data-btn="repeat">Ulangi</button>
+    <button data-btn="pin">Bekukan</button>
+    <button id="mic">Bicara</button>
   </div>
-  <details class="row" id="wifi-box" hidden><summary>⚡ Mode Wi-Fi (foto lebih cepat lewat hotspot HP)</summary>
+  <details class="row" id="wifi-box" hidden><summary>Mode Wi-Fi (foto lebih cepat lewat hotspot HP)</summary>
     <form id="wifi" class="row"><input id="ssid" placeholder="Nama hotspot HP"><input id="pass" type="password" placeholder="Kata sandi"><button>Sambungkan</button></form>
     <p class="hint">Kacamata tersambung ke hotspot HP lalu aplikasi menarik foto lewat Wi-Fi. Browser memblokir ini pada halaman HTTPS; di sana Bluetooth tetap dipakai.</p>
   </details>
@@ -66,8 +66,8 @@ $('start').onclick = async () => {
   const og = $('source').value !== 'phone';
   $('cam').hidden = og; $('photo').hidden = !og;
   source = og ? new GlassesCamera({ profile: $('source').value, intervalMs: 2000 }) : new PhoneCamera();
-  source.onstatus = (t) => log(`📡 ${t}`);
-  source.onbattery = (b) => { $('battery').hidden = false; $('battery').textContent = `🔋 ${b}%`; };
+  source.onstatus = (t) => log(t);
+  source.onbattery = (b) => { $('battery').hidden = false; $('battery').textContent = `Baterai ${b}%`; };
   $('wifi-box').hidden = $('source').value !== 'belajartenun';
   try { await source.start(og ? $('photo') : $('cam')); } catch (e) { log(`kamera: ${e.message}`); }
   $('lens').classList.toggle('audio-only', $('audio-only').checked);
@@ -75,24 +75,24 @@ $('start').onclick = async () => {
     moduleId: undefined, source, audioOnly: $('audio-only').checked, serverTts: cfg.tts,
     ui: {
       // Inilah seluruh tugas klien kacamata: tampilkan "display", ucapkan "speak".
-      show: (r) => { if (r.display) $('hud').textContent = r.display; if (r.speak) log(`🔊 ${r.speak}`); },
+      show: (r) => { if (r.display) $('hud').textContent = r.display; if (r.speak) log(`Tutor: ${r.speak}`); },
       card: (c) => renderCard($('cards'), c),
-      demo: (url) => url && log(`▶ video demo: ${url}`),
+      demo: (url) => url && log(`Video demo: ${url}`),
       status: (t) => log(t),
-      finish: () => log('🎉 selesai'),
-      transcript: (role, text) => log(`${role === 'user' ? '🗣️' : '🧵'} ${text}`),
+      finish: () => log('Latihan selesai'),
+      transcript: (role, text) => log(`${role === 'user' ? 'Kamu' : 'Tutor'}: ${text}`),
     },
   });
   await tutor.start();
-  if ($('live').checked) { try { await tutor.startLive(); log('🎧 Gemini Live tersambung'); } catch (e) { log(`Live gagal: ${e.message}`); } }
+  if ($('live').checked) { try { await tutor.startLive(); log('Gemini Live tersambung'); } catch (e) { log(`Live gagal: ${e.message}`); } }
 };
-$('wifi').onsubmit = async (e) => { e.preventDefault(); try { await source.enableWifi($('ssid').value, $('pass').value); log('📶 Mengirim data Wi-Fi ke kacamata…'); } catch (err) { log(err.message); } };
+$('wifi').onsubmit = async (e) => { e.preventDefault(); try { await source.enableWifi($('ssid').value, $('pass').value); log('Mengirim data Wi-Fi ke kacamata…'); } catch (err) { log(err.message); } };
 document.querySelectorAll('[data-btn]').forEach((b) => b.onclick = () => tutor?.button(b.dataset.btn));
-$('say').onsubmit = (e) => { e.preventDefault(); const t = $('text').value; $('text').value = ''; log(`🗣️ ${t}`); tutor?.say(t); };
+$('say').onsubmit = (e) => { e.preventDefault(); const t = $('text').value; $('text').value = ''; log(`Kamu: ${t}`); tutor?.say(t); };
 $('mic').onclick = () => {
   const R = window.SpeechRecognition || window.webkitSpeechRecognition; if (!R) return log('pengenalan suara tidak didukung browser ini');
   const rec = new R(); rec.lang = 'id-ID';
-  rec.onresult = (e) => { const t = e.results[0][0].transcript; log(`🗣️ ${t}`); tutor?.say(t); };
+  rec.onresult = (e) => { const t = e.results[0][0].transcript; log(`Kamu: ${t}`); tutor?.say(t); };
   rec.start();
 };
 </script>
