@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Nav from './Nav';
+import GoogleButton from './GoogleButton';
 import { api } from '../lib/api';
 import { useApp } from '../lib/session';
 
@@ -8,7 +9,7 @@ export default function Masuk() {
   const [mode, setMode] = useState<'masuk' | 'daftar'>('masuk');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const { refresh } = useApp();
+  const { refresh, config } = useApp();
   const nav = useNavigate();
   const [params] = useSearchParams();
 
@@ -28,6 +29,8 @@ export default function Masuk() {
       <Nav back={{ to: '/', label: 'Beranda' }} />
       <h1>{mode === 'masuk' ? 'Masuk' : 'Buat akun'}</h1>
       <p className="muted">{mode === 'masuk' ? 'Lanjutkan latihanmu.' : 'Gratis. Progres latihanmu tersimpan di akun ini.'}</p>
+      {params.get('galat') === 'google' && <p className="error" role="alert">Masuk dengan Google belum berhasil. Coba lagi atau pakai email.</p>}
+      {config?.googleLogin && <><GoogleButton next={params.get('lanjut') || '/belajar'} className="dark wide" /><p className="or muted small">atau dengan email</p></>}
       <form className="form" onSubmit={submit}>
         {mode === 'daftar' && <label>Nama<input name="name" autoComplete="name" required /></label>}
         <label>Email<input name="email" type="email" autoComplete="email" required /></label>

@@ -1,5 +1,5 @@
 export type User = { id: string; name: string; email: string; role: 'pemula' | 'partner' | 'admin'; status: string };
-export type Config = { ai: boolean; tts: boolean; live: boolean; livekit: boolean; user: User | null; authDisabled: boolean };
+export type Config = { ai: boolean; tts: boolean; live: boolean; livekit: boolean; googleLogin?: boolean; user: User | null; authDisabled: boolean };
 export type ModuleSummary = { id: string; title: string; tradition?: string; description?: string; steps: number };
 export type Step = { id: string; title: string; instruction: string; tips?: string[]; demo_video?: string; demo_start?: number; demo_attribution?: string; auto_detect?: boolean };
 export type Module = {
