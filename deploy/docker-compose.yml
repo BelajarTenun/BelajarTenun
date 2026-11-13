@@ -2,6 +2,8 @@
 # Jalankan dari folder deploy/:  docker compose up -d --build
 services:
   app:
+    # CD (GitHub Actions) memakai image dari ghcr.io; tanpa APP_IMAGE, dibangun dari sumber.
+    image: ${APP_IMAGE:-belajartenun-app:local}
     build: ..
     restart: unless-stopped
     env_file: ../.env
@@ -16,6 +18,7 @@ services:
       - ./secrets:/secrets:ro
 
   agent:
+    image: ${AGENT_IMAGE:-belajartenun-agent:local}
     build: ../agent
     restart: unless-stopped
     env_file: ../.env

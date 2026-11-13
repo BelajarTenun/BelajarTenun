@@ -38,6 +38,34 @@ cd deploy && docker compose up -d --build
 
 Cek: `https://DOMAIN/api/health`. Akun pertama yang mendaftar menjadi admin.
 
+## CI/CD lewat GitHub Actions
+
+- **CI** (`.github/workflows/ci.yml`), setiap push dan PR: tes server, typecheck + build web React, cek sintaks agen.
+- **Deploy** (`.github/workflows/deploy.yml`), setiap push ke `main`: tes → bangun image `app` dan `agent` ke
+  GitHub Container Registry (ghcr.io) → SSH ke VPS → `docker compose pull` + `up -d` → cek `/api/health`.
+
+Persiapan sekali di VPS:
+
+```bash
+sudo mkdir -p /opt/belajartenun/deploy/secrets && sudo chown -R $USER /opt/belajartenun
+```
+
+Taruh `.env` di `/opt/belajartenun/.env` dan kunci Vertex di `/opt/belajartenun/deploy/secrets/vertex-sa.json`.
+Berkas compose disalin otomatis oleh workflow.
+
+Di GitHub: Settings → Environments → buat `production` (bisa diberi reviewer wajib sebelum deploy),
+lalu Settings → Secrets and variables → Actions, tambahkan:
+
+| Secret | Isi |
+|---|---|
+| `VPS_HOST` | IP atau domain VPS |
+| `VPS_USER` | user SSH yang boleh menjalankan docker |
+| `VPS_SSH_KEY` | private key SSH (pasangannya di `~/.ssh/authorized_keys` VPS) |
+
+Selama `VPS_HOST` belum diisi, workflow tetap membangun image tetapi tidak deploy.
+Rollback: jalankan ulang workflow Deploy dari commit sebelumnya (Actions → Deploy → Re-run), atau di VPS
+`APP_IMAGE=ghcr.io/<owner>/belajartenun-app:<sha> docker compose up -d app`.
+
 ## Alur Gemini Live dengan Vertex AI
 
 Vertex AI tidak menerbitkan token sementara untuk browser, jadi kredensial tidak pernah keluar dari server:
