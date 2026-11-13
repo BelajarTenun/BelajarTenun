@@ -55,6 +55,7 @@ Arsitektur tutornya meniru pola [VisionClaw](https://github.com/sseanliu/VisionC
 | 👤 | **Akun**: masuk/daftar, kode akses perangkat untuk kacamata | `/masuk.html` |
 | 📊 | **Evaluasi akurasi** dari dataset (matriks kebingungan, latensi, ambang CI) | `scripts/evaluate.js` |
 | 🧠 | **Model offline**: ekspor dataset → latih MobileNetV3 → TF.js/TFLite, dipakai otomatis di HP | `scripts/train/`, `public/js/local-model.js` |
+| 🖨️ | **Casing kacamata 3D** (OpenSCAD parametrik + STL): kamera menunduk 25°, penjepit gagang, lubang LED privasi/tombol/mik/USB-C | `hardware/casing/` |
 | 📡 | **Klien kacamata asli**: bridge Brilliant Frame dan miniapp MentraOS | `clients/frame/`, `clients/mentra/` |
 
 ## Menjalankan
