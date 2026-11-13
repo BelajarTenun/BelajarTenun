@@ -106,7 +106,7 @@ export const A19Arsip: React.FC = () => {
           <Card light key={t} style={{ opacity: fade(f, 10 + i * 8, 24 + i * 8) }}>
             <Tag dark>Tervalidasi</Tag>
             <div style={{ fontSize: 28, margin: '10px 0 14px' }}>{t}</div>
-            <div style={{ fontSize: 18, color: C.soft }}>Sumber: [pembuat] · CC BY · Tidore</div>
+            <div style={{ fontSize: 18, color: C.soft }}>Sumber: [pembuat] · CC BY · [tradisi]</div>
             <div style={{ fontFamily: MONO, fontSize: 14, color: C.ink, marginTop: 10 }}>JSON · CSV</div>
           </Card>
         ))}
@@ -197,12 +197,12 @@ export const A24Bisnis: React.FC<{ skema?: string[]; x0?: number }> = ({ x0 = 76
   );
 };
 
-// Adegan 25 — peta: Tidore → Nusantara → dunia. Posisi titik perkiraan di bingkai 1920×1080.
+// Adegan 25 — peta: tradisi tenun di seluruh Nusantara → dunia. Posisi titik perkiraan di bingkai 1920×1080.
 export const A25Peta: React.FC = () => {
   const f = useCurrentFrame();
   const pts: [string, number, number, number][] = [
-    ['Tidore', 1430, 470, 10], ['Sumba', 1130, 690, 50], ['Toraja', 1210, 520, 62], ['Toba', 620, 430, 74],
-    ['Lombok', 1010, 680, 86], ['Kalimantan', 1000, 450, 98], ['Jawa', 860, 650, 110], ['Flores', 1230, 690, 122],
+    ['Toba', 620, 430, 10], ['Palembang', 720, 560, 22], ['Jawa', 860, 650, 34], ['Kalimantan', 1000, 450, 46],
+    ['Lombok', 1010, 680, 58], ['Toraja', 1210, 520, 70], ['Sumba', 1130, 690, 82], ['Flores', 1230, 690, 94], ['Tidore', 1430, 470, 106], ['Papua', 1660, 560, 118],
   ];
   const zoom = interpolate(f, [170, 260], [1, 0.45], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' });
   return (
@@ -216,7 +216,7 @@ export const A25Peta: React.FC = () => {
           const p = fade(f, s, s + 12);
           return (
             <div key={n} style={{ position: 'absolute', left: x - 14, top: y - 14, opacity: p }}>
-              <div style={{ width: 14, height: 14, borderRadius: 7, margin: 7, background: i === 0 ? C.ai : C.ink, boxShadow: i === 0 ? `0 0 0 ${10 + Math.sin(f / 6) * 5}px rgba(110,168,240,0.25)` : 'none' }} />
+              <div style={{ width: 14, height: 14, borderRadius: 7, margin: 7, background: C.ink, boxShadow: `0 0 0 ${6 + Math.sin(f / 6 + i) * 4}px rgba(42,50,60,0.12)` }} />
               <div style={{ fontFamily: MONO, fontSize: 15, letterSpacing: 1, color: C.ink, marginTop: 4 }}>{n.toUpperCase()}</div>
             </div>
           );
@@ -224,7 +224,7 @@ export const A25Peta: React.FC = () => {
         {/* garis keluar ke dunia */}
         <svg width="1920" height="1080" style={{ position: 'absolute', overflow: 'visible' }}>
           {[[-1600, -500], [3400, -400], [-1400, 1500], [3300, 1400], [960, -1300]].map(([x, y], i) => (
-            <path key={i} d={`M1430 470 Q ${(1430 + x) / 2} ${Math.min(470, y) - 300} ${x} ${y}`} stroke={C.ink} strokeWidth={1.5} opacity={0.6} fill="none" strokeDasharray="4000" strokeDashoffset={4000 * (1 - fade(f, 180 + i * 8, 260 + i * 8))} />
+            <path key={i} d={`M1100 560 Q ${(1100 + x) / 2} ${Math.min(560, y) - 300} ${x} ${y}`} stroke={C.ink} strokeWidth={1.5} opacity={0.6} fill="none" strokeDasharray="4000" strokeDashoffset={4000 * (1 - fade(f, 180 + i * 8, 260 + i * 8))} />
           ))}
         </svg>
       </AbsoluteFill>

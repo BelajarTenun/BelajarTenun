@@ -35,7 +35,7 @@ Format per adegan: **lokasi/shot**, **skrip/VO**, **animasi/layar**, **chip pojo
 
 **Adegan 10 (1:12–1:20) · Istilah bahasa daerah**
 - **Shot:** close-up tangan memegang benang pakan.
-- **VO tutor:** "Dalam bahasa Tidore, benang pakan disebut *[istilah asli]*."
+- **VO tutor:** "Setiap tradisi punya sebutannya sendiri untuk benang pakan." Kartu menampilkan istilah dari 2–3 tradisi.
 - **Layar:** kartu kosakata muncul di samping benang: **[istilah asli]** → *benang pakan* + ikon speaker (terdengar pelafalannya).
 - **Chip pojok:** **BAHASA DAERAH**
 - ⚠️ Istilah wajib dari penenun/modul tervalidasi.
@@ -135,8 +135,8 @@ Format per adegan: **lokasi/shot**, **skrip/VO**, **animasi/layar**, **chip pojo
 - **VO:** "Kami mulai dari sanggar dan sekolah. Setiap modul yang divalidasi memberi penghasilan bagi penenun, dan setiap murid baru memperluas pasar kain tenun."
 
 **Adegan 25 (3:41–3:51) · Nusantara ke dunia**
-- **Animasi:** peta Indonesia, titik Tidore menyala → Sumba, Toraja, Toba, Lombok → garis keluar ke dunia.
-- **VO:** "Dari Tidore ke seluruh tradisi tenun Nusantara, dan dari Indonesia ke dunia."
+- **Animasi:** peta Indonesia, titik tradisi tenun menyala satu per satu dari barat ke timur → garis keluar ke dunia.
+- **VO:** "Dari satu tradisi ke seluruh tradisi tenun Nusantara, dan dari Indonesia ke dunia."
 - **Layar kecil:** *Indonesia Cultural Power*
 
 ### Penutup
@@ -183,7 +183,7 @@ Tidak ada alat tenun, benang, atau kain. Semua adegan dibuat dari tiga bahan saj
 | 21–22 | 2:56 | 🎨 | Angka uji aplikasi & akurasi deteksi |
 | 23 | 3:16 | 👓 / 🎤 | Testimoni teman yang mencoba aplikasi (cukup muka, boleh pakai kacamata) |
 | 24 | 3:26 | 🎤 + 🎨 | Model bisnis |
-| 25 | 3:41 | 🎨 | Peta Tidore → Nusantara → dunia |
+| 25 | 3:41 | 🎨 | Peta tradisi tenun Nusantara → dunia |
 | 26 | 3:51 | 🎨 | Montase |
 | 27 | 3:59 | 🎤 | Andrew (+ tim) penutup |
 | 28 | 4:05 | 🎨 | Kartu logo + kredit |

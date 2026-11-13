@@ -8,20 +8,28 @@ Format semua shot: **horizontal 16:9, 1080p atau 4K, 30 fps**. Ambil setiap shot
 
 | # | Adegan | Waktu | Posisi di frame | Yang dilakukan / diucapkan |
 |---|---|---|---|---|
-| A1 | 1 | 0:00 | Masuk dari kiri, berhenti di **sepertiga kiri** | “Selama ratusan tahun, menenun diajarkan dari tangan ke tangan.” |
-| A2 | 3 | 0:14 | **Sepertiga kanan** | Memegang kacamata, memakainya saat bilang: “Bagaimana kalau ilmunya bisa ikut… di mata kita?” |
-| A3 | 5 | 0:28 | **Sepertiga kiri** | “Ilmu tenun sebenarnya sudah ada di mana-mana: ribuan video dan arsip yang dibagikan terbuka di internet.” |
+| A1 | 1 | 0:00 | Masuk dari kiri, berhenti di **tengah** | “Selama ratusan tahun, menenun diajarkan dari tangan ke tangan.” |
+| A2 | 3 | 0:14 | **Tengah** | Memegang kacamata, memakainya saat bilang: “Bagaimana kalau ilmunya bisa ikut… di mata kita?” |
+| A3 | 5 | 0:28 | **Tengah** | “Ilmu tenun sebenarnya sudah ada di mana-mana: ribuan video dan arsip yang dibagikan terbuka di internet.” |
 | A4 | 15 | 1:58 | **Tengah** | “Penenun tidak tergantikan. Dengan BelajarTenun, akses ke mereka terbuka untuk lebih banyak murid, dari mana saja.” |
-| A5 | 20 | 2:36 | **Sepertiga kanan** (animasi tabel di kiri) | “Video tutorial tidak bisa melihat kesalahan kita. Kelas tatap muka terbatas tempat dan waktunya. BelajarTenun menggabungkan keduanya: melihat dari mata murid, mengoreksi saat itu juga, dan tetap setia pada ilmu penenunnya.” |
+| A5 | 20 | 2:36 | **Tengah** | “Video tutorial tidak bisa melihat kesalahan kita. Kelas tatap muka terbatas tempat dan waktunya. BelajarTenun menggabungkan keduanya: melihat dari mata murid, mengoreksi saat itu juga, dan tetap setia pada ilmu penenunnya.” |
 | A6 | 27 | 3:59 | Tengah, **bertiga** dengan 2 anggota tim | “BelajarTenun: cara baru belajar budaya. Terbuka untuk siapa saja, menyesuaikan setiap murid, dan dijaga oleh penenunnya sendiri.” |
 
-Tips: latar agak gelap atau blur (teks animasi berwarna putih), mic klip, kamera setinggi mata, sisakan ruang kosong di sisi yang berlawanan dengan Andrew.
+**Andrew selalu di tengah frame.** Di editing, footage digeser pelan ke kiri atau kanan sambil diperbesar ±130%, lalu animasi muncul di sisi yang kosong (adegan 1, 5, 24 → Andrew bergeser ke kiri; adegan 20 → ke kanan; adegan 3, 15, 27 tetap di tengah).
+
+Supaya efek geser tetap tajam:
+- Rekam **4K** kalau bisa (perbesaran 130% dari 4K tetap lebih tajam dari 1080p).
+- Bingkai lebih longgar: sisakan ruang di atas kepala dan di kiri-kanan badan, kira-kira **setengah badan sampai pinggang**.
+- Andrew jangan banyak bergerak ke samping; gestur tangan boleh.
+- Latar agak gelap atau blur (teks animasi berwarna putih), mic klip, kamera setinggi mata.
+
+Efek geser bisa dibuat otomatis di Remotion (taruh footage di `video/public/`, isi prop `footage`) atau manual di CapCut/Premiere: keyframe **Position X ±360 px** dan **Scale 100% → 130%** selama 0,8 detik dengan ease in-out di awal adegan.
 
 ## Sesi 2 · Anggota tim bidang ekonomi
 
 | # | Adegan | Waktu | Posisi | Diucapkan |
 |---|---|---|---|---|
-| E1 | 24 | 3:26 | **Sepertiga kiri** (diagram bisnis di kanan) | “Kami mulai dari sanggar dan sekolah. Setiap modul yang divalidasi memberi penghasilan bagi penenun, dan setiap murid baru memperluas pasar kain tenun.” (sesuaikan dengan proposal) |
+| E1 | 24 | 3:26 | **Tengah** | “Kami mulai dari sanggar dan sekolah. Setiap modul yang divalidasi memberi penghasilan bagi penenun, dan setiap murid baru memperluas pasar kain tenun.” (sesuaikan dengan proposal) |
 
 ## Sesi 3 · Wajah murid memakai kacamata
 
@@ -58,7 +66,7 @@ Satu orang sebagai murid, memakai kacamata BelajarTenun. Latar polos/blur, cahay
 
 - 5–12 klip video tenun open source (CC BY / CC0 / domain publik) → `video/public/`, untuk adegan 5, 6, 9–11, 14.
 - Musik latar berlisensi jelas.
-- Istilah Tidore asli (adegan 10), nama penenun (7, 14), angka uji (21–22), skema bisnis (24).
+- Istilah daerah dari 2–3 tradisi, sudah divalidasi (adegan 10), nama penenun (7, 14), angka uji (21–22), skema bisnis (24).
 - Voice over (VO) untuk adegan animasi: bisa suara Andrew direkam terpisah di ruangan tenang, atau suara tutor dari aplikasi.
 
 ## Ringkasan

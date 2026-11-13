@@ -101,25 +101,38 @@ export const A09Tahap: React.FC<PovProps> = (p) => {
   );
 };
 
-// Adegan 10 — kartu kosakata bahasa daerah.
-export const A10Kosakata: React.FC<PovProps & { istilah?: string; arti?: string; bahasa?: string }> = ({ istilah = '[istilah daerah]', arti = 'benang pakan', bahasa = 'Tidore', ...p }) => {
-  const s = useSpring(30, 14);
+// Adegan 10 — kosakata bahasa daerah dari beberapa tradisi tenun (tidak khusus satu daerah).
+// Ganti istilah dengan yang sudah divalidasi penenun dari tiap tradisi.
+type Istilah = { tradisi: string; istilah: string };
+const ISTILAH: Istilah[] = [
+  { tradisi: 'Tradisi A', istilah: '[istilah 1]' },
+  { tradisi: 'Tradisi B', istilah: '[istilah 2]' },
+  { tradisi: 'Tradisi C', istilah: '[istilah 3]' },
+];
+export const A10Kosakata: React.FC<PovProps & { arti?: string; daftar?: Istilah[] }> = ({ arti = 'benang pakan', daftar = ISTILAH, ...p }) => {
   const f = useCurrentFrame();
   return (
     <Lens {...p}>
       <StageCard n={3} conf={0.86} />
-      <div style={{ position: 'absolute', left: 1080, top: 430, transform: `scale(${s})`, transformOrigin: 'left center' }}>
+      <div style={{ position: 'absolute', left: 1080, top: 300 }}>
         <svg width="140" height="20" style={{ position: 'absolute', left: -140, top: 52 }}><line x1="8" y1="10" x2="140" y2="10" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" /><circle cx="8" cy="10" r="6" fill="none" stroke="#fff" strokeWidth="1.5" /></svg>
-        <Card style={{ width: 520 }}>
-          <Tag>Bahasa {bahasa}</Tag>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 6 }}>
-            <div style={{ fontFamily: SERIF, fontSize: 60 }}>{istilah}</div>
-            <svg width="40" height="28" viewBox="0 0 40 28">{[0, 1, 2, 3, 4].map((i) => { const h = 6 + Math.abs(Math.sin(f / 4 + i)) * 16 * (f > 60 && f < 110 ? 1 : 0.3); return <rect key={i} x={i * 8} y={14 - h / 2} width={3} height={h} rx={1.5} fill="#F4F5F2" />; })}</svg>
-          </div>
-          <div style={{ fontSize: 24, color: 'rgba(244,245,242,0.65)', marginTop: 2 }}>{arti}</div>
-        </Card>
+        <div style={{ fontFamily: MONO, fontSize: 16, letterSpacing: 2, color: '#fff', opacity: fade(f, 15, 30), marginBottom: 14 }}>[ {arti.toUpperCase()} ]</div>
+        {daftar.map((d, i) => {
+          const s0 = 30 + i * 50;
+          const o = fade(f, s0, s0 + 15);
+          const speaking = f > s0 + 10 && f < s0 + 45;
+          return (
+            <Card key={i} style={{ width: 520, marginBottom: 14, opacity: o, filter: `blur(${(1 - o) * 6}px)` }}>
+              <Tag>{d.tradisi}</Tag>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 4 }}>
+                <div style={{ fontFamily: SERIF, fontSize: 50 }}>{d.istilah}</div>
+                <svg width="40" height="28" viewBox="0 0 40 28">{[0, 1, 2, 3, 4].map((k) => { const h = 6 + Math.abs(Math.sin(f / 4 + k)) * 16 * (speaking ? 1 : 0.25); return <rect key={k} x={k * 8} y={14 - h / 2} width={3} height={h} rx={1.5} fill="#F4F5F2" />; })}</svg>
+              </div>
+            </Card>
+          );
+        })}
       </div>
-      <Say text={`Dalam bahasa ${bahasa}, ${arti} disebut ${istilah}.`} start={20} end={220} />
+      <Say text={`Setiap tradisi punya sebutannya sendiri untuk ${arti}.`} start={20} end={220} />
       <Chip label="BAHASA DAERAH" start={30} />
     </Lens>
   );
