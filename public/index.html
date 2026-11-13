@@ -22,6 +22,10 @@
       <h2 id="module-title">Memuat…</h2>
       <p id="module-desc"></p>
       <ol id="module-steps"></ol>
+      <label class="picker">Kamera
+        <select id="camera-source"><option value="phone">Kamera HP</option><option value="belajartenun">Kacamata BelajarTenun (Bluetooth)</option><option value="omiglass">omiGlass</option><option value="openglass">OpenGlass</option></select>
+      </label>
+      <p class="hint" id="audio-hint">Suara tutor & mikrofon memakai HP — sambungkan earbuds Bluetooth supaya tangan tetap bebas.</p>
       <label class="toggle"><input type="checkbox" id="handsfree"> Mode hands-free (perintah suara terus aktif)</label>
       <label class="toggle" id="live-wrap" hidden><input type="checkbox" id="live"> Ngobrol langsung dengan tutor (Gemini Live)</label>
       <button id="start" class="primary" disabled>Mulai latihan</button>
@@ -34,9 +38,10 @@
   <!-- Layar 2: sesi latihan (tampilan HUD ala kacamata) -->
   <section id="session" class="screen">
     <video id="cam" autoplay playsinline muted></video>
+    <img id="cam-img" class="cam-img" hidden alt="">
     <div class="hud">
       <div class="progress"><div id="bar"></div></div>
-      <p class="step-count"><span class="rec-dot" title="Kamera aktif"></span> <span id="step-count"></span> <span id="badges"></span></p>
+      <p class="step-count"><span class="rec-dot" title="Kamera aktif"></span> <span id="step-count"></span> <span id="badges"></span> <span id="battery"></span></p>
       <h2 id="step-title"></h2>
       <p id="step-instruction"></p>
       <p id="feedback" class="feedback" aria-live="polite"></p>

@@ -29,7 +29,8 @@
   <p><a href="./">← BelajarTenun</a> · <b>Mode kacamata</b>: memakai Glasses API &amp; Gemini Live yang sama dengan kacamata sungguhan (docs/KACAMATA.md).</p>
   <div class="lens" id="lens"><video id="cam" autoplay playsinline muted></video><img id="photo" hidden alt=""><div class="hud-text" id="hud">Pilih kamera lalu "Pakai kacamata"</div></div>
   <div class="row">
-    <label>Kamera <select id="source"><option value="phone">HP / webcam</option><option value="openglass">OpenGlass (Bluetooth)</option></select></label>
+    <label>Kamera <select id="source"><option value="phone">HP / webcam</option><option value="belajartenun">Kacamata BelajarTenun (Bluetooth)</option><option value="omiglass">omiGlass (Bluetooth)</option><option value="openglass">OpenGlass (Bluetooth)</option></select></label>
+    <span id="battery" class="pill" hidden></span>
     <label><input type="checkbox" id="audio-only"> Kacamata tanpa layar (suara saja)</label>
     <label id="live-wrap" hidden><input type="checkbox" id="live"> Gemini Live</label>
   </div>
@@ -40,13 +41,17 @@
     <button data-btn="pin">📌 Bekukan</button>
     <button id="mic">🎙️ Bicara</button>
   </div>
+  <details class="row" id="wifi-box" hidden><summary>⚡ Mode Wi-Fi (foto lebih cepat lewat hotspot HP)</summary>
+    <form id="wifi" class="row"><input id="ssid" placeholder="Nama hotspot HP"><input id="pass" type="password" placeholder="Kata sandi"><button>Sambungkan</button></form>
+    <p class="hint">Kacamata tersambung ke hotspot HP lalu aplikasi menarik foto lewat Wi-Fi. Browser memblokir ini pada halaman HTTPS; di sana Bluetooth tetap dipakai.</p>
+  </details>
   <form id="say" class="row"><input id="text" placeholder='Ucapan (mis. "kenapa tepi menyempit?" / "sudah" / "catat …")'><button>Kirim</button></form>
   <div class="cards" id="cards"></div>
   <div class="log" id="log"></div>
 </div>
 <script type="module">
 import { api, $ } from './js/api.js';
-import { PhoneCamera, OpenGlassCamera } from './js/sources.js';
+import { PhoneCamera, GlassesCamera } from './js/sources.js';
 import { TutorClient } from './js/tutor.js';
 import { renderCard } from './js/cards.js';
 
@@ -54,14 +59,16 @@ let tutor, source;
 const log = (t) => { $('log').textContent = `${new Date().toLocaleTimeString()}  ${t}\n` + $('log').textContent; };
 const cfg = await api('/api/config');
 $('live-wrap').hidden = !cfg.live;
-if (!OpenGlassCamera.supported()) $('source').options[1].text += ' – butuh Chrome';
+if (!GlassesCamera.supported()) for (const o of [...$('source').options].slice(1)) o.text += ' – butuh Chrome Android/desktop';
 
 $('start').onclick = async () => {
   tutor?.stop(); source?.stop();
-  const og = $('source').value === 'openglass';
+  const og = $('source').value !== 'phone';
   $('cam').hidden = og; $('photo').hidden = !og;
-  source = og ? new OpenGlassCamera({ intervalSec: 5 }) : new PhoneCamera();
+  source = og ? new GlassesCamera({ profile: $('source').value, intervalMs: 2000 }) : new PhoneCamera();
   source.onstatus = (t) => log(`📡 ${t}`);
+  source.onbattery = (b) => { $('battery').hidden = false; $('battery').textContent = `🔋 ${b}%`; };
+  $('wifi-box').hidden = $('source').value !== 'belajartenun';
   try { await source.start(og ? $('photo') : $('cam')); } catch (e) { log(`kamera: ${e.message}`); }
   $('lens').classList.toggle('audio-only', $('audio-only').checked);
   tutor = new TutorClient({
@@ -79,6 +86,7 @@ $('start').onclick = async () => {
   await tutor.start();
   if ($('live').checked) { try { await tutor.startLive(); log('🎧 Gemini Live tersambung'); } catch (e) { log(`Live gagal: ${e.message}`); } }
 };
+$('wifi').onsubmit = async (e) => { e.preventDefault(); try { await source.enableWifi($('ssid').value, $('pass').value); log('📶 Mengirim data Wi-Fi ke kacamata…'); } catch (err) { log(err.message); } };
 document.querySelectorAll('[data-btn]').forEach((b) => b.onclick = () => tutor?.button(b.dataset.btn));
 $('say').onsubmit = (e) => { e.preventDefault(); const t = $('text').value; $('text').value = ''; log(`🗣️ ${t}`); tutor?.say(t); };
 $('mic').onclick = () => {

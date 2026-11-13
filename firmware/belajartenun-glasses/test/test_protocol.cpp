@@ -53,7 +53,7 @@ int main() {
   const char badCreds[] = "\x10";
   CHECK(applyCommand(s, (const uint8_t*)badCreds, 1) == ACT_ERROR);
   uint8_t unknown[] = {0x99}; CHECK(applyCommand(s, unknown, 1) == ACT_ERROR);
-  uint8_t st[8]; CHECK(buildStatus(st, true, 77, WIFI_CONNECTED, 2000, 1) == 7 && st[2] == 77 && (st[4] | st[5] << 8) == 2000);
+  uint8_t st[8]; CHECK(buildStatus(st, true, 77, WS_CONNECTED, 2000, 1) == 7 && st[2] == 77 && (st[4] | st[5] << 8) == 2000);
   // 4. Tombol
   auto run = [](std::vector<std::pair<uint32_t, bool>> seq, uint32_t until) {
     ButtonDetector d; std::vector<ButtonEvent> evs; size_t k = 0; bool raw = false;

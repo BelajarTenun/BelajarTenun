@@ -40,7 +40,7 @@ enum EventType : uint8_t {
 
 enum ButtonEvent : uint8_t { BTN_NONE = 0, BTN_TAP = 1, BTN_DOUBLE = 2, BTN_LONG = 3 };
 enum ErrorCode : uint8_t { ERR_CAMERA_INIT = 1, ERR_CAMERA_CAPTURE = 2, ERR_WIFI_CONNECT = 3, ERR_BAD_COMMAND = 4, ERR_CAMERA_NOT_ALLOWED = 5 };
-enum WifiState : uint8_t { WIFI_OFF = 0, WIFI_CONNECTING = 1, WIFI_CONNECTED = 2, WIFI_FAILED = 3 };
+enum WifiState : uint8_t { WS_OFF = 0, WS_CONNECTING = 1, WS_CONNECTED = 2, WS_FAILED = 3 };
 
 // ---------------- Pemotongan foto menjadi notifikasi BLE ----------------
 inline uint8_t photoHeader(uint8_t orientation) { return (uint8_t)((PROTOCOL_VERSION << 4) | (orientation & 0x0F)); }

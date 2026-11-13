@@ -24,7 +24,7 @@ static Preferences prefs;
 static ButtonDetector button;
 static NimBLECharacteristic *photoData, *events, *batteryLevel;
 static bool bleConnected = false, cameraOn = false, snapRequested = false, oneShot = false;
-static uint8_t wifiState = WIFI_OFF, batteryPct = 0, captureFailures = 0;
+static uint8_t wifiState = WS_OFF, batteryPct = 0, captureFailures = 0;
 static uint32_t lastCapture = 0, lastActivity = 0, lastBatteryReport = 0, wifiStartedAt = 0;
 static WebServer http(HTTP_PORT);
 static bool httpStarted = false;
@@ -99,7 +99,7 @@ static void captureAndSend() {
     return;
   }
   captureFailures = 0;
-  if (bleConnected && wifiState != WIFI_CONNECTED) sendPhotoBle(fb);  // Wi-Fi aktif → aplikasi menarik via HTTP
+  if (bleConnected && wifiState != WS_CONNECTED) sendPhotoBle(fb);  // Wi-Fi aktif → aplikasi menarik via HTTP
   esp_camera_fb_return(fb);
 }
 
@@ -130,29 +130,29 @@ static void wifiStart() {
   WiFi.mode(WIFI_STA);
   WiFi.setSleep(false);                               // cegah Wi-Fi membeku saat streaming
   WiFi.begin(settings.ssid, settings.password);
-  wifiState = WIFI_CONNECTING; wifiStartedAt = millis();
+  wifiState = WS_CONNECTING; wifiStartedAt = millis();
   sendStatus();
 }
 static void wifiStop() {
   if (httpStarted) { http.stop(); httpStarted = false; }
   WiFi.disconnect(true); WiFi.mode(WIFI_OFF);
-  wifiState = WIFI_OFF; sendStatus();
+  wifiState = WS_OFF; sendStatus();
 }
 static void wifiLoop() {
-  if (wifiState == WIFI_CONNECTING) {
+  if (wifiState == WS_CONNECTING) {
     if (WiFi.status() == WL_CONNECTED) {
-      wifiState = WIFI_CONNECTED;
+      wifiState = WS_CONNECTED;
       if (!httpStarted) { http.on("/capture", handleCapture); http.on("/status", handleStatus); http.begin(); httpStarted = true; }
       MDNS.begin(MDNS_NAME);
       IPAddress ip = WiFi.localIP();
       uint8_t e[5] = {EVT_WIFI_IP, ip[0], ip[1], ip[2], ip[3]};
       sendEvent(e, 5); sendStatus();
     } else if (millis() - wifiStartedAt > WIFI_CONNECT_TIMEOUT_MS) {
-      wifiState = WIFI_FAILED; WiFi.disconnect(true); sendError(ERR_WIFI_CONNECT); sendStatus();
+      wifiState = WS_FAILED; WiFi.disconnect(true); sendError(ERR_WIFI_CONNECT); sendStatus();
     }
-  } else if (wifiState == WIFI_CONNECTED) {
+  } else if (wifiState == WS_CONNECTED) {
     http.handleClient();
-    if (WiFi.status() != WL_CONNECTED) { wifiState = WIFI_CONNECTING; wifiStartedAt = millis(); WiFi.reconnect(); }
+    if (WiFi.status() != WL_CONNECTED) { wifiState = WS_CONNECTING; wifiStartedAt = millis(); WiFi.reconnect(); }
   }
 }
 
@@ -264,8 +264,8 @@ void loop() {
     captureAndSend();
     if (oneShot) { oneShot = false; }
   }
-  if (wifiState != WIFI_OFF) wifiLoop();
+  if (wifiState != WS_OFF) wifiLoop();
   if (now - lastBatteryReport >= BATTERY_REPORT_MS) { lastBatteryReport = now; readBattery(); sendStatus(); }
-  if (!bleConnected && !cameraOn && wifiState != WIFI_CONNECTED && now - lastActivity > IDLE_DEEP_SLEEP_MS) goToSleep();
+  if (!bleConnected && !cameraOn && wifiState != WS_CONNECTED && now - lastActivity > IDLE_DEEP_SLEEP_MS) goToSleep();
   delay(5);
 }

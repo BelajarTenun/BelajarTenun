@@ -139,3 +139,12 @@ test('prediksi model lokal yang yakin dipakai tanpa memanggil AI cloud', async (
   assert.equal(calls.length, 0);
   assert.equal(r.step.index, 2);
 });
+
+test('foto basi dari kacamata (> 4 dtk) dibuang', async () => {
+  const { s, calls, tick } = setup();
+  s.start(); s.button('next'); tick(5000);
+  assert.equal((await s.frame('a', { ageMs: 6000 })).reason, 'basi');
+  assert.equal(calls.length, 0);
+  tick(5000); await s.frame('b', { ageMs: 800 });
+  assert.equal(calls.length, 1);
+});

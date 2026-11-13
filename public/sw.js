@@ -1,6 +1,6 @@
 // Service worker: cache tampilan aplikasi agar tetap terbuka saat sinyal lemah (F8).
 // API & video rekaman selalu lewat jaringan (data belajar tidak di-cache).
-const CACHE = 'bt-shell-v3';
+const CACHE = 'bt-shell-v4';
 const SHELL = ['/', '/index.html', '/app.js', '/style.css', '/icon.svg', '/manifest.webmanifest',
   '/js/api.js', '/js/tutor.js', '/js/quality.js', '/js/earcons.js', '/js/tracer.js', '/js/cards.js', '/js/live.js', '/js/sources.js', '/js/rtc.js', '/js/local-model.js', '/js/livekit-tutor.js', '/vendor/livekit-client/livekit-client.esm.mjs'];
 self.addEventListener('install', (e) => e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())));

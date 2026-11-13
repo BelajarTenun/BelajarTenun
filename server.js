@@ -65,7 +65,7 @@ async function withAudio(reply, body) {
 const PARTNER = ['partner', 'admin'];
 const sessionRoutes = (prefix) => ({
   [`POST ${prefix}/start`]: async (b, req) => withAudio((await startSession(b, await auth.currentUser(req))).start(), b),
-  [`POST ${prefix}/frame`]: async (b, req) => withAudio(await getSession(b.sessionId, await auth.currentUser(req)).frame(b.image, { quality: b.quality, local: b.localPrediction }), b),
+  [`POST ${prefix}/frame`]: async (b, req) => withAudio(await getSession(b.sessionId, await auth.currentUser(req)).frame(b.image, { quality: b.quality, local: b.localPrediction, ageMs: b.ageMs }), b),
   [`POST ${prefix}/say`]: async (b, req) => withAudio(await getSession(b.sessionId, await auth.currentUser(req)).say(String(b.text || '').slice(0, 500)), b),
   [`POST ${prefix}/button`]: async (b, req) => withAudio(getSession(b.sessionId, await auth.currentUser(req)).button(b.action), b),
   [`POST ${prefix}/tick`]: async (b, req) => withAudio(getSession(b.sessionId, await auth.currentUser(req)).tick(), b),

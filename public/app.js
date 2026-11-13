@@ -1,6 +1,6 @@
 // BelajarTenun – aplikasi pemula di HP.
 import { api, $, esc, accountBadge } from './js/api.js';
-import { PhoneCamera } from './js/sources.js';
+import { PhoneCamera, GlassesCamera } from './js/sources.js';
 import { TutorClient } from './js/tutor.js';
 import { renderCard } from './js/cards.js';
 import { shareView } from './js/rtc.js';
@@ -58,8 +58,15 @@ function stopHandsfree() { const r = hfRec; hfRec = null; r?.stop(); $('hf-statu
 
 // ---------- Sesi ----------
 async function start() {
-  const cam = new PhoneCamera();
-  try { await cam.start($('cam')); } catch { alert('Kamera tidak bisa dibuka. Latihan tetap bisa berjalan dengan konfirmasi manual.'); }
+  const choice = $('camera-source').value;
+  const glasses = choice !== 'phone';
+  $('cam').hidden = glasses; $('cam-img').hidden = !glasses;
+  const cam = glasses ? new GlassesCamera({ profile: choice, intervalMs: 2000 }) : new PhoneCamera();
+  cam.onstatus = (t) => feedback(t);
+  cam.onbattery = (b) => { $('battery').textContent = `· 🔋 ${b}%`; };
+  try { await cam.start(glasses ? $('cam-img') : $('cam')); }
+  catch (e) { alert(glasses ? `Kacamata tidak tersambung: ${e.message}` : 'Kamera tidak bisa dibuka. Latihan tetap bisa berjalan dengan konfirmasi manual.'); }
+  try { localStorage.setItem('bt_camera', choice); } catch {}
   state.camera = cam; state.events = { questions: 0, auto: 0 }; state.startedAt = Date.now();
   $('cards').innerHTML = ''; $('transcript').innerHTML = ''; $('badges').textContent = '';
   show('session');
@@ -158,6 +165,8 @@ async function selectModule(id) {
   await selectModule(pub.some((m) => m.id === saved) ? saved : pub[0]?.id);
   if ($('module-select')) $('module-select').value = state.module.id;
   $('live-wrap').hidden = !state.config.live;
+  try { const c = localStorage.getItem('bt_camera'); if (c) $('camera-source').value = c; } catch {}
+  if (!GlassesCamera.supported()) for (const o of [...$('camera-source').options].slice(1)) { o.disabled = true; o.text += ' (butuh Chrome Android)'; }
   $('mode').textContent = state.config.ai ? `Mode AI aktif · deteksi tahap otomatis (${state.config.model})` : 'Mode manual · AI belum dikonfigurasi (lihat README)';
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();
