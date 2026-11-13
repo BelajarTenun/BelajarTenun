@@ -43,6 +43,19 @@ AGENT_TOKEN = os.environ.get("AGENT_TOKEN", "")
 # Satu file .env untuk server & agen: plugin Google membaca GOOGLE_API_KEY.
 if os.environ.get("GEMINI_API_KEY") and not os.environ.get("GOOGLE_API_KEY"):
     os.environ["GOOGLE_API_KEY"] = os.environ["GEMINI_API_KEY"]
+# Vertex AI: kredensial dari GOOGLE_APPLICATION_CREDENTIALS (service account) atau metadata server.
+USE_VERTEX = os.environ.get("AI_PROVIDER") == "vertex" or (
+    bool(os.environ.get("GOOGLE_CLOUD_PROJECT")) and not os.environ.get("GEMINI_API_KEY")
+)
+VERTEX_OPTS = (
+    {
+        "vertexai": True,
+        "project": os.environ.get("GOOGLE_CLOUD_PROJECT"),
+        "location": os.environ.get("GOOGLE_CLOUD_LOCATION", "us-central1"),
+    }
+    if USE_VERTEX
+    else {}
+)
 UI_TOPIC = "bt.ui"
 
 
@@ -192,6 +205,7 @@ async def entrypoint(ctx: JobContext) -> None:
         llm=google.beta.realtime.RealtimeModel(
             model=cfg["model"],
             voice=cfg["voice"],
+            **VERTEX_OPTS,
             input_audio_transcription=genai_types.AudioTranscriptionConfig(),
             output_audio_transcription=genai_types.AudioTranscriptionConfig(),
         ),
