@@ -17,7 +17,28 @@ import * as pipeline from './lib/pipeline.js';
 import { getAnalysis } from './lib/video-analysis.js';
 import { generateDialogs, evaluateDialog, listDialogs } from './lib/dialog-gen.js';
 import { pairsForModule } from './lib/exo-ego.js';
+import { googleLoginEnabled, authUrl, profileFromCode } from './lib/google-login.js';
 import { createAccessToken, livekitEnabled, roomForSession, toJsonSchema } from './lib/livekit.js';
+
+// ----- Masuk dengan Google: alihkan ke Google, lalu kembali ke /api/auth/google/callback -----
+async function googleRoute(req, res, url) {
+  const back = (path) => res.writeHead(302, { location: path, ...SECURITY_HEADERS }).end();
+  if (!googleLoginEnabled()) return back('/masuk?galat=google');
+  if (url.pathname === '/api/auth/google') {
+    const { url: to, state } = authUrl(req);
+    const next = /^\/[\w/-]*$/.test(url.searchParams.get('lanjut') || '') ? url.searchParams.get('lanjut') : '/belajar';
+    res.setHeader('set-cookie', `bt_oauth=${state}.${encodeURIComponent(next)}; Path=/api/auth/google; HttpOnly; SameSite=Lax; Max-Age=600${config.publicUrl.startsWith('https') ? '; Secure' : ''}`);
+    return back(to);
+  }
+  const saved = /(?:^|;\s*)bt_oauth=([^;]+)/.exec(req.headers.cookie || '')?.[1] || '';
+  const [state, next = '%2Fbelajar'] = saved.split('.');
+  if (!state || state !== url.searchParams.get('state') || !url.searchParams.get('code')) return back('/masuk?galat=google');
+  try {
+    const user = await auth.loginWithGoogle(await profileFromCode(req, url.searchParams.get('code')));
+    res.setHeader('set-cookie', [auth.sessionCookie(user.id), 'bt_oauth=; Path=/api/auth/google; Max-Age=0']);
+    return back(decodeURIComponent(next));
+  } catch { return back('/masuk?galat=google'); }
+}
 
 const WEB_DIST = join(ROOT, 'web', 'dist');
 const fail = (code, message) => Object.assign(new Error(message), { code });
@@ -76,7 +97,7 @@ const routes = {
   'GET /api/health': async () => ({ ok: true }),
   'GET /api/config': async (b, req) => ({
     ai: aiEnabled(), tts: Boolean(config.ttsKey), model: config.geminiModel, live: (aiEnabled() && !isVertex()) || livekitEnabled(), aiProvider: config.aiProvider, liveModel: config.liveModel,
-    livekit: livekitEnabled(),
+    livekit: livekitEnabled(), googleLogin: googleLoginEnabled(),
     user: await auth.currentUser(req), authDisabled: config.authDisabled,
   }),
 
@@ -328,6 +349,7 @@ export const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, m);
     }
     if (url.pathname.startsWith('/sources/')) return await serveSourceFile(req, res, url.pathname);
+    if (url.pathname.startsWith('/api/auth/google')) return await googleRoute(req, res, url);
     const handler = routes[`${req.method} ${url.pathname}`];
     if (handler) {
       let body = {};
