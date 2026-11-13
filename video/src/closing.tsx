@@ -176,7 +176,7 @@ export const A21Angka: React.FC<{ pengguna?: string; video?: string; akurasi?: s
 };
 
 // Adegan 24 — model bisnis. Sisi kiri kosong untuk anggota tim.
-export const A24Bisnis: React.FC<{ skema?: string[] }> = ({ skema = ['[Langganan sanggar/sekolah]', '[Paket kacamata + modul]', '[Kemitraan dinas/museum]'] }) => {
+export const A24Bisnis: React.FC<{ skema?: string[]; x0?: number }> = ({ x0 = 760, skema = ['[Langganan sanggar/sekolah]', '[Paket kacamata + modul]', '[Kemitraan dinas/museum]'] }) => {
   const f = useCurrentFrame();
   const col = (title: string, items: string[], x: number, s: number, c: string) => (
     <div style={{ position: 'absolute', left: x, top: 220, width: 330 }}>
@@ -188,11 +188,11 @@ export const A24Bisnis: React.FC<{ skema?: string[] }> = ({ skema = ['[Langganan
   );
   return (
     <Bg>
-      {col('PENGGUNA', ['Pemula', 'SMK tekstil', 'Sanggar tenun', 'Wisata budaya'], 760, 10, C.ai)}
-      <div style={{ position: 'absolute', left: 1100, top: 470, fontSize: 40, fontWeight: 200, color: C.soft, opacity: fade(f, 70, 80) }}>→</div>
-      {col('NILAI', ['Sanggar melatih lebih banyak murid', 'Penenun dapat atribusi & honor', 'Pasar kain tenun meluas'], 1160, 80, C.gold)}
-      <div style={{ position: 'absolute', left: 1500, top: 470, fontSize: 40, fontWeight: 200, color: C.soft, opacity: fade(f, 150, 160) }}>→</div>
-      {col('SKEMA', skema, 1560, 160, C.accent)}
+      {col('PENGGUNA', ['Pemula', 'SMK tekstil', 'Sanggar tenun', 'Wisata budaya'], x0, 10, C.ai)}
+      <div style={{ position: 'absolute', left: x0 + 340, top: 470, fontSize: 40, fontWeight: 200, color: C.soft, opacity: fade(f, 70, 80) }}>→</div>
+      {col('NILAI', ['Sanggar melatih lebih banyak murid', 'Penenun dapat atribusi & honor', 'Pasar kain tenun meluas'], x0 + 400, 80, C.gold)}
+      <div style={{ position: 'absolute', left: x0 + 740, top: 470, fontSize: 40, fontWeight: 200, color: C.soft, opacity: fade(f, 150, 160) }}>→</div>
+      {col('SKEMA', skema, x0 + 800, 160, C.accent)}
     </Bg>
   );
 };

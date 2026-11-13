@@ -48,6 +48,17 @@ Hasilnya di `video/out/`. Render sebagian: `npm run render -- A06 A09`. Cek cepa
 
 Komposisi berakhiran **`-overlay`** dirender sebagai `.mov` ProRes 4444 dengan **latar transparan**: taruh di track atas footage (shot muka Andrew/murid) di CapCut/Premiere/DaVinci.
 
+## Adegan di samping Andrew
+
+Kebanyakan adegan berlatar Andrew yang sedang bicara. Untuk itu setiap adegan informasi punya dua versi tambahan:
+
+- **`<adegan>-andrew-overlay`** → `.mov` transparan: panel kaca berisi animasi, di sisi yang berlawanan dengan Andrew. Taruh di track atas footage Andrew.
+- **`<adegan>-andrew-preview`** → sama, tapi dengan siluet penanda Andrew, hanya untuk mengecek komposisi.
+
+Sisi panel: `kanan` (Andrew berdiri di kiri frame) atau `kiri` (Andrew di kanan, misalnya adegan 20). Ubah prop `side` di Studio sesuai posisi Andrew saat syuting.
+
+Tips syuting: posisikan Andrew di sepertiga kiri atau kanan frame, dengan latar yang agak gelap atau blur, supaya panel terang terbaca jelas.
+
 ## Memasukkan video tenun sungguhan
 
 1. Taruh file video (lisensi jelas) di `video/public/`, misalnya `public/pov-tenun.mp4`.
