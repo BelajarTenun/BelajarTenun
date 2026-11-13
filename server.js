@@ -135,6 +135,30 @@ const routes = {
     await data.saveModule(module);
     return { ok: true, demo_video: step.demo_video };
   },
+  // Video pengenalan modul: dari rekaman partner atau sumber video yang izinnya membolehkan ditonton pemula.
+  'POST /api/module/intro-video': async (b, req) => {
+    const user = await auth.requireRole(req, ...PARTNER);
+    const module = await data.getModule(b.moduleId);
+    let video, attribution = null;
+    if (b.recordingId) {
+      const rec = await data.getRecording(b.recordingId);
+      if (!rec.consent?.scopes?.includes('pembelajaran')) throw fail(400, 'Penenun tidak mengizinkan rekaman ini ditonton pemula');
+      const f = rec.files.find((x) => /\.(webm|mp4)$/.test(x));
+      if (!f) throw fail(404, 'Rekaman tidak punya video');
+      video = `recordings/${rec.id}/${f}`; attribution = rec.weaver ? `Penenun: ${rec.weaver}` : null;
+    } else if (b.sourceId) {
+      const src = await sources.getSource(b.sourceId);
+      if (!sources.allows(src, 'demo')) throw fail(400, 'Status izin video ini tidak membolehkan ditonton pemula');
+      if (!src.files?.includes('video.mp4')) throw fail(400, 'Video belum dipra-proses');
+      video = `sources/${src.id}/video.mp4`; attribution = [src.title, src.channel].filter(Boolean).join(' – ') || src.url;
+    } else if (b.clear) video = null;
+    else throw fail(400, 'Pilih rekaman atau sumber video');
+    if (video && (Number.isFinite(b.start) || Number.isFinite(b.end))) video += `#t=${Math.floor(b.start || 0)}${Number.isFinite(b.end) ? `,${Math.ceil(b.end)}` : ''}`;
+    module.intro = { ...(module.intro || {}), video, video_attribution: video ? attribution : null };
+    await data.saveModule(module, user);
+    return { ok: true, intro: module.intro };
+  },
+
   'POST /api/check-step': async (b, req) => {
     await auth.requireRole(req, ...PARTNER);
     const module = await data.getModule(b.moduleId);

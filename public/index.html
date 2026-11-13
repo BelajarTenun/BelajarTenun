@@ -9,33 +9,88 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Layar 1: pilih modul -->
+  <!-- 1. Beranda: pilih modul -->
   <section id="home" class="screen active">
     <header class="brand">
       <div class="account" id="account"></div>
       <h1>BelajarTenun</h1>
-      <p>Tutor AI pendamping belajar menenun, langsung di alat tenunmu.</p>
+      <p>Belajar menenun tradisional, dibimbing langsung lewat kacamata.</p>
     </header>
-    <div id="modules"></div>
-    <article class="card" id="module-card">
-      <span class="tag" id="module-status"></span>
-      <h2 id="module-title">Memuat…</h2>
-      <p id="module-desc"></p>
-      <ol id="module-steps"></ol>
-      <label class="picker">Kamera
-        <select id="camera-source"><option value="phone">Kamera HP</option><option value="belajartenun">Kacamata BelajarTenun (Bluetooth)</option><option value="omiglass">omiGlass</option><option value="openglass">OpenGlass</option></select>
-      </label>
-      <p class="hint" id="audio-hint">Suara tutor & mikrofon memakai HP — sambungkan earbuds Bluetooth supaya tangan tetap bebas.</p>
-      <label class="toggle"><input type="checkbox" id="handsfree"> Mode hands-free (perintah suara terus aktif)</label>
-      <label class="toggle" id="live-wrap" hidden><input type="checkbox" id="live"> Ngobrol langsung dengan tutor (Gemini Live)</label>
-      <button id="start" class="primary" disabled>Mulai latihan</button>
-      <p class="hint">Pasang HP di kepala (head strap) atau pakai kacamata, dengan kamera mengarah ke benang lungsi. Punya kacamata? Buka <a href="kacamata.html">mode kacamata</a>.</p>
-    </article>
-    <p class="mode" id="mode"></p>
-    <nav class="links"><a href="progres.html">Progres</a><a href="pendamping.html">Pendamping</a><a href="arsip.html">Arsip</a><a href="editor.html">Editor</a><a href="rekam.html">Rekam</a><a href="anotasi.html">Anotasi</a><a href="sumber.html">Sumber video</a></nav>
+    <ol class="flow-steps" aria-label="Alur belajar">
+      <li><b>Kenali</b><span>Tonton pengenalan singkat</span></li>
+      <li><b>Siapkan</b><span>Pakai kacamata &amp; earbuds</span></li>
+      <li><b>Praktik</b><span>Dibimbing tahap demi tahap</span></li>
+    </ol>
+    <h2 class="section-title">Pilih modul</h2>
+    <div id="module-list" class="module-list"><p class="hint">Memuat…</p></div>
+    <footer class="home-foot">
+      <a href="progres.html">Progres latihanku</a>
+      <a href="arsip.html">Arsip tenun</a>
+      <a href="masuk.html?untuk=partner" id="partner-link">Untuk penenun &amp; tim</a>
+    </footer>
   </section>
 
-  <!-- Layar 2: sesi latihan (tampilan HUD ala kacamata) -->
+  <!-- 2. Pengenalan: video tutorial singkat + penjelasan -->
+  <section id="intro" class="screen">
+    <div class="flow">
+      <nav class="flow-nav"><button class="link" data-go="home">Kembali</button><span class="flow-pos">1 / 3 · Pengenalan</span></nav>
+      <h1 id="intro-title"></h1>
+      <p id="intro-meta" class="hint"></p>
+      <div id="intro-media" class="intro-media"></div>
+      <p id="intro-caption" class="hint intro-caption"></p>
+      <p id="intro-summary" class="lead"></p>
+      <div class="intro-cols">
+        <div><h3>Yang kamu butuhkan</h3><ul id="intro-tools" class="checklist"></ul></div>
+        <div><h3>Cara kacamata membimbingmu</h3><ul id="intro-points" class="bullets"></ul></div>
+      </div>
+      <h3>Tahap yang akan kamu kerjakan</h3>
+      <ol id="intro-steps" class="step-list"></ol>
+      <div class="flow-actions">
+        <button id="intro-listen">Dengarkan penjelasan</button>
+        <button id="intro-next" class="primary">Lanjut: siapkan kacamata</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Siapkan kacamata -->
+  <section id="setup" class="screen">
+    <div class="flow">
+      <nav class="flow-nav"><button class="link" data-go="intro">Kembali</button><span class="flow-pos">2 / 3 · Siapkan</span></nav>
+      <h1>Siapkan kacamata</h1>
+      <div class="choice" id="camera-choice">
+        <label class="choice-item"><input type="radio" name="cam" value="belajartenun" checked><span><b>Kacamata BelajarTenun</b><small>Tersambung lewat Bluetooth</small></span></label>
+        <label class="choice-item"><input type="radio" name="cam" value="phone"><span><b>Kamera HP</b><small>HP dipasang di head strap atau di atas alat tenun</small></span></label>
+        <label class="choice-item"><input type="radio" name="cam" value="other"><span><b>Kacamata lain</b><small><select id="other-device"><option value="omiglass">omiGlass</option><option value="openglass">OpenGlass</option></select></small></span></label>
+      </div>
+      <p id="bt-warning" class="hint warn-text" hidden>Kacamata butuh Chrome di Android atau komputer. Di perangkat ini, pakai kamera HP.</p>
+
+      <div class="preview" id="preview-box">
+        <video id="preview-video" autoplay playsinline muted hidden></video>
+        <img id="preview-img" alt="" hidden>
+        <p id="preview-empty" class="preview-empty">Belum tersambung</p>
+      </div>
+      <p id="preview-quality" class="feedback info" aria-live="polite"></p>
+      <button id="connect" class="primary wide">Sambungkan kamera</button>
+
+      <ul class="checklist setup-check">
+        <li><label class="toggle"><input type="checkbox" id="chk-view"> Arahkan pandangan ke lungsi, tangan terlihat di gambar</label></li>
+        <li><label class="toggle"><input type="checkbox" id="chk-audio"> Earbuds tersambung ke HP dan suara terdengar <button class="link" id="test-audio" type="button">Tes suara</button></label></li>
+      </ul>
+
+      <details class="advanced">
+        <summary>Pengaturan suara</summary>
+        <label class="toggle"><input type="checkbox" id="handsfree"> Perintah suara selalu aktif ("sudah", "ulangi", bertanya)</label>
+        <label class="toggle" id="live-wrap" hidden><input type="checkbox" id="live"> Ngobrol langsung dengan tutor (real-time)</label>
+      </details>
+
+      <div class="flow-actions">
+        <button id="skip-camera" class="link">Lanjut tanpa kamera</button>
+        <button id="start" class="primary" disabled>Mulai praktik</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Praktik (tampilan seperti di lensa) -->
   <section id="session" class="screen">
     <video id="cam" autoplay playsinline muted></video>
     <img id="cam-img" class="cam-img" hidden alt="">
@@ -56,7 +111,7 @@
       <ul id="demo-tips"></ul>
       <button id="demo-go" class="primary">Saya coba sekarang</button>
     </div>
-    <p id="hf-status" class="hf-status" hidden>Hands-free aktif · ucapkan "sudah", "ulangi", "contoh", "catat …", atau tanya apa saja</p>
+    <p id="hf-status" class="hf-status" hidden>Perintah suara aktif · ucapkan "sudah", "ulangi", "contoh", atau tanya apa saja</p>
     <nav class="controls">
       <button id="btn-repeat" title="Lihat contoh">Contoh</button>
       <button id="btn-pin" title="Bekukan tampilan">Bekukan</button>
@@ -71,21 +126,24 @@
     <button id="btn-exit" class="exit" aria-label="Keluar">Keluar</button>
   </section>
 
-  <!-- Layar 3: selesai + kuesioner (learning validation) -->
+  <!-- 5. Selesai -->
   <section id="finish" class="screen">
-    <div class="card">
-      <h2>Latihan selesai</h2>
-      <p id="summary"></p>
-      <ul id="summary-list"></ul>
-      <form id="survey" class="survey">
-        <h3>Bantu kami (30 detik)</h3>
+    <div class="flow">
+      <h1>Latihan selesai</h1>
+      <p id="summary" class="lead"></p>
+      <ul id="summary-list" class="bullets"></ul>
+      <form id="survey" class="survey card">
+        <h3>Bagaimana latihanmu? (30 detik)</h3>
         <label>Seberapa mudah mengikuti panduan? <span class="scale" data-q="mudah"></span></label>
         <label>Seberapa paham kamu alasan tiap tahap? <span class="scale" data-q="paham"></span></label>
         <label>Seberapa percaya diri mencoba sendiri? <span class="scale" data-q="percaya_diri"></span></label>
-        <label>Saran / bagian yang membingungkan <textarea id="survey-text" rows="2"></textarea></label>
+        <label>Bagian yang membingungkan <textarea id="survey-text" rows="2"></textarea></label>
         <button class="primary">Kirim</button>
       </form>
-      <button id="again">Kembali ke awal</button>
+      <div class="flow-actions">
+        <button id="replay-intro">Tonton pengenalan lagi</button>
+        <button id="again" class="primary">Kembali ke beranda</button>
+      </div>
     </div>
   </section>
 
