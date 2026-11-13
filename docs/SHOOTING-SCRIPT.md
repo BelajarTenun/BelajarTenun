@@ -152,3 +152,40 @@ Format per adegan: **lokasi/shot**, **skrip/VO**, **animasi/layar**, **chip pojo
 - **Animasi:** latar krem, logo, sketsa garis kacamata digambar bertahap, motif tenun tipis.
 - **Teks:** *"Belajar menenun, dipandu ilmu tenun dari seluruh Nusantara."* + tautan demo.
 - Lanjut **kredit sumber** (video open source, musik, font + lisensinya).
+
+## Versi produksi: hanya 3 jenis shot
+
+Tidak ada alat tenun, benang, atau kain. Semua adegan dibuat dari tiga bahan saja:
+
+- **🎨 ANIMASI**: motion graphic + rekam layar aplikasi di laptop (rekam layar tidak butuh alat apa pun, cukup aplikasi diputar dengan video tenun open source).
+- **🎤 NGOMONG**: Andrew bicara ke kamera.
+- **👓 MUKA**: close-up wajah memakai kacamata BelajarTenun, latar blur.
+
+| # | Waktu | Shot | Isi |
+|---|---|---|---|
+| 1 | 0:00 | 🎤 | Andrew masuk dari kiri, "Selama ratusan tahun…" |
+| 2 | 0:07 | 🎨 | Ilustrasi penenun senior, ruang tenun memudar |
+| 3 | 0:14 | 🎤 + 👓 | Andrew memakai kacamata, "Bagaimana kalau ilmunya bisa ikut di mata kita?" |
+| 4 | 0:20 | 🎨 | Logo + ilustrasi kacamata, VO pengenalan |
+| 5 | 0:28 | 🎤 + 🎨 | Andrew kiri, grid video open source kanan |
+| 6 | 0:36 | 🎨 | Video tenun + kotak deteksi, label tahap/istilah/kesalahan |
+| 7 | 0:46 | 🎨 | Ilustrasi penenun memeriksa + layar Editor, chip KUALITAS |
+| 8 | 0:55 | 👓 + 🎨 | Murid memakai kacamata, "Mulai belajar" → animasi tombol Start & gelombang suara AI |
+| 9 | 1:02 | 🎨 ↔ 👓 | POV: video tenun dalam bingkai lensa + kartu Tahap 2/5, diselingi 1 detik muka murid melihat ke bawah |
+| 10 | 1:12 | 🎨 | Kartu kosakata bahasa daerah di atas video tenun |
+| 11 | 1:20 | 🎨 ↔ 👓 | Sorot oranye "pinggir menyempit" → hijau ✔, diselingi muka murid mengangguk |
+| 12 | 1:30 | 👓 | Muka samping murid bertanya, teks pertanyaan melayang |
+| 13 | 1:39 | 👓 + 🎨 | Pertanyaan di luar modul terbang ke kotak "untuk penenun" |
+| 14 | 1:48 | 🎨 | Animasi split: HP pendamping ↔ kacamata, gelembung pesan |
+| 15 | 1:58 | 🎤 | Andrew: akses ke penenun terbuka, chip AKSES |
+| 16–19 | 2:06 | 🎨 | Catatan belajar, progres, offline, arsip (rekam layar) |
+| 20 | 2:36 | 🎤 + 🎨 | Andrew + tabel perbandingan |
+| 21–22 | 2:56 | 🎨 | Angka uji aplikasi & akurasi deteksi |
+| 23 | 3:16 | 👓 / 🎤 | Testimoni teman yang mencoba aplikasi (cukup muka, boleh pakai kacamata) |
+| 24 | 3:26 | 🎤 + 🎨 | Model bisnis |
+| 25 | 3:41 | 🎨 | Peta Tidore → Nusantara → dunia |
+| 26 | 3:51 | 🎨 | Montase |
+| 27 | 3:59 | 🎤 | Andrew (+ tim) penutup |
+| 28 | 4:05 | 🎨 | Kartu logo + kredit |
+
+Daftar syuting kamera hanya dua sesi: **🎤 Andrew** (adegan 1, 3, 5, 15, 20, 24, 27; bisa dalam satu sesi di Tokopedia) dan **👓 muka** (adegan 3, 8, 9, 11, 12, 13, 23). Sisanya dikerjakan di laptop.
