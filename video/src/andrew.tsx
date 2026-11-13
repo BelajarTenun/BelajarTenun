@@ -11,7 +11,7 @@ export const OnAndrew: React.FC<{ Scene: React.FC<any>; sceneProps?: any; side?:
   setFloating(true);
   const f = useCurrentFrame();
   const W = 1920 * area, scale = area;
-  const left = side === 'kanan' ? 1920 - W - 40 : 40;
+  const left = area >= 1 ? 0 : side === 'kanan' ? 1920 - W - 40 : 40;
   return (
     <AbsoluteFill>
       {preview && (

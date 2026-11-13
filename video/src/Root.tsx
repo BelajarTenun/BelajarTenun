@@ -66,6 +66,13 @@ for (const [id, Scene, sec, side, sp] of andrew) {
   list.push([`${id}-andrew-preview`, OnAndrewById, sec, { scene: id, sceneProps: sp ?? {}, side, preview: true }]);
 }
 
+// Bingkai storyboard untuk shot wajah/Andrew yang tidak punya animasi besar.
+SCENES['A12-tanya'] = A12Tanya; SCENES['A13-luar-modul'] = A13LuarModul;
+SCENES['kosong'] = () => null; SCENES['chip-akses'] = () => <AbsoluteFill><Chip label="AKSES" start={0} /></AbsoluteFill>;
+for (const [id, scene, side] of [['SB03-andrew-kacamata', 'kosong', 'kiri'], ['SB12-wajah-tanya', 'A12-tanya', 'kanan'], ['SB13-wajah-luar-modul', 'A13-luar-modul', 'kanan'], ['SB15-andrew-akses', 'chip-akses', 'kiri']] as const) {
+  list.push([`${id}-andrew-preview`, OnAndrewById, 9, { scene, side, preview: true, area: 1 }]);
+}
+
 const cache = new Map<any, any>();
 const withLight = (Comp: React.FC<any>) => {
   if (!cache.has(Comp)) cache.set(Comp, (p: any) => { setFloating(false); return <Comp {...p} />; });
