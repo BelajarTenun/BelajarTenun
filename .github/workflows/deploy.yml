@@ -1,0 +1,115 @@
+# CD: setiap push ke main → tes → bangun image (app, agent) ke GitHub Container Registry → deploy ke VPS lewat SSH.
+# Secrets repo yang dibutuhkan: VPS_HOST, VPS_USER, VPS_SSH_KEY (lihat deploy/README.md).
+# Tanpa VPS_HOST, image tetap dibangun tetapi langkah deploy dilewati.
+name: Deploy
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  APP_IMAGE: ghcr.io/${{ github.repository_owner }}/belajartenun-app
+  AGENT_IMAGE: ghcr.io/${{ github.repository_owner }}/belajartenun-agent
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+
+  images:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Image app (web + API)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.APP_IMAGE }}:latest
+            ${{ env.APP_IMAGE }}:${{ github.sha }}
+          cache-from: type=gha,scope=app
+          cache-to: type=gha,mode=max,scope=app
+      - name: Image agen Gemini Live
+        uses: docker/build-push-action@v6
+        with:
+          context: agent
+          push: true
+          tags: |
+            ${{ env.AGENT_IMAGE }}:latest
+            ${{ env.AGENT_IMAGE }}:${{ github.sha }}
+          cache-from: type=gha,scope=agent
+          cache-to: type=gha,mode=max,scope=agent
+
+  deploy:
+    needs: images
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Cek konfigurasi VPS
+        id: cfg
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+        run: echo "ok=$([ -n "$HOST" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        if: steps.cfg.outputs.ok == 'true'
+      - name: Salin berkas compose ke VPS
+        if: steps.cfg.outputs.ok == 'true'
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: deploy/docker-compose.yml,deploy/Caddyfile,deploy/livekit.yaml
+          target: /opt/belajartenun
+      - name: Tarik image baru dan jalankan ulang
+        if: steps.cfg.outputs.ok == 'true'
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.sha }}
+          APP_IMAGE: ${{ env.APP_IMAGE }}
+          AGENT_IMAGE: ${{ env.AGENT_IMAGE }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: GHCR_USER,GHCR_TOKEN,TAG,APP_IMAGE,AGENT_IMAGE
+          script: |
+            set -e
+            cd /opt/belajartenun/deploy
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            export APP_IMAGE="$APP_IMAGE:$TAG" AGENT_IMAGE="$AGENT_IMAGE:$TAG"
+            docker compose pull app agent
+            docker compose up -d --no-build --remove-orphans
+            docker logout ghcr.io
+            docker image prune -f
+            for i in $(seq 1 20); do
+              docker compose exec -T app node -e "fetch('http://localhost:8080/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" && exit 0
+              sleep 3
+            done
+            echo "App tidak sehat setelah deploy"; docker compose logs --tail 80 app; exit 1
