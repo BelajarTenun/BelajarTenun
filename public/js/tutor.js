@@ -28,6 +28,12 @@ export class TutorClient {
     earcon('connected');
     this.handle(r);
     this.loop = setInterval(() => this.#tick(), 1000);
+    // Tombol kacamata: ketuk = lanjut, ketuk ganda = ulangi instruksi, tahan = bekukan tampilan.
+    if (this.source) this.source.onbutton = (press) => {
+      this.tracer.emit('glasses_button', { press });
+      const action = { tap: 'next', double: 'repeat', long: 'pin' }[press];
+      if (action) this.button(action);
+    };
     return r;
   }
 
@@ -47,7 +53,9 @@ export class TutorClient {
     const motion = motionBetween(this.prevGray, gray);
     this.prevGray = gray;
     if (!q.ok) { this.rejected++; return { quality: q, motion, jpeg: null }; }
-    return { quality: q, motion, jpeg: toJpeg(el), local: predictLocal(el) };
+    // Foto kacamata datang berkala: catat kapan diambil supaya foto basi bisa dibuang.
+    const capturedAt = this.source?.lastPhotoAt ?? Date.now();
+    return { quality: q, motion, jpeg: toJpeg(el), local: predictLocal(el), capturedAt };
   }
 
   async #tick() {
@@ -55,9 +63,11 @@ export class TutorClient {
     const now = Date.now();
     const f = this.grab();
     // Kirim foto bila kualitas baik dan (ada gerakan atau sudah 6 dtk); paling cepat tiap 3 dtk.
-    if (f?.jpeg && now - this.lastSent > 3000 && (f.motion > 2.5 || now - this.lastSent > 6000)) {
-      this.lastSent = now;
-      try { this.handle(await api('/api/session/frame', { sessionId: this.sessionId, image: f.jpeg, quality: f.quality, localPrediction: f.local, audio: this.serverTts })); } catch {}
+    const fromGlasses = this.source?.lastPhotoAt !== undefined;
+    const fresh = !fromGlasses || (f?.capturedAt && f.capturedAt !== this.lastCapturedAt);   // jangan kirim foto kacamata yang sama dua kali
+    if (f?.jpeg && fresh && now - this.lastSent > (fromGlasses ? 1000 : 3000) && (fromGlasses || f.motion > 2.5 || now - this.lastSent > 6000)) {
+      this.lastSent = now; this.lastCapturedAt = f.capturedAt;
+      try { this.handle(await api('/api/session/frame', { sessionId: this.sessionId, image: f.jpeg, quality: f.quality, localPrediction: f.local, ageMs: Date.now() - f.capturedAt, audio: this.serverTts })); } catch {}
     } else if (now - this.lastTick > 15000 && now - this.lastSent > 15000) {
       this.lastTick = now;
       try { this.handle(await api('/api/session/tick', { sessionId: this.sessionId, audio: this.serverTts })); } catch {}

@@ -116,3 +116,5 @@ td.ok { color: var(--ok); font-weight: 600; } td.todo { color: var(--warn); }
 .timeline { position: relative; height: 22px; background: var(--line); border-radius: 6px; margin: .5rem 0; overflow: hidden; }
 .timeline span { position: absolute; top: 0; bottom: 0; opacity: .8; }
 .timeline .done { background: #2f7d4f; } .timeline .mistake { background: #b7791f; } .timeline .not_yet { background: #7a6656; }
+
+.cam-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
