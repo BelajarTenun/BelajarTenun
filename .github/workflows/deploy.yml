@@ -13,8 +13,8 @@ concurrency:
 
 env:
   REGISTRY: ghcr.io
-  APP_IMAGE: ghcr.io/${{ github.repository_owner }}/belajartenun-app
-  AGENT_IMAGE: ghcr.io/${{ github.repository_owner }}/belajartenun-agent
+  APP_IMAGE: ghcr.io/belajartenun/belajartenun-app
+  AGENT_IMAGE: ghcr.io/belajartenun/belajartenun-agent
 
 jobs:
   test:
