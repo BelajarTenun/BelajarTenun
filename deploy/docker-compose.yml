@@ -1,0 +1,55 @@
+# BelajarTenun – satu VPS: app (web + API), LiveKit, agen Gemini Live, Caddy (HTTPS otomatis).
+# Jalankan dari folder deploy/:  docker compose up -d --build
+services:
+  app:
+    build: ..
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      PORT: "8080"
+      DATA_DIR: /data
+      LIVEKIT_URL: ws://livekit:7880
+      LIVEKIT_PUBLIC_URL: wss://livekit.${DOMAIN}
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/vertex-sa.json
+    volumes:
+      - data:/data
+      - ./secrets:/secrets:ro
+
+  agent:
+    build: ../agent
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      BT_SERVER: http://app:8080
+      LIVEKIT_URL: ws://livekit:7880
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/vertex-sa.json
+    volumes:
+      - ./secrets:/secrets:ro
+    depends_on: [app, livekit]
+
+  livekit:
+    image: livekit/livekit-server:v1.8.4
+    restart: unless-stopped
+    command: --config /etc/livekit.yaml
+    environment:
+      LIVEKIT_KEYS: "${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"
+    volumes:
+      - ./livekit.yaml:/etc/livekit.yaml:ro
+    ports:
+      - "7881:7881/tcp"              # WebRTC lewat TCP (cadangan)
+      - "50000-50100:50000-50100/udp" # media WebRTC
+
+  caddy:
+    image: caddy:2.8.4
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN}
+    ports: ["80:80", "443:443", "443:443/udp"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy:/data
+    depends_on: [app, livekit]
+
+volumes:
+  data:
+  caddy:

@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { config, ROOT } from './lib/config.js';
 import { store, seedDataDir, applyRetention } from './lib/store.js';
-import { aiEnabled, generate, createLiveToken, tts, usageStats, loadUsage } from './lib/ai.js';
+import { aiEnabled, isVertex, generate, createLiveToken, tts, usageStats, loadUsage } from './lib/ai.js';
 import * as auth from './lib/auth.js';
 import * as kb from './lib/knowledge.js';
 import * as data from './lib/data.js';
@@ -19,6 +19,7 @@ import { generateDialogs, evaluateDialog, listDialogs } from './lib/dialog-gen.j
 import { pairsForModule } from './lib/exo-ego.js';
 import { createAccessToken, livekitEnabled, roomForSession, toJsonSchema } from './lib/livekit.js';
 
+const WEB_DIST = join(ROOT, 'web', 'dist');
 const fail = (code, message) => Object.assign(new Error(message), { code });
 const b64 = (img) => String(img || '').replace(/^data:image\/\w+;base64,/, '');
 
@@ -74,7 +75,7 @@ const sessionRoutes = (prefix) => ({
 const routes = {
   'GET /api/health': async () => ({ ok: true }),
   'GET /api/config': async (b, req) => ({
-    ai: aiEnabled(), tts: Boolean(config.ttsKey), model: config.geminiModel, live: aiEnabled() || livekitEnabled(), liveModel: config.liveModel,
+    ai: aiEnabled(), tts: Boolean(config.ttsKey), model: config.geminiModel, live: (aiEnabled() && !isVertex()) || livekitEnabled(), aiProvider: config.aiProvider, liveModel: config.liveModel,
     livekit: livekitEnabled(),
     user: await auth.currentUser(req), authDisabled: config.authDisabled,
   }),
@@ -340,9 +341,14 @@ export const server = http.createServer(async (req, res) => {
     if (url.pathname.startsWith('/api/')) return sendJson(res, 404, { error: 'Tidak ditemukan' });
     if (url.pathname.startsWith('/recordings/')) return await serveRecording(req, res, url.pathname);
     const file = normalize(url.pathname === '/' ? '/index.html' : url.pathname).replace(/^(\.\.[/\\])+/, '');
-    const buf = await readFile(join(ROOT, 'public', file)).catch(() => null);
+    // Aplikasi pemula (React, web/dist) didahulukan; halaman tim & modul JS bersama dari public/.
+    let buf = await readFile(join(WEB_DIST, file)).catch(() => null) ?? await readFile(join(ROOT, 'public', file)).catch(() => null);
+    let type = MIME[extname(file)];
+    // Rute aplikasi (/belajar/..., /masuk) tanpa ekstensi: kirim index.html React.
+    if (!buf && !extname(file)) { buf = await readFile(join(WEB_DIST, 'index.html')).catch(() => null); type = MIME['.html']; }
     if (!buf) return res.writeHead(404).end('Not found');
-    res.writeHead(200, { 'content-type': MIME[extname(file)] || 'application/octet-stream', ...SECURITY_HEADERS }).end(buf);
+    if (file.startsWith('/assets/')) res.setHeader('cache-control', 'public, max-age=31536000, immutable');
+    res.writeHead(200, { 'content-type': type || 'application/octet-stream', ...SECURITY_HEADERS }).end(buf);
   } catch (e) {
     if (typeof e.code !== "number") console.error(e);
     sendJson(res, typeof e.code === 'number' ? e.code : 500, { error: e.message });
@@ -354,7 +360,7 @@ if (process.argv[1] === new URL(import.meta.url).pathname) {
   await applyRetention().catch(() => {});
   server.listen(config.port, () => {
     console.log(`BelajarTenun berjalan di http://localhost:${config.port}`);
-    console.log(`AI: ${aiEnabled() ? `aktif (${config.geminiModel}, live: ${config.liveModel})` : 'mode manual (GEMINI_API_KEY kosong)'} | TTS: ${config.ttsKey ? 'aktif' : 'suara browser'} | data: ${config.dataDir}`);
+    console.log(`AI: ${aiEnabled() ? `${config.aiProvider} (${config.geminiModel}, live: ${config.liveModel})` : 'mode manual (GEMINI_API_KEY atau GOOGLE_CLOUD_PROJECT kosong)'} | TTS: ${config.ttsKey ? 'aktif' : 'suara browser'} | data: ${config.dataDir}`);
     if (config.authSecretIsRandom) console.warn('Peringatan: AUTH_SECRET belum diset: sesi login hilang setiap server restart.');
     if (config.authDisabled) console.warn('Peringatan: AUTH_DISABLED=1: semua orang dianggap admin. Jangan dipakai di produksi.');
   });

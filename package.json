@@ -1,9 +1,11 @@
 {
   "name": "belajar-tenun",
   "version": "0.3.0",
-  "description": "BelajarTenun \u2013 AI-powered wearable weaving tutor (prototipe v0)",
+  "description": "BelajarTenun – AI-powered wearable weaving tutor (prototipe v0)",
   "type": "module",
   "scripts": {
+    "build": "cd web && npm ci && npm run build",
+    "web": "cd web && npm run dev",
     "start": "node server.js",
     "dev": "AUTH_DISABLED=1 node --watch server.js",
     "test": "node --test test/*.test.js",
