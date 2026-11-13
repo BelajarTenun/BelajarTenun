@@ -53,3 +53,9 @@ Pratinjau rakitan: buka `.scad` di OpenSCAD (part `"assembly"`). Warna hijau = b
 5. Tekan tutup sampai bibirnya masuk, lalu jepitkan ke gagang kacamata dekat engsel, sisi kamera menghadap ke depan.
 
 ⚠️ LiPo: jangan tertusuk, tertekuk, atau terjepit; jangan dicas tanpa pengawasan di dalam casing tertutup saat pertama kali diuji.
+
+## Varian v2: mik + speaker di kacamata
+`with_speaker = true` menambah ruang untuk amplifier **MAX98357A** dan speaker mikro 15 mm, serta kisi speaker di dinding belakang (mengarah ke telinga). Casing menjadi ±23 × 31 × 43 mm.
+- STL siap pakai: `body-v2-speaker.stl`, `lid-v2-speaker.stl`
+- Pratinjau: `pratinjau-v2-speaker.png`
+- Untuk MVP **tidak disarankan** (lihat `../README.md`); firmware audio di kacamata belum dibuat.

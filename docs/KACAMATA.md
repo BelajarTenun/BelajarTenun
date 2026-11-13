@@ -41,7 +41,8 @@ Coba tanpa hardware: buka **`/kacamata.html`**. Halaman ini bisa memakai kamera 
 | Perangkat | Berkas | Status |
 |---|---|---|
 | HP / webcam | `/`, `/kacamata.html` | Diuji di browser |
-| OpenGlass (ESP32-S3) | `public/js/sources.js` (Web Bluetooth) | Protokol dari firmware OpenGlass; belum diuji dengan hardware |
+| **Kacamata BelajarTenun (rakitan, MVP)** | `firmware/belajartenun-glasses/`, `hardware/`, `public/js/sources.js` | Firmware dikompilasi CI; protokol dites lintas bahasa; belum diuji di board |
+| omiGlass / OpenGlass (ESP32-S3) | `public/js/sources.js` (Web Bluetooth, profil `omiglass` / `openglass`) | Protokol dari firmware asli; belum diuji dengan hardware |
 | Brilliant Labs Frame | `clients/frame/bridge.py` | Belum diuji di perangkat |
 | MentraOS (Mentra Live, dll.) | `clients/mentra/` | Belum diuji di perangkat |
 

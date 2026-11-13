@@ -24,6 +24,12 @@ batt_l    = 30.5;  //               panjang (berdiri, sumbu Z)
 wire_gap  = 1.5;   // ruang kabel antara baterai & board
 tol       = 0.4;   // kelonggaran tiap sisi
 
+/* [Varian v2: mik + speaker di kacamata] */
+with_speaker = false;   // true = tambah ruang amplifier MAX98357A + speaker mikro 15 mm
+amp_w = 18.0; amp_h = 19.5; amp_t = 3.5;   // board MAX98357A (berdiri di sisi dalam)
+spk_d = 15.5; spk_t = 4.5;                 // speaker mikro bulat
+spk_extra_z = with_speaker ? spk_t + 2 : 0; // ruang speaker di bawah
+
 /* [Dinding] */
 wall      = 1.6;
 radius    = 3.0;   // pembulatan sudut luar
@@ -59,8 +65,8 @@ $fn = 48;
 
 // ---------- Ukuran turunan ----------
 in_x = max(board_w, batt_w) + 2*tol;
-in_y = stack_d + wire_gap + batt_t + 2*tol;
-in_z = max(board_h, batt_l) + 2*tol + 2;
+in_y = stack_d + wire_gap + batt_t + 2*tol + (with_speaker ? amp_t + 1 : 0);
+in_z = max(board_h, batt_l) + 2*tol + 2 + spk_extra_z;
 out_x = in_x + wall;           // sisi -X ditutup oleh tutup
 out_y = in_y + 2*wall;
 out_z = in_z + 2*wall;
@@ -98,9 +104,13 @@ module body() {
     translate([in_x/2 + 3, wall + in_y*0.35, out_z - wall - 1]) cylinder(d=button_d, h=wall+2);
     // USB-C di dasar, dekat dinding depan (board di depan, berdiri)
     translate([in_x/2 - usb_w/2, out_y - wall - usb_y - usb_t/2, -1]) rbox_flat([usb_w, usb_t, wall+2], 1.2);
+    // v2: kisi speaker di dinding belakang bawah (mengarah ke telinga sepanjang gagang)
+    if (with_speaker) for (i=[-2:2], j=[-1:1]) translate([in_x/2 + i*2.6, -1, wall + spk_t/2 + 1 + j*2.6]) rotate([-90,0,0]) cylinder(d=1.6, h=wall+2, $fn=12);
     // mikrofon: deretan lubang kecil di depan bawah
     for (i=[0:mic_holes-1]) translate([in_x/2 - (mic_holes-1)*1.4 + i*2.8, out_y - wall - 1, wall + 5]) rotate([-90,0,0]) cylinder(d=mic_d, h=wall+2, $fn=16);
   }
+  // v2: dudukan speaker (cincin) di dasar belakang
+  if (with_speaker) translate([in_x/2, wall + spk_d/2 + 0.5, wall]) difference() { cylinder(d=spk_d + 2.4, h=1.6); translate([0,0,-1]) cylinder(d=spk_d + 0.4, h=4); }
   // sekat penahan baterai (menjaga board tidak bergeser ke belakang)
   translate([wall*0.0 + in_x - 3, wall + batt_t + 2*tol, wall]) cube([3, 1.2, in_z*0.6]);
   // alur kecil penahan bibir tutup (snap)
@@ -161,7 +171,11 @@ module mount_tab() {
 // ---------- Tata letak ----------
 module components_preview() { // hanya untuk visual
   color("seagreen", 0.6) translate([tol, wall + in_y - stack_d - tol, wall + tol]) cube([board_w, stack_d, board_h]);
-  color("silver", 0.6) translate([tol, wall + tol, wall + tol]) cube([batt_w, batt_t, batt_l]);
+  color("silver", 0.6) translate([tol, wall + tol, wall + tol + spk_extra_z]) cube([batt_w, batt_t, batt_l]);
+  if (with_speaker) {
+    color("gold", 0.7) translate([in_x/2, wall + spk_d/2 + 0.5, wall + 0.5]) cylinder(d=spk_d, h=spk_t);
+    color("purple", 0.6) translate([tol, wall + batt_t + 2*tol + 0.5, wall + spk_extra_z]) cube([amp_w, amp_t, amp_h]);
+  }
 }
 
 if (part == "body") body();
