@@ -1,81 +1,63 @@
-# Daftar Shot yang Harus Diambil
+# Daftar Shot yang Harus Diambil (v3)
 
-Semua bagian lain sudah berupa animasi di `video/` (lihat animatic `preview/FULL-animatic.mp4`). Yang perlu direkam kamera hanya daftar di bawah. Tidak butuh alat tenun.
+Tidak ada shot menenun dan tidak butuh alat tenun. Yang direkam hanya **Andrew memakai kacamata dan bicara**, **HP**, dan **rekam layar**. Semua gambar tenun berasal dari video open source + animasi di `video/`.
 
-Format semua shot: **horizontal 16:9, 1080p atau 4K, 30 fps**. Ambil setiap shot 2–3 kali, plus 2 detik diam sebelum dan sesudah bicara.
+Format semua shot kamera: **horizontal 16:9, 4K kalau bisa (minimal 1080p), 30 fps**. Ambil setiap shot 2–3 kali, plus 2 detik diam sebelum dan sesudah bicara.
 
-## Sesi 1 · Andrew (lokasi: Tokopedia)
+## Sesi 1 · Andrew bicara (lokasi: Tokopedia) · ±1,5 jam
 
-| # | Adegan | Waktu | Posisi di frame | Yang dilakukan / diucapkan |
-|---|---|---|---|---|
-| A1 | 1 | 0:00 | Masuk dari kiri, berhenti di **tengah** | “Selama ratusan tahun, menenun diajarkan dari tangan ke tangan.” |
-| A2 | 3 | 0:14 | **Tengah** | Memegang kacamata, memakainya saat bilang: “Bagaimana kalau ilmunya bisa ikut… di mata kita?” |
-| A3 | 5 | 0:28 | **Tengah** | “Ilmu tenun sebenarnya sudah ada di mana-mana: ribuan video dan arsip yang dibagikan terbuka di internet.” |
-| A4 | 15 | 1:58 | **Tengah** | “Penenun tidak tergantikan. Dengan BelajarTenun, akses ke mereka terbuka untuk lebih banyak murid, dari mana saja.” |
-| A5 | 20 | 2:36 | **Tengah** | “Video tutorial tidak bisa melihat kesalahan kita. Kelas tatap muka terbatas tempat dan waktunya. BelajarTenun menggabungkan keduanya: melihat dari mata murid, mengoreksi saat itu juga, dan tetap setia pada ilmu penenunnya.” |
-| A6 | 27 | 3:59 | Tengah, **bertiga** dengan 2 anggota tim | “BelajarTenun: cara baru belajar budaya. Terbuka untuk siapa saja, menyesuaikan setiap murid, dan dijaga oleh penenunnya sendiri.” |
+**Andrew selalu di tengah frame**, memakai kacamata BelajarTenun (kecuali awal adegan 3). Di editing, frame digeser ke kiri/kanan sambil diperbesar ±130%, lalu animasi muncul di sisi kosong.
 
-**Andrew selalu di tengah frame.** Di editing, footage digeser pelan ke kiri atau kanan sambil diperbesar ±130%, lalu animasi muncul di sisi yang kosong (adegan 1, 5, 24 → Andrew bergeser ke kiri; adegan 20 → ke kanan; adegan 3, 15, 27 tetap di tengah).
+| # | Adegan | Shot | Diucapkan |
+|---|---|---|---|
+| A1 | 01 | Masuk dari kiri, berhenti di tengah | "Selama ratusan tahun, menenun diajarkan dari tangan ke tangan." |
+| A2 | 03 | Tengah, memegang kacamata lalu memakainya saat "di mata kita" | "Bagaimana kalau ilmunya bisa ikut… di mata kita?" |
+| A3 | 05 | Tengah | "Ilmu tenun sebenarnya sudah ada di mana-mana: ribuan video dan arsip yang dibagikan terbuka di internet, dari banyak tradisi." |
+| A4 | 15 | Tengah | "Penenun tidak tergantikan. Dengan BelajarTenun, akses ke mereka terbuka untuk lebih banyak murid, dari mana saja." |
+| A5 | 19 | Tengah | "Video tutorial tidak bisa melihat kesalahan kita. Kelas tatap muka terbatas tempat dan waktunya. BelajarTenun menggabungkan keduanya: melihat dari mata murid, mengoreksi saat itu juga, dan tetap setia pada ilmu penenunnya." |
+| A6 | 22 | Tengah | "Kami mulai dari sanggar dan sekolah. Setiap modul yang divalidasi memberi penghasilan bagi penenun, dan setiap murid baru memperluas pasar kain tenun." (sesuaikan proposal) |
+| A7 | 25 | Tengah, melepas kacamata, menatap kamera | "BelajarTenun. Belajar menenun, dipandu ilmu Nusantara." |
+| A8 | 12 | **Close-up wajah dari samping**, memakai kacamata, sedikit menunduk, HP di tangan | "Kenapa harus dirapatkan setiap baris?" lalu mengangguk |
+| A9 | 13 | Sama seperti A8, berhenti sejenak | "Kalau benangnya putus gimana?" |
 
-Supaya efek geser tetap tajam:
-- Rekam **4K** kalau bisa (perbesaran 130% dari 4K tetap lebih tajam dari 1080p).
-- Bingkai lebih longgar: sisakan ruang di atas kepala dan di kiri-kanan badan, kira-kira **setengah badan sampai pinggang**.
-- Andrew jangan banyak bergerak ke samping; gestur tangan boleh.
-- Latar agak gelap atau blur (teks animasi berwarna putih), mic klip, kamera setinggi mata.
+Tips: bingkai setengah badan sampai pinggang dengan ruang longgar di kiri-kanan (untuk efek geser), latar agak gelap atau blur, mic klip, Andrew tidak bergeser ke samping.
 
-Efek geser bisa dibuat otomatis di Remotion (taruh footage di `video/public/`, isi prop `footage`) atau manual di CapCut/Premiere: keyframe **Position X ±360 px** dan **Scale 100% → 130%** selama 0,8 detik dengan ease in-out di awal adegan.
-
-## Sesi 2 · Anggota tim bidang ekonomi
-
-| # | Adegan | Waktu | Posisi | Diucapkan |
-|---|---|---|---|---|
-| E1 | 24 | 3:26 | **Tengah** | “Kami mulai dari sanggar dan sekolah. Setiap modul yang divalidasi memberi penghasilan bagi penenun, dan setiap murid baru memperluas pasar kain tenun.” (sesuaikan dengan proposal) |
-
-## Sesi 3 · Wajah murid memakai kacamata
-
-Satu orang sebagai murid, memakai kacamata BelajarTenun. Latar polos/blur, cahaya dari samping. Kepala sedikit menunduk seolah melihat ke tangan.
-
-| # | Adegan | Shot | Durasi | Yang dilakukan |
-|---|---|---|---|---|
-| M1 | 12 | Close-up wajah **dari samping**, wajah di kiri frame | 9 dtk | Melihat ke bawah, lalu bertanya: “Kenapa harus dirapatkan setiap baris?” lalu mengangguk |
-| M2 | 13 | Sama seperti M1 | 9 dtk | Berhenti sejenak, bertanya: “Kalau benangnya putus gimana?” |
-| M3 | 8 | Wajah dari depan, sedikit menunduk | 2 dtk | Bilang “Mulai belajar.” |
-| M4 | 9 | Wajah dari depan/samping, menunduk fokus | 1–2 dtk | Sisipan: diam, mata bergerak seperti mengamati |
-| M5 | 11 | Wajah, ragu lalu mengangguk | 2 dtk | Sisipan: dahi sedikit berkerut, lalu tersenyum kecil |
-| M6 | 16 | Melepas kacamata, tersenyum | 2 dtk | Sisipan sebelum catatan belajar |
-| M7 | 4 | Close-up kacamata di meja / di tangan | 2 dtk | Cuplikan produk (pelan, cahaya bagus) |
-| M8 | 8 | Tangan menekan tombol Mulai di HP | 2 dtk | Layar HP membuka `/kacamata.html` |
-
-## Sesi 4 · Testimoni & uji coba
+## Sesi 2 · HP & kacamata · ±45 menit
 
 | # | Adegan | Shot | Catatan |
 |---|---|---|---|
-| T1 | 23 | Teman yang mencoba aplikasi, talking head 5 dtk | Satu kalimat dengan kata-kata sendiri tentang mencoba aplikasinya |
-| T2 | 23 | Penenun/guru tenun lewat video call, 5 dtk (opsional) | Rekam layar video call, minta izin |
-| T3 | 21 | 3–5 teman mencoba aplikasi di laptop/HP | Cuplikan pendek 1–2 dtk masing-masing, untuk diselipkan di adegan 21 |
+| H1 | 08 | **Dari atas bahu Andrew** ke layar HP: tekan *Hubungkan kacamata* → *Kacamata tersambung* → *Mulai sesi* | Andrew memakai kacamata; layar HP terbaca jelas, kecerahan HP maksimal |
+| H2 | 08 | Andrew bilang "Mulai belajar." sambil melihat HP | 2 dtk, wajah + HP di frame |
+| H3 | 04 | Close-up kacamata di meja / di tangan, pelan, cahaya bagus | 2–3 dtk cuplikan produk |
+| H4 | 04 | Close-up kacamata dipakai + HP menyala di tangan | 2 dtk |
 
-## Sesi 5 · Rekam layar (di laptop, tanpa kamera)
+## Sesi 3 · Rekam layar (tanpa kamera) · ±45 menit
 
-| # | Adegan | Yang direkam |
-|---|---|---|
-| L1 | 22 | Terminal `npm run evaluate` → hasil akurasi |
-| L2 | 9–11 (opsional) | `/kacamata.html` mode **Berkas video** dengan video POV tenun open source, termasuk suara tutor. Jika direkam, bisa menggantikan latar video di animasi POV |
-| L3 | 7, 16, 17, 19 (opsional) | Halaman Editor, catatan belajar, Progres, Arsip, jika ingin memakai tampilan asli selain animasi |
+| # | Adegan | Yang direkam | Cara |
+|---|---|---|---|
+| L1 | 08 | Layar HP: menghubungkan kacamata dan *Mulai sesi* | Perekam layar bawaan HP, **dengan suara** |
+| L2 | 09–11 | Layar HP: web app dalam mode **Berkas video** memutar video tenun open source; kartu tahap, transkrip, dan suara tutor | Satu sesi penuh 1–2 menit, pilih bagian terbaik |
+| L3 | 12–13 | Layar HP saat Andrew bertanya (transkrip + jawaban) | Bisa sekaligus dengan L2 |
+| L4 | 21 | Terminal laptop `npm run evaluate` → hasil akurasi | OBS / perekam layar |
+| L5 | 07, 16–18 (opsional) | Halaman Editor, catatan belajar, Progres, Arsip | Jika ingin tampilan asli selain animasi |
 
 ## Bahan non-kamera
 
-- 5–12 klip video tenun open source (CC BY / CC0 / domain publik) → `video/public/`, untuk adegan 5, 6, 9–11, 14.
-- Musik latar berlisensi jelas.
-- Istilah daerah dari 2–3 tradisi, sudah divalidasi (adegan 10), nama penenun (7, 14), angka uji (21–22), skema bisnis (24).
-- Voice over (VO) untuk adegan animasi: bisa suara Andrew direkam terpisah di ruangan tenang, atau suara tutor dari aplikasi.
+- 5–12 klip video tenun open source (CC BY / CC0 / domain publik) → `video/public/` dan untuk mode Berkas video. Catat pembuat & lisensi.
+- Musik latar berlisensi jelas (untuk cut mengikuti ketukan).
+- Rekaman suara Andrew untuk VO adegan animasi (02, 04, 06, 07, 16–18, 20–21, 23), di ruangan tenang.
+- Data asli: istilah daerah 2–3 tradisi (10), nama penenun (07, 14), angka uji (20–21), skema bisnis (22).
 
 ## Ringkasan
 
-| Sesi | Jumlah shot | Perkiraan waktu |
+| Sesi | Shot | Waktu |
 |---|---|---|
-| Andrew | 6 | 1–1,5 jam |
-| Tim ekonomi | 1 | 15 menit |
-| Wajah murid | 8 | 45 menit |
-| Testimoni | 2–3 | 30 menit |
-| Rekam layar | 1–3 | 30 menit |
-| **Total** | **±20 shot** | **±3–4 jam** |
+| Andrew bicara | 9 | ±1,5 jam |
+| HP & kacamata | 4 | ±45 menit |
+| Rekam layar | 3–5 | ±45 menit |
+| Rekam VO | 1 | ±30 menit |
+| **Total** | **±18** | **±3,5 jam** |
+
+## Efek geser (jika diedit manual)
+
+CapCut/Premiere: di awal adegan 01, 05, 22 (Andrew ke kiri) dan 19 (Andrew ke kanan), keyframe **Position X ±360 px** dan **Scale 100% → 130%** selama 0,8 detik, ease in-out. Atau otomatis di Remotion: taruh footage di `video/public/`, isi prop `footage`.

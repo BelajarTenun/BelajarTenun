@@ -1,191 +1,140 @@
-# Shooting Script Video Showcase BelajarTenun
+# Shooting Script Video Showcase BelajarTenun (v3)
 
-Format per adegan: **lokasi/shot**, **skrip/VO**, **animasi/layar**, **chip pojok**. Pemeran: **Andrew** (host), **Murid**, **Partner penenun**, tim (budaya, pengembang, ekonomi). Total ±4:10 (wajib 3–5 menit).
+Video Showcase BUDAYA GO! 2026 · Inovasi Digital · Subtema 4. Durasi **±3:50** (wajib 3–5 menit).
 
-## Adegan 1–8 (dari draf tim)
+**Aturan produksi:** tidak ada shot orang menenun. Yang direkam kamera hanya:
+- 🎤 **Andrew** memakai kacamata BelajarTenun dan bicara (selalu di tengah frame; animasi menggeser frame ke kiri/kanan di editing).
+- 📱 **HP** di tangan Andrew: menyambungkan kacamata dan menekan "Mulai sesi" di web app (shot dari atas bahu dan/atau rekam layar HP).
+- 📱 **Rekam layar HP** web app yang memutar video tenun open source (mode *Berkas video*), jadi AI, suara, dan transkripnya benar-benar bekerja.
 
-1. **Adegan 1 (0:00–0:07)** · Tokopedia. Andrew masuk dari kiri ke tengah.
-   - Teks di layar, kata per kata: *"Menenun dulu diajarkan…"* → *"…dari tangan ke tangan."*
-   - VO Andrew: "Selama ratusan tahun, menenun diajarkan dari tangan ke tangan."
-2. **Adegan 2 (0:07–0:14)** · Animasi.
-   - VO: "Tapi penenun senior makin sedikit. Anak muda yang ingin belajar sering tidak punya akses ke guru, dan pengetahuannya pelan-pelan hilang."
-3. **Adegan 3 (0:14–0:20)** · Kembali ke Andrew, sambil memakai kacamata BelajarTenun.
-   - Andrew: "Bagaimana kalau ilmunya bisa ikut… di mata kita?"
-4. **Adegan 4 (0:20–0:28)** · Potong ke logo BelajarTenun, lalu cuplikan cepat produk (kacamata, aplikasi HP, alat tenun).
-   - VO: "BelajarTenun adalah tutor AI di kacamata yang mengajarkan pengetahuan dan teknologi tradisional menenun, termasuk istilahnya dalam bahasa daerah, langsung saat kita mencoba."
-5. **Adegan 5 (0:28–0:36)** · Andrew di kiri layar, kanan berisi grid video open source berlabel lisensi.
-   - Andrew: "Ilmu tenun sebenarnya sudah ada di mana-mana: ribuan video dan arsip yang dibagikan terbuka di internet."
-6. **Adegan 6 (0:36–0:46)** · Motion graphic computer vision di atas video penenun.
-   - VO: "AI memecah setiap gerakan jadi tahap, istilah, dan kesalahan yang sering terjadi, lalu menggabungkan pola dari banyak penenun di banyak video."
-7. **Adegan 7 (0:46–0:55)** · Validasi oleh partner penenun di halaman Editor. Chip: **KUALITAS**
-   - VO: "Tapi AI bisa salah. Untuk menjaga kualitas, setiap tahap diperiksa penenun sebelum diajarkan."
-8. **Adegan 8 (0:55–1:02)** · POV murid memakai kacamata, menekan Start di aplikasi HP. Chip: **ADAPTIF**
-   - Murid: "Mulai belajar." → efek AI mendengar + earcon.
-   - Tutor: "Halo. Kita mulai dari mengenal alat. Lihat ke arah belida."
+Semua gambar tenun berasal dari video open source berlisensi jelas, dan setiap kali muncul diberi label sumber. Andrew berperan sebagai host sekaligus "murid".
 
-## Lanjutan
+Keterangan jenis: **🎨 ANIMASI** · **🎤 ANDREW** · **🎤+🎨 ANDREW + ANIMASI MELAYANG** · **📱 HP / REKAM LAYAR HP** · **💻 REKAM LAYAR LAPTOP**
 
-### Babak belajar menenun
+---
 
-**Adegan 9 (1:02–1:12) · Belajar tahap 2**
-- **Shot:** POV kacamata ke alat tenun, tangan murid mengangkat belida. Sisipkan 1 detik shot samping (murid dari luar) supaya penonton tahu ini kacamata.
-- **Layar (kartu kanan atas):** `Tahap 2/5 · Membuka mulut lungsi`, bilah keyakinan naik dari 40% ke 90%.
-- **VO tutor:** "Bagus. Mulut lungsinya sudah terbuka. Sekarang masukkan benang pakan."
-- **Animasi:** earcon "naik tahap", kartu berganti `Tahap 3/5 · Memasukkan pakan`.
+## Babak 1 · Masalah & produk (0:00–0:30)
 
-**Adegan 10 (1:12–1:20) · Istilah bahasa daerah**
-- **Shot:** close-up tangan memegang benang pakan.
-- **VO tutor:** "Setiap tradisi punya sebutannya sendiri untuk benang pakan." Kartu menampilkan istilah dari 2–3 tradisi.
-- **Layar:** kartu kosakata muncul di samping benang: **[istilah asli]** → *benang pakan* + ikon speaker (terdengar pelafalannya).
-- **Chip pojok:** **BAHASA DAERAH**
-- ⚠️ Istilah wajib dari penenun/modul tervalidasi.
+**01 · 0:00–0:07 · 🎤+🎨**
+- Andrew masuk dari kiri ke tengah, berhenti. Frame bergeser, Andrew ke kiri.
+- Layar (kanan, kata per kata): *Menenun dulu diajarkan* → *dari tangan ke tangan.*
+- Andrew: "Selama ratusan tahun, menenun diajarkan dari tangan ke tangan."
 
-**Adegan 11 (1:20–1:30) · Koreksi kesalahan**
-- **Shot:** makro, murid menarik pakan terlalu kencang, pinggir kain menyempit.
-- **Layar:** lingkaran sorot oranye di pinggir kain + kartu *"Pinggir kain menyempit"*.
-- **VO tutor:** "Pinggirnya mulai menyempit. Longgarkan sedikit benang pakannya."
-- Murid ragu 2 detik → **VO tutor:** "Tarik pelan sampai pinggirnya lurus dengan baris sebelumnya."
-- Murid membetulkan → kartu berubah hijau ✔ + earcon sukses.
-- **Chip pojok:** **ADAPTIF** (tetap)
+**02 · 0:07–0:15 · 🎨**
+- Titik-titik (penenun) memudar satu per satu. Tiga kalimat muncul bergantian.
+- VO Andrew: "Tapi penenun senior makin sedikit. Anak muda yang ingin belajar sering tidak punya akses ke guru, dan pengetahuannya pelan-pelan hilang."
 
-**Adegan 12 (1:30–1:39) · Bertanya sambil bekerja**
-- **Shot:** close-up wajah samping murid (gaya video referensi), tangan tetap menenun.
-- **Murid:** "Kenapa harus dirapatkan setiap baris?" → teks pertanyaan melayang di samping wajah (font serif).
-- **VO tutor:** "Supaya kain padat dan motifnya tidak bergeser."
-- **Layar kecil:** *Sumber: modul tervalidasi*.
-- **Chip pojok:** **INTERAKTIF**
+**03 · 0:15–0:21 · 🎤**
+- Andrew di tengah, memegang kacamata, memakainya saat kalimat "di mata kita". Push-in pelan.
+- Andrew: "Bagaimana kalau ilmunya bisa ikut… di mata kita?"
 
-**Adegan 13 (1:39–1:48) · Tidak mengarang jawaban**
-- **Shot:** sama, murid berhenti sejenak.
-- **Murid:** "Kalau benangnya putus gimana?"
-- **VO tutor:** "Itu belum ada di modul yang divalidasi. Pertanyaanmu sudah kucatat untuk penenun."
-- **Animasi:** teks pertanyaan terbang masuk ke ikon kotak *"Pertanyaan untuk penenun"*.
+**04 · 0:21–0:30 · 🎨**
+- Transisi: lensa kacamata membesar memenuhi layar → benang tersusun jadi logo → **BelajarTenun** → tagline → tiga Objek Pemajuan Kebudayaan.
+- VO: "BelajarTenun adalah tutor AI di kacamata yang mengajarkan pengetahuan dan teknologi tradisional menenun, termasuk istilahnya dalam bahasa daerah, langsung saat kita mencoba."
 
-### Babak pendampingan jarak jauh
+## Babak 2 · Dari data terbuka ke pelajaran (0:30–0:58)
 
-**Adegan 14 (1:48–1:58) · Penenun mendampingi dari jauh**
-- **Shot:** split screen. Kiri: murid di alat tenun. Kanan: partner penenun di rumah memegang HP (halaman Pendamping) yang menampilkan POV murid.
-- **Penenun (bicara ke HP):** "Coba tekan lebih pelan."
-- **Animasi:** gelembung pesan mengalir dari HP penenun ke kacamata murid.
-- **VO tutor:** "Pesan dari Ibu [nama]: coba tekan lebih pelan."
+**05 · 0:30–0:38 · 🎤+🎨**
+- Frame bergeser, Andrew ke kiri. Kanan: klip video tenun open source muncul satu per satu, berlabel lisensi.
+- Andrew: "Ilmu tenun sebenarnya sudah ada di mana-mana: ribuan video dan arsip yang dibagikan terbuka di internet, dari banyak tradisi."
 
-**Adegan 15 (1:58–2:06) · Andrew**
-- **Shot:** Andrew talking head di Tokopedia, tengah.
-- **Andrew:** "Penenun tidak tergantikan. Dengan BelajarTenun, akses ke mereka terbuka untuk lebih banyak murid, dari mana saja."
-- **Chip pojok:** **AKSES**
+**06 · 0:38–0:48 · 🎨**
+- Video tenun open source + sudut deteksi (TANGAN, BELIDA, LUNGSI). Garis waktu 5 tahap terisi. Kartu: tahap, istilah, kesalahan umum, "digabung dari N video".
+- VO: "AI memecah setiap gerakan jadi tahap, istilah, dan kesalahan yang sering terjadi, lalu menggabungkan pola dari banyak penenun."
 
-### Babak hasil belajar
+**07 · 0:48–0:58 · 🎨 · [ KUALITAS ]**
+- [USULAN AI] → [DIUBAH PENENUN] → [TERVALIDASI PENENUN].
+- VO: "Tapi AI bisa salah. Untuk menjaga kualitas, setiap tahap diperiksa penenun sebelum diajarkan."
 
-**Adegan 16 (2:06–2:14) · Catatan belajar**
-- **Shot:** murid melepas kacamata, tersenyum, melihat HP.
-- **Layar (rekam layar HP diperbesar):** *"5/5 tahap selesai · 1 koreksi · 1 pertanyaan baru"* + kuesioner singkat.
-- **VO:** "Setiap sesi meninggalkan catatan: apa yang sudah bisa, apa yang membingungkan."
+## Babak 3 · Cara belajar (0:58–1:52)
 
-**Adegan 17 (2:14–2:21) · Progres**
-- **Shot:** rekam layar halaman Progres, grafik tingkat selesai, tahap paling membingungkan disorot.
-- **VO:** "Dari situ kami bisa mengukur efektivitasnya, dan memperbaiki tahap yang paling sulit."
-- **Chip pojok:** **EFEKTIVITAS**
+Alur produk yang ditunjukkan apa adanya: **kacamata = kamera**, tersambung lewat Bluetooth ke **web app di HP**. Sesi dimulai di HP, suara tutor dan percakapan live keluar dari HP, dan kartu tahap + transkrip tampil di layar HP. Kacamata tidak punya layar, jadi tidak ada tampilan di lensa.
 
-**Adegan 18 (2:21–2:28) · Offline** *(hanya jika model offline sudah jalan)*
-- **Shot:** murid di rumah/desa, HP menunjukkan tanpa sinyal, kartu tahap tetap muncul.
-- **Layar:** ikon *"Offline · model lokal"*.
-- **VO:** "Tanpa sinyal pun, deteksi tahap tetap berjalan di HP."
+**08 · 0:58–1:06 · 🎤 + 📱 · [ ADAPTIF ]**
+- Andrew memakai kacamata, memegang HP. Shot dari atas bahu (over-the-shoulder) ke layar HP, atau rekam layar HP.
+- Di HP: tekan **Hubungkan kacamata** → status *Kacamata tersambung* → tekan **Mulai sesi**. Earcon + bola biru AI di layar HP.
+- Andrew: "Mulai belajar."
+- Tutor (dari speaker HP, transkrip muncul di HP): "Halo. Kita mulai dari mengenal alat. Lihat ke arah belida."
 
-**Adegan 19 (2:28–2:36) · Arsip publik**
-- **Shot:** rekam layar halaman Arsip, scroll pelan kartu tahap & istilah tervalidasi + atribusi sumber.
-- **VO:** "Pengetahuan yang sudah divalidasi kami buka sebagai arsip tenun publik, supaya terus lestari."
-- **Chip pojok:** **PELESTARIAN**
+**09 · 1:06–1:16 · 📱 REKAM LAYAR HP + 🎨**
+- Transisi: layar HP membesar memenuhi frame → rekam layar web app yang menampilkan gambar dari kamera (untuk demo: mode *Berkas video* dengan video tenun open source).
+- Di layar HP: kartu `TAHAP 2/5 · Membuka mulut lungsi`, bilah keyakinan naik → `TAHAP 3/5`. Transkrip percakapan bertambah.
+- Tutor: "Bagus. Mulut lungsinya sudah terbuka. Sekarang masukkan benang pakan."
+- Label kecil: *Input: video tenun [lisensi] · [pembuat]*
 
-### Babak kenapa berbeda
+**10 · 1:16–1:24 · 🎨 · [ BAHASA DAERAH ]**
+- HP di tengah; kartu kosakata keluar dari layar HP: istilah benang pakan dari 3 tradisi bergantian, masing-masing dengan gelombang suara (pelafalan diputar dari HP).
+- Tutor: "Setiap tradisi punya sebutannya sendiri untuk benang pakan."
 
-**Adegan 20 (2:36–2:56) · Perbandingan**
-- **Shot:** Andrew align kanan, tabel animasi di kiri, centang muncul baris per baris.
+**11 · 1:24–1:34 · 🎨 · [ ADAPTIF ]**
+- Layar HP diperbesar: gambar kamera (video sumber) dengan lingkaran tipis oranye di pinggir kain + kartu [KOREKSI] di HP. Petunjuk kedua lebih rinci. Berubah hijau, [SUDAH BENAR].
+- Tutor: "Pinggirnya mulai menyempit. Longgarkan sedikit benang pakannya." → "Tarik pelan sampai lurus dengan baris sebelumnya." → "Nah, sudah rapi."
 
-  | | Video tutorial | Kelas tatap muka | **BelajarTenun** |
-  |---|---|---|---|
-  | Melihat kesalahan murid | ✗ | ✔ | ✔ |
-  | Kapan & di mana saja | ✔ | ✗ | ✔ |
-  | Isi divalidasi penenun | ? | ✔ | ✔ |
-  | Tangan tetap bebas | ✗ | ✔ | ✔ |
-  | Istilah bahasa daerah | jarang | ✔ | ✔ |
+**12 · 1:34–1:43 · 🎤+🎨 · [ INTERAKTIF ]**
+- Close-up wajah Andrew dari samping, memakai kacamata, HP di tangan/meja. Pertanyaan serif melayang di samping wajah; jawaban muncul sebagai gelembung transkrip yang keluar dari HP.
+- Andrew: "Kenapa harus dirapatkan setiap baris?"
+- Tutor (dari HP): "Supaya kain padat dan motifnya tidak bergeser." · *Sumber: modul tervalidasi*
 
-- **Andrew:** "Video tutorial tidak bisa melihat kesalahan kita. Kelas tatap muka terbatas tempat dan waktunya. BelajarTenun menggabungkan keduanya: melihat dari mata murid, mengoreksi saat itu juga, dan tetap setia pada ilmu penenunnya."
+**13 · 1:43–1:52 · 🎤+🎨**
+- Shot sama. Pertanyaan terbang mengecil masuk ke kartu [UNTUK PENENUN · 1 pertanyaan baru]. Label [ TIDAK MENGARANG JAWABAN ].
+- Andrew: "Kalau benangnya putus gimana?"
+- Tutor: "Itu belum ada di modul yang divalidasi. Pertanyaanmu sudah kucatat untuk penenun."
 
-### Babak bukti uji coba
+## Babak 4 · Akses (1:52–2:12)
 
-**Adegan 21 (2:56–3:08) · Uji coba pemula**
-- **Shot:** cuplikan cepat 3–5 pemula (bukan tim) mencoba di sanggar/kampus.
-- **Layar:** angka muncul satu per satu: *"[N] pemula · rata-rata [x]/5 tahap · [y] menit"*.
-- **VO:** "Kami menguji BelajarTenun bersama [N] pemula yang belum pernah menenun."
+**14 · 1:52–2:04 · 🎨**
+- HP penenun (halaman Pendamping) menampilkan POV murid → pesan diketik → gelembung melengkung masuk ke tampilan kacamata.
+- Tutor: "Pesan dari Ibu [nama]: coba tekan lebih pelan."
 
-**Adegan 22 (3:08–3:16) · Akurasi**
-- **Shot:** rekam layar hasil `npm run evaluate` → diubah jadi grafik sederhana.
-- **Layar:** *"Akurasi deteksi tahap [x]% · respons [y] detik"*.
-- **VO:** "Deteksi tahapnya kami uji dengan data berlabel, bukan hanya dicoba-coba."
+**15 · 2:04–2:12 · 🎤 · [ AKSES ]**
+- Andrew di tengah.
+- Andrew: "Penenun tidak tergantikan. Dengan BelajarTenun, akses ke mereka terbuka untuk lebih banyak murid, dari mana saja."
 
-**Adegan 23 (3:16–3:26) · Testimoni**
-- **Shot:** dua talking head singkat, masing-masing 5 detik, dengan lower third nama.
-- **Murid** dan **partner penenun** bicara dengan kata-kata sendiri (jangan dihafalkan).
+## Babak 5 · Hasil & pelestarian (2:12–2:36)
 
-### Babak potensi pengembangan
+**16 · 2:12–2:20 · 🎨** · Catatan belajar: 5/5 tahap · 1 koreksi · 1 pertanyaan baru + kuesioner.
+- VO: "Setiap sesi meninggalkan catatan: apa yang sudah bisa, apa yang membingungkan."
 
-**Adegan 24 (3:26–3:41) · Model bisnis**
-- **Shot:** anggota tim bidang ekonomi talking head, align kiri; diagram ikon di kanan.
-- **Layar:** Pengguna (pemula, SMK tekstil, sanggar, wisata budaya) → Nilai (sanggar melatih lebih banyak murid, penenun dapat atribusi & honor) → Skema [sesuai proposal].
-- **VO:** "Kami mulai dari sanggar dan sekolah. Setiap modul yang divalidasi memberi penghasilan bagi penenun, dan setiap murid baru memperluas pasar kain tenun."
+**17 · 2:20–2:28 · 🎨 · [ EFEKTIVITAS ]** · Grafik tingkat selesai, tahap tersulit menyala.
+- VO: "Dari situ kami bisa mengukur efektivitasnya, dan memperbaiki tahap yang paling sulit."
 
-**Adegan 25 (3:41–3:51) · Nusantara ke dunia**
-- **Animasi:** peta Indonesia, titik tradisi tenun menyala satu per satu dari barat ke timur → garis keluar ke dunia.
-- **VO:** "Dari satu tradisi ke seluruh tradisi tenun Nusantara, dan dari Indonesia ke dunia."
-- **Layar kecil:** *Indonesia Cultural Power*
+**18 · 2:28–2:36 · 🎨 · [ PELESTARIAN ]** · Arsip tenun terbuka bergulir pelan, atribusi sumber.
+- VO: "Pengetahuan yang sudah divalidasi kami buka sebagai arsip tenun publik, supaya terus lestari."
 
-### Penutup
+## Babak 6 · Kenapa berbeda (2:36–2:54)
 
-**Adegan 26 (3:51–3:59) · Montase**
-- 1 detik per shot: grid video → computer vision → POV kacamata → kartu hijau ✔ → murid & penenun tertawa → kain jadi. Musik naik.
+**19 · 2:36–2:54 · 🎤+🎨**
+- Frame bergeser, Andrew ke kanan; tabel di kiri: Video tutorial · Kelas tatap muka · BelajarTenun.
+- Andrew: "Video tutorial tidak bisa melihat kesalahan kita. Kelas tatap muka terbatas tempat dan waktunya. BelajarTenun menggabungkan keduanya: melihat dari mata murid, mengoreksi saat itu juga, dan tetap setia pada ilmu penenunnya."
 
-**Adegan 27 (3:59–4:05) · Tim**
-- **Shot:** Andrew + dua anggota tim berdiri berdampingan di Tokopedia.
-- **Andrew:** "BelajarTenun: cara baru belajar budaya. Terbuka untuk siapa saja, menyesuaikan setiap murid, dan dijaga oleh penenunnya sendiri."
+## Babak 7 · Bukti uji (2:54–3:14)
 
-**Adegan 28 (4:05–4:10) · Kartu penutup**
-- **Animasi:** latar krem, logo, sketsa garis kacamata digambar bertahap, motif tenun tipis.
-- **Teks:** *"Belajar menenun, dipandu ilmu tenun dari seluruh Nusantara."* + tautan demo.
-- Lanjut **kredit sumber** (video open source, musik, font + lisensinya).
+**20 · 2:54–3:06 · 🎨** · Angka uji: [N] video tenun diuji · [x]% akurasi deteksi tahap · [y] detik respons.
+- VO: "Kami menguji deteksi tahapnya dengan [N] video tenun berlabel dari berbagai tradisi."
 
-## Versi produksi: hanya 3 jenis shot
+**21 · 3:06–3:14 · 💻 REKAM LAYAR** · Terminal `npm run evaluate`, lalu punch-in ke angka akurasi.
+- VO: "Hasilnya bisa diperiksa ulang siapa saja."
 
-Tidak ada alat tenun, benang, atau kain. Semua adegan dibuat dari tiga bahan saja:
+## Babak 8 · Potensi (3:14–3:36)
 
-- **🎨 ANIMASI**: motion graphic + rekam layar aplikasi di laptop (rekam layar tidak butuh alat apa pun, cukup aplikasi diputar dengan video tenun open source).
-- **🎤 NGOMONG**: Andrew bicara ke kamera.
-- **👓 MUKA**: close-up wajah memakai kacamata BelajarTenun, latar blur.
+**22 · 3:14–3:26 · 🎤+🎨** · Andrew ke kiri; kanan: Pengguna → Nilai → Skema.
+- Andrew: "Kami mulai dari sanggar dan sekolah. Setiap modul yang divalidasi memberi penghasilan bagi penenun, dan setiap murid baru memperluas pasar kain tenun."
 
-| # | Waktu | Shot | Isi |
-|---|---|---|---|
-| 1 | 0:00 | 🎤 | Andrew masuk dari kiri, "Selama ratusan tahun…" |
-| 2 | 0:07 | 🎨 | Ilustrasi penenun senior, ruang tenun memudar |
-| 3 | 0:14 | 🎤 + 👓 | Andrew memakai kacamata, "Bagaimana kalau ilmunya bisa ikut di mata kita?" |
-| 4 | 0:20 | 🎨 | Logo + ilustrasi kacamata, VO pengenalan |
-| 5 | 0:28 | 🎤 + 🎨 | Andrew kiri, grid video open source kanan |
-| 6 | 0:36 | 🎨 | Video tenun + kotak deteksi, label tahap/istilah/kesalahan |
-| 7 | 0:46 | 🎨 | Ilustrasi penenun memeriksa + layar Editor, chip KUALITAS |
-| 8 | 0:55 | 👓 + 🎨 | Murid memakai kacamata, "Mulai belajar" → animasi tombol Start & gelombang suara AI |
-| 9 | 1:02 | 🎨 ↔ 👓 | POV: video tenun dalam bingkai lensa + kartu Tahap 2/5, diselingi 1 detik muka murid melihat ke bawah |
-| 10 | 1:12 | 🎨 | Kartu kosakata bahasa daerah di atas video tenun |
-| 11 | 1:20 | 🎨 ↔ 👓 | Sorot oranye "pinggir menyempit" → hijau ✔, diselingi muka murid mengangguk |
-| 12 | 1:30 | 👓 | Muka samping murid bertanya, teks pertanyaan melayang |
-| 13 | 1:39 | 👓 + 🎨 | Pertanyaan di luar modul terbang ke kotak "untuk penenun" |
-| 14 | 1:48 | 🎨 | Animasi split: HP pendamping ↔ kacamata, gelembung pesan |
-| 15 | 1:58 | 🎤 | Andrew: akses ke penenun terbuka, chip AKSES |
-| 16–19 | 2:06 | 🎨 | Catatan belajar, progres, offline, arsip (rekam layar) |
-| 20 | 2:36 | 🎤 + 🎨 | Andrew + tabel perbandingan |
-| 21–22 | 2:56 | 🎨 | Angka uji aplikasi & akurasi deteksi |
-| 23 | 3:16 | 👓 / 🎤 | Testimoni teman yang mencoba aplikasi (cukup muka, boleh pakai kacamata) |
-| 24 | 3:26 | 🎤 + 🎨 | Model bisnis |
-| 25 | 3:41 | 🎨 | Peta tradisi tenun Nusantara → dunia |
-| 26 | 3:51 | 🎨 | Montase |
-| 27 | 3:59 | 🎤 | Andrew (+ tim) penutup |
-| 28 | 4:05 | 🎨 | Kartu logo + kredit |
+**23 · 3:26–3:36 · 🎨** · Peta Nusantara, titik tradisi menyala barat ke timur → garis ke dunia. *Indonesia Cultural Power*
+- VO: "Dari satu tradisi ke seluruh tradisi tenun Nusantara, dan dari Indonesia ke dunia."
 
-Daftar syuting kamera hanya dua sesi: **🎤 Andrew** (adegan 1, 3, 5, 15, 20, 24, 27; bisa dalam satu sesi di Tokopedia) dan **👓 muka** (adegan 3, 8, 9, 11, 12, 13, 23). Sisanya dikerjakan di laptop.
+## Penutup (3:36–3:52)
+
+**24 · 3:36–3:42 · 🎨** · Montase cepat mengikuti ketukan musik.
+
+**25 · 3:42–3:47 · 🎤** · Andrew di tengah, melepas kacamata, menatap kamera.
+- Andrew: "BelajarTenun. Belajar menenun, dipandu ilmu Nusantara."
+
+**26 · 3:47–3:52+ · 🎨** · Kartu penutup: logo terisi benang, nama produk, URL, lalu kredit sumber.
+
+---
+
+## Catatan
+
+- Adegan offline, testimoni, dan uji coba pemula di alat tenun **dihapus** karena tidak bisa direkam. Bisa ditambahkan kembali jika kelak tersedia (durasi masih punya ruang sampai 5:00).
+- Data yang wajib diisi asli: istilah daerah (10), nama penenun (7, 14), angka uji (20–21), skema bisnis (22, sama dengan proposal).
