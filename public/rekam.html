@@ -155,13 +155,15 @@ async function refresh() {
       <small>${r.createdAt.slice(0, 16).replace('T', ' ')} · ${r.files.length} file · izin: ${esc((r.consent?.scopes || []).join(', '))}</small>
       ${video ? `<a href="recordings/${r.id}/${video}" target="_blank">lihat</a>` : ''}
       ${r.stepId === 'full' ? ` · <a href="anotasi.html?id=${r.id}">anotasi</a>` : ''}
+      ${video && r.consent?.scopes?.includes('pembelajaran') ? ` <button data-intro="${r.id}">Jadikan video pengenalan</button>` : ''}
       ${canDemo ? (isDemo ? ' <span class="tag">demo aktif</span>' : ` <button data-demo="${r.id}">Jadikan demo</button>`) : ''}
       <button class="danger" data-withdraw="${r.id}">Cabut izin & hapus</button></li>`;
   }).join('') || '<li>Belum ada rekaman.</li>';
 }
 
 $('list').onclick = async (e) => {
-  const { demo, withdraw } = e.target.dataset || {};
+  const { demo, withdraw, intro } = e.target.dataset || {};
+  if (intro) { try { await api('/api/module/intro-video', { moduleId: mod.id, recordingId: intro }); alert('Video pengenalan modul diperbarui.'); } catch (err) { alert(err.message); } return; }
   try {
     if (demo) { await api('/api/recordings/use-as-demo', { id: demo }); mod = await api(`/api/module?id=${mod.id}`); }
     if (withdraw && confirm('Cabut persetujuan? Video dan semua frame rekaman ini akan dihapus permanen.')) await api('/api/recordings/withdraw', { id: withdraw });

@@ -29,6 +29,16 @@
     <video id="ev-video" controls playsinline></video>
     <p id="ev-meta" class="hint"></p>
   </section>
+  <section class="card">
+    <h2>Pengenalan modul</h2>
+    <p class="hint">Ditampilkan ke pemula sebelum memakai kacamata: video tutorial singkat dan penjelasan. Video bisa dipilih dari halaman Rekam atau Sumber video (tombol "Jadikan video pengenalan").</p>
+    <label>Video pengenalan <input id="i-video" placeholder="(kosong: pakai contoh tiap tahap atau ringkasan)"></label>
+    <label>Ringkasan (2–3 kalimat) <textarea id="i-summary" rows="3"></textarea></label>
+    <label>Yang dibutuhkan (satu per baris) <textarea id="i-tools" rows="3"></textarea></label>
+    <label>Cara kacamata membimbing (satu per baris, kosong = teks bawaan) <textarea id="i-points" rows="3"></textarea></label>
+    <label>Perkiraan durasi (menit) <input id="i-duration" type="number" min="1"></label>
+  </section>
+
   <div id="steps"></div>
   <button id="add-step">+ Tambah tahap</button>
 
@@ -90,11 +100,16 @@ function kbCard(e, i) {
     <button data-act="del-kb">Hapus</button></section>`;
 }
 function render() {
+  const intro = mod.intro || {};
+  $('i-video').value = intro.video || ''; $('i-summary').value = intro.summary || ''; $('i-tools').value = (intro.tools || []).join('\n');
+  $('i-points').value = (intro.points || []).join('\n'); $('i-duration').value = intro.duration_min || '';
   $('m-id').value = mod.id; $('m-title').value = mod.title; $('m-trad').value = mod.tradition || ''; $('m-desc').value = mod.description || ''; $('m-status').value = mod.status || ''; $('m-pub').checked = mod.published !== false;
   $('steps').innerHTML = mod.steps.map(stepCard).join('');
   $('kb').innerHTML = kb.entries.map(kbCard).join('');
 }
 function collect() {
+  const lines = (id) => $(id).value.split('\n').map((x) => x.trim()).filter(Boolean);
+  mod.intro = { ...(mod.intro || {}), video: $('i-video').value.trim() || null, summary: $('i-summary').value.trim() || null, tools: lines('i-tools'), points: lines('i-points'), duration_min: Number($('i-duration').value) || null };
   Object.assign(mod, { id: $('m-id').value.trim(), title: $('m-title').value, tradition: $('m-trad').value, description: $('m-desc').value, status: $('m-status').value, published: $('m-pub').checked });
   document.querySelectorAll('[data-step]').forEach((card) => {
     const s = mod.steps[card.dataset.step], v = (k) => card.querySelector(`[data-k="${k}"]`);

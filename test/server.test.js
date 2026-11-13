@@ -107,3 +107,17 @@ test('agen LiveKit: hanya rahasia bersama yang benar boleh mengambil konfigurasi
   assert.ok(ok.tools.some((t) => t.name === 'check_my_work' && t.parameters.type === 'object'));
   assert.equal((await call('/api/livekit/token', { sessionId: s.sessionId })).status, 501, 'LiveKit tidak dikonfigurasi di tes ini');
 });
+
+test('video pengenalan modul: hanya dari rekaman yang diizinkan untuk pembelajaran', async () => {
+  const rec = (await call('/api/recordings', { stepId: 'full', consent: { given: true, name: 'Ibu B', scopes: ['pengembangan_ai'] } }, 'partner')).body;
+  await fetch(`${base}/api/recordings/upload?id=${rec.id}&name=video.webm`, { method: 'POST', headers: { cookie: jar.partner }, body: Buffer.from('x') });
+  assert.equal((await call('/api/module/intro-video', { moduleId: 'tidore-dasar', recordingId: rec.id }, 'partner')).status, 400);
+  const ok = await call('/api/recordings', { stepId: 'full', consent: { given: true, name: 'Ibu C', scopes: ['pembelajaran'] } }, 'partner');
+  await fetch(`${base}/api/recordings/upload?id=${ok.body.id}&name=video.webm`, { method: 'POST', headers: { cookie: jar.partner }, body: Buffer.from('x') });
+  const r = (await call('/api/module/intro-video', { moduleId: 'tidore-dasar', recordingId: ok.body.id, start: 3, end: 40 }, 'partner')).body;
+  assert.equal(r.intro.video, `recordings/${ok.body.id}/video.webm#t=3,40`);
+  assert.equal(r.intro.video_attribution, 'Penenun: Ibu C');
+  const mod = (await call('/api/module?id=tidore-dasar')).body;
+  assert.ok(mod.intro.summary, 'ringkasan lama tetap ada');
+  assert.equal((await call('/api/module/intro-video', { moduleId: 'tidore-dasar', recordingId: ok.body.id })).status, 401, 'pemula/tamu tidak boleh');
+});

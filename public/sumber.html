@@ -135,6 +135,14 @@ async function showDetail(id) {
   $('d-title').textContent = current.title || current.url || id;
   $('d-meta').innerHTML = `${esc(current.tradition)} · ${esc(current.region || '-')} · alat: ${esc(current.loomType || a.loomType || '-')} · sudut: ${esc(a.viewpoint || current.viewpoint)} · izin: ${current.license.status}${current.url ? ` · <a href="${esc(current.url)}" target="_blank" rel="noopener">sumber asli</a>` : ''}`;
   $('d-video').src = current.files?.includes('video.mp4') ? `sources/${id}/video.mp4` : '';
+  const canIntro = ['cc_by', 'izin_tertulis', 'milik_sendiri'].includes(current.license.status) && current.files?.includes('video.mp4');
+  $('d-meta').insertAdjacentHTML('beforeend', canIntro ? ` · <button class="link" id="as-intro" type="button">Jadikan video pengenalan modul…</button>` : '');
+  if (canIntro) $('as-intro').onclick = async () => {
+    const { modules } = await api('/api/modules');
+    const pick = prompt(`ID modul tujuan:\n${modules.map((m) => m.id).join('\n')}`, modules.find((m) => m.tradition === current.tradition)?.id || modules[0]?.id);
+    if (!pick) return;
+    try { await api('/api/module/intro-video', { moduleId: pick, sourceId: id }); alert('Video pengenalan modul diperbarui.'); } catch (e) { alert(e.message); }
+  };
   const dur = current.durationSec || Math.max(1, ...(a.steps || []).map((s) => s.end));
   $('d-timeline').innerHTML = (a.steps || []).map((s) => `<span class="${s.ragu ? 'mistake' : 'done'}" title="${esc(s.title)}" style="left:${(s.start / dur) * 100}%;width:${((s.end - s.start) / dur) * 100}%"></span>`).join('');
   $('d-steps').innerHTML = a.steps?.length ? a.steps.map((s) => `<div class="seg"><button data-seek="${s.start}">Putar ${fmt(s.start)}</button> <b>${esc(s.title)}</b> ${s.ragu ? '<span class="pill">ragu</span>' : ''}
