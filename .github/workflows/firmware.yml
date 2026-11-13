@@ -1,0 +1,30 @@
+name: Firmware kacamata
+on:
+  push:
+    paths: ["firmware/**", ".github/workflows/firmware.yml"]
+  pull_request:
+    paths: ["firmware/**", ".github/workflows/firmware.yml"]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: firmware/belajartenun-glasses
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tes protokol (host)
+        run: g++ -std=c++17 -Wall -Wextra -I src test/test_protocol.cpp -o /tmp/t && /tmp/t
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: pio-${{ hashFiles('firmware/belajartenun-glasses/platformio.ini') }}
+      - run: pip install platformio
+      - name: Kompilasi firmware
+        run: pio run
+      - uses: actions/upload-artifact@v4
+        with:
+          name: belajartenun-glasses-firmware
+          path: firmware/belajartenun-glasses/.pio/build/xiao_esp32s3/firmware.bin
