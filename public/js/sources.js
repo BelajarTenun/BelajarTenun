@@ -1,7 +1,7 @@
 // Sumber kamera. Semua sumber punya antarmuka yang sama:
 //   await src.start(videoOrImgElement)  → mulai
 //   src.element                          → <video>/<img> yang bisa digambar ke canvas
-//   src.kind                             → 'phone' | 'openglass'  (label sumber, ala VisionClaw capture_source)
+//   src.kind                             → 'phone' | 'openglass' | 'file'  (label sumber, ala VisionClaw capture_source)
 //   src.stream (opsional)                → MediaStream untuk dibagikan ke pendamping (WebRTC)
 //   src.onstatus = (text) => {}          → status koneksi
 
@@ -15,6 +15,29 @@ export class PhoneCamera {
     this.onstatus?.('Kamera HP aktif');
   }
   stop() { this.stream?.getTracks().forEach((t) => t.stop()); }
+}
+
+// Video rekaman (mis. video tenun POV berlisensi terbuka) diputar sebagai kamera.
+// Untuk uji coba & demo tanpa alat tenun: tutor tetap menganalisis frame sungguhan.
+export class VideoFileCamera {
+  kind = 'file';
+  constructor(file) { this.file = file; }
+  async start(video) {
+    if (!this.file) throw new Error('pilih berkas video dulu');
+    this.url = URL.createObjectURL(this.file);
+    video.srcObject = null;
+    video.src = this.url;
+    video.muted = true;
+    video.loop = true;
+    await video.play().catch(() => {});
+    this.stream = video.captureStream?.();
+    this.element = video;
+    this.onstatus?.(`Memutar video: ${this.file.name}`);
+  }
+  stop() {
+    if (this.element) { this.element.pause(); this.element.removeAttribute('src'); this.element.load(); }
+    if (this.url) URL.revokeObjectURL(this.url);
+  }
 }
 
 // OpenGlass (ESP32-S3) lewat Web Bluetooth. Protokol dari OpenGlass firmware.ino & DeviceView.tsx:

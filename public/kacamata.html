@@ -29,7 +29,8 @@
   <p><a href="./">← BelajarTenun</a> · <b>Mode kacamata</b>: memakai Glasses API &amp; Gemini Live yang sama dengan kacamata sungguhan (docs/KACAMATA.md).</p>
   <div class="lens" id="lens"><video id="cam" autoplay playsinline muted></video><img id="photo" hidden alt=""><div class="hud-text" id="hud">Pilih kamera lalu "Pakai kacamata"</div></div>
   <div class="row">
-    <label>Kamera <select id="source"><option value="phone">HP / webcam</option><option value="openglass">OpenGlass (Bluetooth)</option></select></label>
+    <label>Kamera <select id="source"><option value="phone">HP / webcam</option><option value="openglass">OpenGlass (Bluetooth)</option><option value="file">Berkas video (uji/demo)</option></select></label>
+    <input type="file" id="video-file" accept="video/*" hidden>
     <label><input type="checkbox" id="audio-only"> Kacamata tanpa layar (suara saja)</label>
     <label id="live-wrap" hidden><input type="checkbox" id="live"> Gemini Live</label>
   </div>
@@ -46,7 +47,7 @@
 </div>
 <script type="module">
 import { api, $ } from './js/api.js';
-import { PhoneCamera, OpenGlassCamera } from './js/sources.js';
+import { PhoneCamera, OpenGlassCamera, VideoFileCamera } from './js/sources.js';
 import { TutorClient } from './js/tutor.js';
 import { renderCard } from './js/cards.js';
 
@@ -55,12 +56,15 @@ const log = (t) => { $('log').textContent = `${new Date().toLocaleTimeString()} 
 const cfg = await api('/api/config');
 $('live-wrap').hidden = !cfg.live;
 if (!OpenGlassCamera.supported()) $('source').options[1].text += ' – butuh Chrome';
+$('source').onchange = () => { $('video-file').hidden = $('source').value !== 'file'; };
 
 $('start').onclick = async () => {
   tutor?.stop(); source?.stop();
   const og = $('source').value === 'openglass';
   $('cam').hidden = og; $('photo').hidden = !og;
-  source = og ? new OpenGlassCamera({ intervalSec: 5 }) : new PhoneCamera();
+  source = og ? new OpenGlassCamera({ intervalSec: 5 })
+    : $('source').value === 'file' ? new VideoFileCamera($('video-file').files[0])
+    : new PhoneCamera();
   source.onstatus = (t) => log(`📡 ${t}`);
   try { await source.start(og ? $('photo') : $('cam')); } catch (e) { log(`kamera: ${e.message}`); }
   $('lens').classList.toggle('audio-only', $('audio-only').checked);
