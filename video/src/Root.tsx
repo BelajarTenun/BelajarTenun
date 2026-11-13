@@ -5,6 +5,7 @@ import { A08Mulai, A09Tahap, A10Kosakata, A11Koreksi, A12Tanya, A13LuarModul } f
 import { A14Pendamping, A16Catatan, A17Progres, A19Arsip, A20Banding, A21Angka, A24Bisnis, A25Peta, A28Penutup } from './closing';
 import { Chip, setFloating } from './theme';
 import { OnAndrew } from './andrew';
+import { FullVideo, FULL_SECONDS } from './full';
 
 // Semua 1920×1080, 30 fps. Nama dengan akhiran "-overlay" dirender transparan untuk ditumpuk di atas footage.
 const S = (sec: number) => Math.round(sec * 30);
@@ -73,6 +74,8 @@ for (const [id, scene, side] of [['SB03-andrew-kacamata', 'kosong', 'kiri'], ['S
   list.push([`${id}-andrew-preview`, OnAndrewById, 9, { scene, side, preview: true, area: 1 }]);
 }
 
+list.push(['FULL-animatic', FullVideo, FULL_SECONDS]);
+
 const cache = new Map<any, any>();
 const withLight = (Comp: React.FC<any>) => {
   if (!cache.has(Comp)) cache.set(Comp, (p: any) => { setFloating(false); return <Comp {...p} />; });
@@ -82,7 +85,7 @@ const withLight = (Comp: React.FC<any>) => {
 export const Root: React.FC = () => (
   <>
     {list.map(([id, C, sec, props]) => (
-      <Composition key={id} id={id} component={id.includes('-andrew-') ? C : withLight(C)} durationInFrames={S(sec)} fps={30} width={1920} height={1080} defaultProps={props ?? {}} />
+      <Composition key={id} id={id} component={id.includes('-andrew-') || id.startsWith('FULL') ? C : withLight(C)} durationInFrames={S(sec)} fps={30} width={1920} height={1080} defaultProps={props ?? {}} />
     ))}
   </>
 );
