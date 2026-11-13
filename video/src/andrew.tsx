@@ -1,32 +1,30 @@
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
-import { C, MONO, fade } from './theme';
+import { MONO, fade, setFloating } from './theme';
 
-// Membungkus adegan mana pun menjadi panel kaca di samping Andrew.
-// Dirender dengan latar transparan (.mov) untuk ditaruh di atas footage Andrew.
-//   side="kanan" → panel di kanan, Andrew di kiri frame (dan sebaliknya)
-//   preview=true → tampilkan siluet penanda Andrew (hanya untuk cek komposisi)
+// Animasi melayang langsung di atas footage Andrew: tanpa kotak, tanpa latar.
+// Isi adegan ditaruh di sisi yang berlawanan dengan Andrew.
+//   side="kanan" → animasi di kanan, Andrew di kiri frame (dan sebaliknya)
+//   preview=true → latar & siluet penanda Andrew, hanya untuk cek komposisi
 export type Side = 'kanan' | 'kiri';
-export const OnAndrew: React.FC<{ Scene: React.FC<any>; sceneProps?: any; side?: Side; preview?: boolean }> = ({ Scene, sceneProps = {}, side = 'kanan', preview }) => {
+export const OnAndrew: React.FC<{ Scene: React.FC<any>; sceneProps?: any; side?: Side; preview?: boolean; area?: number }> = ({ Scene, sceneProps = {}, side = 'kanan', preview, area = 0.62 }) => {
+  setFloating(true);
   const f = useCurrentFrame();
-  const p = fade(f, 0, 14);
-  const W = 1080, H = W * 9 / 16, scale = W / 1920;
-  const left = side === 'kanan' ? 1920 - W - 70 : 70;
+  const W = 1920 * area, scale = area;
+  const left = side === 'kanan' ? 1920 - W - 40 : 40;
   return (
     <AbsoluteFill>
       {preview && (
-        <AbsoluteFill style={{ background: 'linear-gradient(180deg,#5d5a55,#3b3a37)' }}>
-          <svg width="700" height="900" style={{ position: 'absolute', left: side === 'kanan' ? 120 : 1100, bottom: 0 }}>
-            <circle cx="350" cy="260" r="130" fill="#2a2927" />
-            <path d="M80 900 Q80 470 350 450 Q620 470 620 900 Z" fill="#2a2927" />
+        <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 40%, #6d6a64, #2f2e2c)' }}>
+          <svg width="700" height="900" style={{ position: 'absolute', left: side === 'kanan' ? 80 : 1140, bottom: 0 }}>
+            <circle cx="350" cy="260" r="130" fill="#1f1e1c" />
+            <path d="M80 900 Q80 470 350 450 Q620 470 620 900 Z" fill="#1f1e1c" />
           </svg>
-          <div style={{ position: 'absolute', left: side === 'kanan' ? 300 : 1280, bottom: 40, fontFamily: MONO, fontSize: 18, color: 'rgba(255,255,255,0.6)' }}>[ footage Andrew ]</div>
+          <div style={{ position: 'absolute', left: side === 'kanan' ? 260 : 1320, bottom: 40, fontFamily: MONO, fontSize: 18, color: 'rgba(255,255,255,0.5)' }}>[ footage Andrew ]</div>
         </AbsoluteFill>
       )}
-      <div style={{ position: 'absolute', left, top: (1080 - H) / 2, width: W, height: H, borderRadius: 28, overflow: 'hidden', opacity: p, filter: `blur(${(1 - p) * 8}px)`, boxShadow: '0 30px 80px rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.5)' }}>
-        <div style={{ width: 1920, height: 1080, transform: `scale(${scale})`, transformOrigin: 'top left' }}>
-          <Scene {...sceneProps} />
-        </div>
+      <div style={{ position: 'absolute', left, top: (1080 - 1080 * scale) / 2, width: 1920, height: 1080, transform: `scale(${scale})`, transformOrigin: 'top left', opacity: fade(f, 0, 6) }}>
+        <Scene {...sceneProps} />
       </div>
     </AbsoluteFill>
   );

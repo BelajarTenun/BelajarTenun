@@ -3,7 +3,7 @@ import { Composition, AbsoluteFill } from 'remotion';
 import { A01Tangan, A02Masalah, A04Logo, A05Grid, A06Vision, A07Validasi } from './opening';
 import { A08Mulai, A09Tahap, A10Kosakata, A11Koreksi, A12Tanya, A13LuarModul } from './pov';
 import { A14Pendamping, A16Catatan, A17Progres, A19Arsip, A20Banding, A21Angka, A24Bisnis, A25Peta, A28Penutup } from './closing';
-import { Chip } from './theme';
+import { Chip, setFloating } from './theme';
 import { OnAndrew } from './andrew';
 
 // Semua 1920×1080, 30 fps. Nama dengan akhiran "-overlay" dirender transparan untuk ditumpuk di atas footage.
@@ -66,10 +66,16 @@ for (const [id, Scene, sec, side, sp] of andrew) {
   list.push([`${id}-andrew-preview`, OnAndrewById, sec, { scene: id, sceneProps: sp ?? {}, side, preview: true }]);
 }
 
+const cache = new Map<any, any>();
+const withLight = (Comp: React.FC<any>) => {
+  if (!cache.has(Comp)) cache.set(Comp, (p: any) => { setFloating(false); return <Comp {...p} />; });
+  return cache.get(Comp);
+};
+
 export const Root: React.FC = () => (
   <>
     {list.map(([id, C, sec, props]) => (
-      <Composition key={id} id={id} component={C} durationInFrames={S(sec)} fps={30} width={1920} height={1080} defaultProps={props ?? {}} />
+      <Composition key={id} id={id} component={id.includes('-andrew-') ? C : withLight(C)} durationInFrames={S(sec)} fps={30} width={1920} height={1080} defaultProps={props ?? {}} />
     ))}
   </>
 );

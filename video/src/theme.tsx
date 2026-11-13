@@ -2,11 +2,16 @@ import React from 'react';
 import { interpolate, spring, useCurrentFrame, useVideoConfig, Easing, OffthreadVideo, Img, staticFile } from 'remotion';
 
 // Gaya mengikuti video referensi: putih keabu-abuan, teks abu kebiruan, kaca gelap, satu aksen biru untuk AI.
-export const C = {
+const LIGHT = {
   bg: '#EDEDE9', ink: '#2A323C', soft: '#8C96A2', line: '#D6D8D6',
   accent: '#2A323C', gold: '#8C96A2', ok: '#7FB89A', warn: '#E3A86B', ai: '#6EA8F0',
   card: 'rgba(32,34,38,0.52)', cardInk: '#F4F5F2', cardSoft: 'rgba(244,245,242,0.6)',
 };
+// Mode "melayang": dipakai saat animasi ditumpuk langsung di atas footage (tanpa latar).
+const FLOAT = { ...LIGHT, bg: 'transparent', ink: '#FFFFFF', soft: 'rgba(255,255,255,0.68)', line: 'rgba(255,255,255,0.28)', accent: '#FFFFFF', gold: 'rgba(255,255,255,0.68)' };
+export const C = { ...LIGHT };
+export let FLOATING = false;
+export const setFloating = (on: boolean) => { FLOATING = on; Object.assign(C, on ? FLOAT : LIGHT); };
 export const SERIF = "'Instrument Serif', 'Playfair Display', 'DM Serif Display', Georgia, serif";
 export const MONO = "'JetBrains Mono', 'IBM Plex Mono', monospace";
 export const SANS = "Inter, 'Helvetica Neue', Arial, sans-serif";
@@ -32,7 +37,7 @@ export const WordReveal: React.FC<{ text: string; start?: number; per?: number; 
 };
 
 export const Card: React.FC<{ style?: React.CSSProperties; children: React.ReactNode; light?: boolean }> = ({ style, children, light }) => (
-  <div style={{ background: light ? 'rgba(255,255,255,0.55)' : C.card, borderRadius: 18, border: light ? '1px solid rgba(255,255,255,0.7)' : '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(24px)', padding: '20px 26px', fontFamily: SANS, fontWeight: 400, color: light ? C.ink : C.cardInk, ...style }}>{children}</div>
+  <div style={{ background: light && !FLOATING ? 'rgba(255,255,255,0.55)' : C.card, borderRadius: 18, border: light && !FLOATING ? '1px solid rgba(255,255,255,0.7)' : '1px solid rgba(255,255,255,0.14)', backdropFilter: 'blur(24px)', padding: '20px 26px', fontFamily: SANS, fontWeight: 400, color: light && !FLOATING ? C.ink : C.cardInk, ...style }}>{children}</div>
 );
 
 // Label kecil bergaya [RETURNING SIGNAL].
@@ -65,7 +70,7 @@ export const Motif: React.FC<{ opacity?: number }> = ({ opacity = 0.07 }) => (
 );
 
 export const Bg: React.FC<{ children?: React.ReactNode; motif?: boolean }> = ({ children, motif }) => (
-  <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 30% 30%, #F3F4F1 0%, ${C.bg} 55%, #E3E7EA 100%)`, overflow: 'hidden' }}>{children}</div>
+  <div style={{ position: 'absolute', inset: 0, background: FLOATING ? 'transparent' : `radial-gradient(ellipse at 30% 30%, #F3F4F1 0%, ${C.bg} 55%, #E3E7EA 100%)`, overflow: 'hidden', textShadow: FLOATING ? '0 2px 24px rgba(0,0,0,0.45)' : 'none' }}>{children}</div>
 );
 
 // Placeholder video/gambar: ganti `src` dengan file di folder public/.
