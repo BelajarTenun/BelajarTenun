@@ -1,0 +1,49 @@
+import React from 'react';
+import { Composition, AbsoluteFill } from 'remotion';
+import { A01Tangan, A02Masalah, A04Logo, A05Grid, A06Vision, A07Validasi } from './opening';
+import { A08Mulai, A09Tahap, A10Kosakata, A11Koreksi, A12Tanya, A13LuarModul } from './pov';
+import { A14Pendamping, A16Catatan, A17Progres, A19Arsip, A20Banding, A21Angka, A24Bisnis, A25Peta, A28Penutup } from './closing';
+import { Chip } from './theme';
+
+// Semua 1920×1080, 30 fps. Nama dengan akhiran "-overlay" dirender transparan untuk ditumpuk di atas footage.
+const S = (sec: number) => Math.round(sec * 30);
+const ChipOnly: React.FC<{ label: string }> = ({ label }) => <AbsoluteFill><Chip label={label} start={5} /></AbsoluteFill>;
+
+const list: [string, React.FC<any>, number, any?][] = [
+  ['A01-teks-tangan', A01Tangan, 7],
+  ['A02-masalah', A02Masalah, 7.5],
+  ['A04-logo', A04Logo, 8],
+  ['A05-grid-open-source', A05Grid, 8],
+  ['A06-computer-vision', A06Vision, 10],
+  ['A07-validasi', A07Validasi, 9],
+  ['A08-mulai', A08Mulai, 7],
+  ['A08-mulai-overlay', A08Mulai, 7, { overlay: true }],
+  ['A09-tahap', A09Tahap, 10],
+  ['A09-tahap-overlay', A09Tahap, 10, { overlay: true }],
+  ['A10-kosakata', A10Kosakata, 8],
+  ['A10-kosakata-overlay', A10Kosakata, 8, { overlay: true }],
+  ['A11-koreksi', A11Koreksi, 10],
+  ['A11-koreksi-overlay', A11Koreksi, 10, { overlay: true }],
+  ['A12-tanya-overlay', A12Tanya, 9],
+  ['A13-luar-modul-overlay', A13LuarModul, 9],
+  ['A14-pendamping', A14Pendamping, 10],
+  ['A16-catatan', A16Catatan, 8],
+  ['A17-progres', A17Progres, 7],
+  ['A19-arsip', A19Arsip, 8],
+  ['A20-perbandingan', A20Banding, 20],
+  ['A21-angka-uji', A21Angka, 12],
+  ['A24-bisnis', A24Bisnis, 15],
+  ['A25-peta', A25Peta, 10],
+  ['A28-penutup', A28Penutup, 8],
+  ...['KUALITAS', 'ADAPTIF', 'BAHASA DAERAH', 'INTERAKTIF', 'AKSES', 'EFEKTIVITAS', 'PELESTARIAN'].map(
+    (l) => [`chip-${l.toLowerCase().replace(' ', '-')}-overlay`, ChipOnly, 6, { label: l }] as [string, React.FC<any>, number, any],
+  ),
+];
+
+export const Root: React.FC = () => (
+  <>
+    {list.map(([id, C, sec, props]) => (
+      <Composition key={id} id={id} component={C} durationInFrames={S(sec)} fps={30} width={1920} height={1080} defaultProps={props ?? {}} />
+    ))}
+  </>
+);
