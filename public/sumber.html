@@ -9,7 +9,7 @@
 <body class="page">
   <header class="brand">
     <div class="account" id="account"></div>
-    <a href="./">← BelajarTenun</a>
+    <a class="wordmark" href="./">BelajarTenun</a>
     <h1>Sumber Video Tenun</h1>
     <p>Kumpulkan video tenun dari semua tradisi, lalu AI menyusun tahap, alat, istilah, dan draf kurikulum. Penenun meninjaunya di <a href="editor.html">Editor</a>. Status izin menentukan ke mana data boleh dipakai.</p>
   </header>
@@ -56,13 +56,13 @@
   <section class="card">
     <h2>3. Bangun kurikulum dari semua video</h2>
     <p class="hint">Tahap dari semua video dikelompokkan (mis. "membuka mulut lungsi" di berbagai tradisi), lalu dibuat draf modul per tradisi + modul dasar lintas tradisi. Kolom yang sudah divalidasi penenun tidak akan ditimpa.</p>
-    <button id="rebuild" class="primary">🧩 Bangun / perbarui draf kurikulum</button>
+    <button id="rebuild" class="primary">Bangun / perbarui draf kurikulum</button>
     <div id="report"></div>
   </section>
 
   <section class="card">
     <h2>4. Uji tutor dengan dialog (pola HowToDIV)</h2>
-    <div class="row"><select id="dlg-module"></select><input id="dlg-count" type="number" value="2" min="1" max="10" style="width:5rem"><button id="dlg-run">💬 Buat & uji dialog</button></div>
+    <div class="row"><select id="dlg-module"></select><input id="dlg-count" type="number" value="2" min="1" max="10" style="width:5rem"><button id="dlg-run">Buat & uji dialog</button></div>
     <div id="dlg-out"></div>
   </section>
 
@@ -137,9 +137,9 @@ async function showDetail(id) {
   $('d-video').src = current.files?.includes('video.mp4') ? `sources/${id}/video.mp4` : '';
   const dur = current.durationSec || Math.max(1, ...(a.steps || []).map((s) => s.end));
   $('d-timeline').innerHTML = (a.steps || []).map((s) => `<span class="${s.ragu ? 'mistake' : 'done'}" title="${esc(s.title)}" style="left:${(s.start / dur) * 100}%;width:${((s.end - s.start) / dur) * 100}%"></span>`).join('');
-  $('d-steps').innerHTML = a.steps?.length ? a.steps.map((s) => `<div class="seg"><button data-seek="${s.start}">▶ ${fmt(s.start)}</button> <b>${esc(s.title)}</b> ${s.ragu ? '<span class="pill">ragu</span>' : ''}
+  $('d-steps').innerHTML = a.steps?.length ? a.steps.map((s) => `<div class="seg"><button data-seek="${s.start}">Putar ${fmt(s.start)}</button> <b>${esc(s.title)}</b> ${s.ragu ? '<span class="pill">ragu</span>' : ''}
     <small class="hint">${esc((s.tools || []).join(', '))}${s.instruction ? ` — ${esc(s.instruction)}` : ''}</small></div>`).join('') : '<p class="hint">Belum dianalisis.</p>';
-  $('d-terms').innerHTML = (a.terms || []).map((t) => `<li><b>${esc(t.term)}</b>: ${esc(t.meaning_guess)} ${t.said_at != null ? `<button data-seek="${t.said_at}">▶ ${fmt(t.said_at)}</button>` : ''}</li>`).join('') || '<li class="hint">-</li>';
+  $('d-terms').innerHTML = (a.terms || []).map((t) => `<li><b>${esc(t.term)}</b>: ${esc(t.meaning_guess)} ${t.said_at != null ? `<button data-seek="${t.said_at}">Putar ${fmt(t.said_at)}</button>` : ''}</li>`).join('') || '<li class="hint">-</li>';
   $('detail').scrollIntoView({ behavior: 'smooth' });
 }
 $('detail').onclick = (e) => { const t = e.target.dataset.seek; if (t != null) { $('d-video').currentTime = Number(t); $('d-video').play(); } };
@@ -163,7 +163,7 @@ $('dlg-run').onclick = async () => {
   try {
     const { dialogs, results } = await api('/api/dialogs/generate', { moduleId: $('dlg-module').value, count: Number($('dlg-count').value) });
     $('dlg-out').innerHTML = results.map((r, i) => `<details><summary>${dialogs[i].scenario} · skor tutor ${(r.score * 100).toFixed(0)}% (${r.passed}/${r.checks}) · ${dialogs[i].generatedBy}</summary>
-      ${dialogs[i].turns.map((t) => `<p><b>${t.role === 'tutor' ? '🧵 Tutor' : '🙋 Murid'}</b> <small class="pill">${t.intent}</small> ${esc(t.text)}</p>`).join('')}
+      ${dialogs[i].turns.map((t) => `<p><b>${t.role === 'tutor' ? 'Tutor' : 'Murid'}</b> <small class="pill">${t.intent}</small> ${esc(t.text)}</p>`).join('')}
       ${r.failures.length ? `<p class="feedback warn">Gagal: ${esc(r.failures.map((f) => f.turn + (f.reason ? ` (${f.reason})` : '')).join('; '))}</p>` : ''}</details>`).join('');
   } catch (e) { $('dlg-out').innerHTML = `<p class="feedback warn">${esc(e.message)}</p>`; }
 };

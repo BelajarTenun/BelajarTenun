@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="t">
+  <title id="t">Alur video tenun menjadi data belajar</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5b4a3f"/></marker>
+    <style>
+      .box{fill:#fffaf3;stroke:#d8c7b2;stroke-width:1.5}
+      .n{font:700 13px Helvetica,Arial,sans-serif;fill:#ffffff}
+      .hd{font:700 16px Helvetica,Arial,sans-serif;fill:#2b1d14}
+      .tx{font:13px Helvetica,Arial,sans-serif;fill:#4a3a2f}
+      .ln{stroke:#5b4a3f;stroke-width:2;fill:none}
+      .acc{fill:#a3361f}
+      .note{font:italic 13px Helvetica,Arial,sans-serif;fill:#8a6f58}
+    </style>
+  </defs>
+  <rect width="1200" height="300" fill="#ffffff"/>
+  <g>
+    <rect x="20" y="40" width="200" height="170" rx="10" class="box"/>
+    <circle cx="46" cy="66" r="14" class="acc"/><text x="46" y="71" text-anchor="middle" class="n">1</text>
+    <text x="70" y="72" class="hd">Daftarkan</text>
+    <text x="36" y="104" class="tx">Video tenun dari</text>
+    <text x="36" y="124" class="tx">tradisi apa pun</text>
+    <text x="36" y="150" class="tx">Status izin wajib:</text>
+    <text x="36" y="170" class="tx">menentukan pemakaian</text>
+  </g>
+  <path d="M222,125 L254,125" class="ln" marker-end="url(#a)"/>
+  <g>
+    <rect x="258" y="40" width="200" height="170" rx="10" class="box"/>
+    <circle cx="284" cy="66" r="14" class="acc"/><text x="284" y="71" text-anchor="middle" class="n">2</text>
+    <text x="308" y="72" class="hd">Pra-proses</text>
+    <text x="274" y="104" class="tx">ffmpeg: video ringan,</text>
+    <text x="274" y="124" class="tx">audio, foto tajam,</text>
+    <text x="274" y="144" class="tx">pergantian adegan</text>
+  </g>
+  <path d="M460,125 L492,125" class="ln" marker-end="url(#a)"/>
+  <g>
+    <rect x="496" y="40" width="200" height="170" rx="10" class="box"/>
+    <circle cx="522" cy="66" r="14" class="acc"/><text x="522" y="71" text-anchor="middle" class="n">3</text>
+    <text x="546" y="72" class="hd">Analisis AI</text>
+    <text x="512" y="104" class="tx">Tahap + waktu, alat,</text>
+    <text x="512" y="124" class="tx">istilah lokal, kesalahan</text>
+    <text x="512" y="150" class="tx">Dicek dua kali; yang</text>
+    <text x="512" y="170" class="tx">tidak konsisten = ragu</text>
+  </g>
+  <path d="M698,125 L730,125" class="ln" marker-end="url(#a)"/>
+  <g>
+    <rect x="734" y="40" width="200" height="170" rx="10" class="box"/>
+    <circle cx="760" cy="66" r="14" class="acc"/><text x="760" y="71" text-anchor="middle" class="n">4</text>
+    <text x="784" y="72" class="hd">Susun kurikulum</text>
+    <text x="750" y="104" class="tx">Gabungkan tahap mirip</text>
+    <text x="750" y="124" class="tx">antar video &amp; tradisi</text>
+    <text x="750" y="150" class="tx">Draf modul per tradisi</text>
+    <text x="750" y="170" class="tx">+ modul dasar umum</text>
+  </g>
+  <path d="M936,125 L968,125" class="ln" marker-end="url(#a)"/>
+  <g>
+    <rect x="972" y="40" width="208" height="170" rx="10" class="box"/>
+    <circle cx="998" cy="66" r="14" class="acc"/><text x="998" y="71" text-anchor="middle" class="n">5</text>
+    <text x="1022" y="72" class="hd">Tinjau penenun</text>
+    <text x="988" y="104" class="tx">Putar bukti video,</text>
+    <text x="988" y="124" class="tx">perbaiki, terima</text>
+    <text x="988" y="150" class="tx">Lalu terbit ke pemula</text>
+    <text x="988" y="170" class="tx">dan arsip publik</text>
+  </g>
+  <text x="20" y="260" class="note">Isi yang sudah diubah atau divalidasi penenun tidak pernah ditimpa saat kurikulum disusun ulang.</text>
+</svg>

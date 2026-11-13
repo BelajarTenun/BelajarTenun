@@ -9,9 +9,9 @@
 <body class="page">
   <header class="brand">
     <div class="account" id="account"></div>
-    <a href="./">← BelajarTenun</a>
+    <a class="wordmark" href="./">BelajarTenun</a>
     <h1>Editor Kurikulum</h1>
-    <p>Untuk partner penenun: isi dan validasi setiap tahap serta jawaban tutor. Kolom 🤖 usulan AI berasal dari video — putar buktinya, perbaiki, lalu terima. <a href="sumber.html">🎞️ Sumber video</a> · <a href="rekam.html">🎥 Rekam</a> · <a href="anotasi.html">🏷️ Anotasi</a></p>
+    <p>Untuk partner penenun: isi dan validasi setiap tahap serta jawaban tutor. Kolom berlabel "usulan AI" berasal dari video: putar buktinya, perbaiki, lalu terima. <a href="sumber.html">Sumber video</a> · <a href="rekam.html">Rekam</a> · <a href="anotasi.html">Anotasi</a></p>
   </header>
 
   <section class="card">
@@ -25,7 +25,7 @@
   </section>
 
   <section class="card" id="evidence" hidden>
-    <h3>Bukti video <button id="ev-close" style="float:right">✕</button></h3>
+    <h3>Bukti video <button id="ev-close" style="float:right" aria-label="Tutup">Tutup</button></h3>
     <video id="ev-video" controls playsinline></video>
     <p id="ev-meta" class="hint"></p>
   </section>
@@ -40,13 +40,13 @@
   <ul id="unanswered" class="rec-list"></ul>
 
   <h2 class="section-title">Knowledge base (tanya jawab)</h2>
-  <p class="hint">Status: <b>draft</b> → <b>ditinjau</b> → <b>tervalidasi</b>. Di produksi hanya entri tervalidasi yang dipakai tutor.</p>
+  <p class="hint">Status: <b>draft</b>, lalu <b>ditinjau</b>, lalu <b>tervalidasi</b>. Di produksi hanya entri tervalidasi yang dipakai tutor.</p>
   <div id="kb"></div>
   <button id="add-kb">+ Tambah tanya jawab</button>
 
   <div class="savebar">
     <span id="msg" class="feedback"></span>
-    <button id="save" class="primary">💾 Simpan semua</button>
+    <button id="save" class="primary">Simpan semua</button>
   </div>
 
 <script type="module">
@@ -54,7 +54,7 @@ import { api, $, esc, requireLogin, accountBadge } from './js/api.js';
 const cfg = await requireLogin(['partner']);
 accountBadge($('account'), cfg.user);
 let mod, kb, modules;
-const BADGE = { usulan_ai: ['🤖 usulan AI', 'pill'], diubah: ['✏️ diubah', 'pill'], tervalidasi: ['✔ tervalidasi', 'tag ok-tag'] };
+const BADGE = { usulan_ai: ['usulan AI', 'pill'], diubah: ['diubah', 'pill'], tervalidasi: ['tervalidasi', 'tag ok-tag'] };
 const badge = (s, k) => { const st = s?.fieldStatus?.[k]; if (!st) return ''; const [t, c] = BADGE[st] || [st, 'pill']; return ` <span class="${c}">${t}</span>${st !== 'tervalidasi' ? ` <button type="button" data-accept="${k}">Terima</button>` : ''}`; };
 const field = (label, key, val, rows, type = 'text', s = null) => rows
   ? `<label>${label}${badge(s, key)}<textarea data-k="${key}" rows="${rows}">${esc(val)}</textarea></label>`
@@ -63,10 +63,10 @@ const field = (label, key, val, rows, type = 'text', s = null) => rows
 function stepCard(s, i) {
   const mistakes = (s.common_mistakes || []).map((m) => `${m.mistake} => ${m.fix}`).join('\n');
   return `<section class="card" data-step="${i}">
-    <h3>Tahap ${i + 1} ${s.validated_by ? '<span class="tag ok-tag">✔ tervalidasi</span>' : '<span class="tag">belum divalidasi</span>'}</h3>
+    <h3>Tahap ${i + 1} ${s.validated_by ? '<span class="tag ok-tag">tervalidasi</span>' : '<span class="tag">belum divalidasi</span>'}</h3>
     ${field('ID (huruf kecil-tanda-hubung)', 'id', s.id)}
-    ${(s.provenance || []).length ? `<p class="hint">Bukti dari video: ${s.provenance.map((p, j) => `<button type="button" data-ev="${j}">▶ ${esc(p.sourceId)} ${Math.floor(p.start)}–${Math.ceil(p.end)} dtk</button>`).join(' ')}${s.genericStepId ? ` · tahap umum: <span class="pill">${esc(s.genericStepId)}</span>` : ''}</p>` : ''}
-    ${s.fieldStatus ? '<button type="button" data-accept="*">✔ Terima semua kolom tahap ini</button>' : ''}
+    ${(s.provenance || []).length ? `<p class="hint">Bukti dari video: ${s.provenance.map((p, j) => `<button type="button" data-ev="${j}">Putar ${esc(p.sourceId)} ${Math.floor(p.start)}–${Math.ceil(p.end)} dtk</button>`).join(' ')}${s.genericStepId ? ` · tahap umum: <span class="pill">${esc(s.genericStepId)}</span>` : ''}</p>` : ''}
+    ${s.fieldStatus ? '<button type="button" data-accept="*">Terima semua kolom tahap ini</button>' : ''}
     ${field('Judul', 'title', s.title, 0, 'text', s)}
     ${field('Instruksi (seperti diucapkan ke murid)', 'instruction', s.instruction, 3, 'text', s)}
     ${field('Tips / petunjuk (satu per baris; dipakai tutor saat murid terlihat kesulitan)', 'tips', (s.tips || []).join('\n'), 2, 'text', s)}
@@ -77,7 +77,7 @@ function stepCard(s, i) {
     <div class="grid2">${field('Konfirmasi kamera berturut-turut sebelum "selesai"', 'confirm_frames', s.confirm_frames ?? 2, 0, 'number')}${field('Keyakinan minimum AI (0–1)', 'min_confidence', s.min_confidence ?? 0.6, 0, 'number')}</div>
     <label class="toggle"><input type="checkbox" data-k="auto_detect" ${s.auto_detect ? 'checked' : ''}> Deteksi otomatis dengan kamera</label>
     ${field('Divalidasi oleh (nama penenun; kosongkan jika belum)', 'validated_by', s.validated_by)}
-    <div class="row"><button data-act="up">↑</button><button data-act="down">↓</button><button data-act="del">Hapus</button></div>
+    <div class="row"><button data-act="up">Naik</button><button data-act="down">Turun</button><button data-act="del">Hapus</button></div>
   </section>`;
 }
 function kbCard(e, i) {
@@ -169,7 +169,7 @@ $('unanswered').onclick = (e) => {
 };
 $('save').onclick = async () => {
   collect();
-  try { await api('/api/module', mod); await api('/api/knowledge', kb); msg('Tersimpan ✔', 'ok'); await loadModules(); render(); }
+  try { await api('/api/module', mod); await api('/api/knowledge', kb); msg('Tersimpan.', 'ok'); await loadModules(); render(); }
   catch (e) { msg(e.message, 'warn'); }
 };
 async function loadModules() {
@@ -182,7 +182,7 @@ const want = new URLSearchParams(location.search).get('module');
 await loadExtras();
 await loadModules();
 const { items } = await api('/api/knowledge/unanswered');
-$('unanswered').innerHTML = items.slice(0, 30).map((u) => `<li>${esc(u.question)} <small>${u.at.slice(0, 10)} · ${esc(u.step || '')}</small> <button data-q="${esc(u.question)}">Jadikan entri</button></li>`).join('') || '<li>Tidak ada. 👍</li>';
+$('unanswered').innerHTML = items.slice(0, 30).map((u) => `<li>${esc(u.question)} <small>${u.at.slice(0, 10)} · ${esc(u.step || '')}</small> <button data-q="${esc(u.question)}">Jadikan entri</button></li>`).join('') || '<li>Tidak ada.</li>';
 render();
 </script>
 </body>

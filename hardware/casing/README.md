@@ -1,61 +1,76 @@
 # Casing Kacamata BelajarTenun
 
-Casing 3D untuk memasang **Seeed Studio XIAO ESP32S3 Sense** dan baterai **LiPo 502030 (250 mAh)** di engsel depan kacamata biasa. Konsepnya mengikuti casing OpenGlass (kotak + tutup samping), dengan penyesuaian untuk menenun.
+Desainnya mengikuti cara OpenGlass. **Modul kamera dipisah dari board** dan ditempel di ujung bingkai (dekat engsel) menghadap ke depan, tersambung ke XIAO lewat kabel pita (FPC). Kotak casing di gagang hanya berisi XIAO dan baterai.
 
-| Rakitan | Badan | Tutup + penjepit |
+<p align="center">
+  <img src="../../docs/assets/kacamata-render.png" alt="Kacamata dengan casing BelajarTenun" width="720">
+</p>
+
+| Casing dan isinya | Casing tampak depan | Dudukan kamera |
 |---|---|---|
-| ![rakitan](pratinjau-rakitan.png) | ![badan](pratinjau-badan.png) | ![tutup](pratinjau-tutup.png) |
+| ![Tampilan terurai](../../docs/assets/casing-terurai.png) | ![Casing depan](../../docs/assets/casing-depan.png) | ![Dudukan kamera](../../docs/assets/dudukan-kamera.png) |
 
-## Isi folder
-| Berkas | Keterangan |
+## Bagian yang dicetak
+
+| Berkas | Bagian | Keterangan |
+|---|---|---|
+| `body.stl` | Badan casing | XIAO berdiri di depan, baterai di belakang. Dinding depan: celah kabel kamera, LED privasi, lubang mikrofon. Atas: tombol. Bawah: USB-C. |
+| `lid.stl` | Tutup + penjepit | Tutup samping dengan bibir pas-tekan. Penjepit gagang dengan bibir pengunci, bisa dilepas tanpa lem. |
+| `camera.stl` | Dudukan kamera | Kantong papan modul kamera (masuk dari belakang), lubang lensa, jalur kabel ke bawah, dan sirip untuk ditempel ke ujung bingkai. Kamera menunduk **25°** supaya tangan dan lungsi terlihat. |
+| `*-v2-speaker.stl` | Varian v2 | Ruang tambahan untuk amplifier MAX98357A dan speaker 15 mm (lihat di bawah). |
+| `belajartenun_casing.scad` | Sumber | Model parametrik OpenSCAD. Semua ukuran bisa diubah di bagian atas file. |
+
+Ukuran luar badan casing ±23 × 22 × 37 mm, dudukan kamera ±13 × 8 × 13 mm.
+
+## Sebelum mencetak: ukur komponenmu
+
+Ukuran default diambil dari spesifikasi umum. Ukur dulu, lalu ubah parameter di `belajartenun_casing.scad`:
+
+| Parameter | Yang diukur |
 |---|---|
-| `belajartenun_casing.scad` | Model parametrik OpenSCAD (sumber utama, ubah ukuran di sini) |
-| `body.stl` | Badan casing, siap cetak (posisi berdiri, sisi terbuka ke samping) |
-| `lid.stl` | Tutup + penjepit gagang, siap cetak (rebah) |
+| `stack_d` | Tebal XIAO + board Sense setelah modul kamera dilepas |
+| `usb_y` | Jarak tengah port USB-C dari dinding depan |
+| `cam_module`, `cam_module_t` | Lebar dan tebal papan modul kamera |
+| `lens_d` | Diameter laras lensa |
+| `temple_t`, `temple_h` | Tebal dan tinggi gagang kacamata di dekat engsel |
+| `camera_tilt` | Seberapa menunduk kamera (default 25°) |
 
-## Bedanya dengan casing OpenGlass
-- **Kamera menunduk 25°** (`camera_tilt`) supaya tangan, lungsi, dan pakan terlihat saat menenun. OpenGlass menghadap lurus ke depan.
-- **Penjepit gagang** (`mount = "clip"`) dengan bibir pengunci, jadi casing bisa dilepas dan tidak perlu lem. Untuk gaya OpenGlass (sirip dilem), pakai `mount = "tab"`.
-- **Lubang LED privasi** 3 mm di sebelah lensa (wajib menyala saat kamera aktif), **lubang tombol** di atas, **lubang mikrofon**, dan **lubang USB-C** di bawah untuk mengisi daya.
-- **Kantong modul kamera** di dinding depan supaya lensa tidak goyang.
+Buat ulang STL setelah mengubah parameter:
 
-## Ukuran
-- Luar badan ±23 × 26 × 37 mm (tanpa penjepit), sebanding dengan OpenGlass (±41 × 25 × 36 mm termasuk tutup).
-- Rongga dalam: XIAO + board Sense + kamera (17,8 × 21 × 15 mm) di depan, baterai berdiri di belakang.
-
-**Ukur komponenmu dulu** sebelum mencetak. Ukuran yang paling sering berbeda:
-- `stack_d`: tebal tumpukan XIAO + Sense + kamera
-- `usb_y`: posisi port USB-C dari dinding depan
-- `lens_z`: tinggi lensa kamera
-- `temple_t` / `temple_h`: tebal dan tinggi gagang kacamatamu di dekat engsel
-
-## Cara membuat STL
-Ubah parameter di bagian atas `.scad`, lalu:
 ```bash
 openscad -D 'part="body"' -o body.stl belajartenun_casing.scad
 ```
+
 ```bash
 openscad -D 'part="lid"' -o lid.stl belajartenun_casing.scad
 ```
-Pratinjau rakitan: buka `.scad` di OpenSCAD (part `"assembly"`). Warna hijau = board, abu-abu muda = baterai.
 
-## Pengaturan cetak (saran)
-- Bahan **PETG** (lebih tahan panas dan lentur untuk penjepit) atau PLA.
-- Layer 0,2 mm, dinding 3 garis, infill 30–40%.
-- Badan dicetak berdiri dengan sisi terbuka ke samping; tutup dicetak rebah. Lubang lensa dan USB di dinding vertikal tidak butuh support. Penjepit mungkin butuh support kecil, tergantung kemiringan.
-- Cetak percobaan dulu, lalu sesuaikan `tol` (kelonggaran, default 0,4 mm) dan `temple_t`.
+```bash
+openscad -D 'part="camera"' -o camera.stl belajartenun_casing.scad
+```
+
+## Pengaturan cetak
+
+| Pengaturan | Saran |
+|---|---|
+| Bahan | PETG (lebih tahan panas, penjepit lebih lentur) atau PLA |
+| Tinggi layer | 0,2 mm (0,12 mm untuk dudukan kamera) |
+| Dinding / infill | 3 garis, 30–40% |
+| Orientasi | Badan berdiri dengan sisi terbuka ke samping; tutup rebah; dudukan kamera dengan sirip di bawah |
+| Support | Tidak perlu untuk badan dan dudukan; penjepit mungkin butuh support kecil |
+
+Cetak satu kali percobaan, lalu sesuaikan `tol` (kelonggaran, default 0,4 mm) dan ukuran gagang.
 
 ## Merakit
-1. Pasang kamera ke board Sense, lalu dorong modul kamera ke kantong lensa di dinding depan (beri sedikit lem bila longgar).
-2. Masukkan XIAO berdiri di bagian depan dengan port USB-C menghadap lubang bawah.
-3. Solder baterai ke pad BAT+/BAT− di bawah XIAO, lalu letakkan baterai di belakang sekat. Tambahkan isolasi Kapton di antara baterai dan board.
-4. (Opsional) Pasang tombol taktil 6×6 di bawah lubang atas dan LED 3 mm + resistor di lubang LED, sambungkan ke GPIO (lihat firmware).
-5. Tekan tutup sampai bibirnya masuk, lalu jepitkan ke gagang kacamata dekat engsel, sisi kamera menghadap ke depan.
 
-⚠️ LiPo: jangan tertusuk, tertekuk, atau terjepit; jangan dicas tanpa pengawasan di dalam casing tertutup saat pertama kali diuji.
+1. Lepas modul kamera dari board Sense. Masukkan papan modul ke kantong dudukan kamera dari belakang, kabel pita keluar lewat jalur di bawah.
+2. Tempel sirip dudukan kamera di sisi luar ujung bingkai dekat engsel (lem atau selotip dua sisi tipis), lensa menghadap ke depan.
+3. Masukkan XIAO berdiri di bagian depan casing dengan USB-C menghadap lubang bawah. Lewatkan kabel pita kamera melalui celah di dinding depan, lalu sambungkan kembali ke konektor board Sense.
+4. Solder baterai ke pad BAT+/BAT− XIAO, tombol, LED privasi, dan pembagi tegangan (skema di [`../README.md`](../README.md)). Letakkan baterai di belakang sekat, beri isolasi Kapton di antara baterai dan board.
+5. Tekan tutup sampai bibirnya masuk, lalu jepitkan casing ke gagang tepat di belakang engsel.
 
-## Varian v2: mik + speaker di kacamata
-`with_speaker = true` menambah ruang untuk amplifier **MAX98357A** dan speaker mikro 15 mm, serta kisi speaker di dinding belakang (mengarah ke telinga). Casing menjadi ±23 × 31 × 43 mm.
-- STL siap pakai: `body-v2-speaker.stl`, `lid-v2-speaker.stl`
-- Pratinjau: `pratinjau-v2-speaker.png`
-- Untuk MVP **tidak disarankan** (lihat `../README.md`); firmware audio di kacamata belum dibuat.
+Hati-hati dengan LiPo: jangan tertusuk, tertekuk, atau terjepit, dan jangan diisi daya tanpa diawasi saat pertama kali diuji.
+
+## Varian v2: mikrofon + speaker di kacamata
+
+Atur `with_speaker = true` untuk menambah ruang amplifier MAX98357A dan speaker mikro 15 mm, dengan kisi speaker di dinding belakang (mengarah ke telinga). Casing menjadi ±23 × 27 × 43 mm. Untuk MVP varian ini tidak disarankan (alasannya di [`../README.md`](../README.md)), dan firmware audio di kacamata belum dibuat.

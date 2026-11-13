@@ -49,10 +49,10 @@ Coba tanpa hardware: buka **`/kacamata.html`**. Halaman ini bisa memakai kamera 
 ## Pilihan perangkat
 | Perangkat | Kamera | Layar lensa | Cara sambung | Catatan |
 |---|---|---|---|---|
-| Brilliant Labs Frame / Halo | ✅ | ✅ | SDK terbuka (Bluetooth ke HP) → HP memanggil Glasses API | Paling cocok untuk v1–v2: open source, ada HUD |
-| Kacamata MentraOS (mis. Mentra Live) | ✅ | tergantung model | Buat "app" MentraOS yang meneruskan foto & transkrip ke Glasses API | Satu app bisa jalan di beberapa merek |
-| Meta Ray-Ban | ✅ | ❌ (audio saja) | Lewat SDK resmi Meta untuk developer, atau pola VisionClaw/OpenGlass | Populer; tanpa HUD, `display` diabaikan |
-| DIY ESP32 kamera (OpenGlass) | ✅ | ❌ | Firmware kirim JPEG ke HP/server | Termurah untuk purwarupa lomba/riset |
+| Brilliant Labs Frame / Halo | Ya | Ya | SDK terbuka (Bluetooth ke HP) → HP memanggil Glasses API | Paling cocok untuk v1–v2: open source, ada HUD |
+| Kacamata MentraOS (mis. Mentra Live) | Ya | tergantung model | Buat "app" MentraOS yang meneruskan foto & transkrip ke Glasses API | Satu app bisa jalan di beberapa merek |
+| Meta Ray-Ban | Ya | Tidak (audio saja) | Lewat SDK resmi Meta untuk developer, atau pola VisionClaw/OpenGlass | Populer; tanpa HUD, `display` diabaikan |
+| DIY ESP32 kamera (OpenGlass) | Ya | Tidak | Firmware kirim JPEG ke HP/server | Termurah untuk purwarupa lomba/riset |
 
 > Ketersediaan SDK, akses kamera, dan syarat developer tiap merek berubah cepat. Cek dokumentasi resminya sebelum membeli.
 

@@ -25,7 +25,7 @@
 - Cookie sesi bertanda tangan HMAC, `HttpOnly`, `SameSite=Lax`, dan `Secure` di produksi.
 - Header keamanan dan `Permissions-Policy` membatasi kamera, mikrofon, dan Bluetooth ke situs sendiri.
 - API key Gemini tidak pernah dikirim ke perangkat. Gemini Live memakai token sementara sekali pakai.
-- Indikator merah 🔴 di layar latihan menandakan kamera aktif.
+- Titik merah di layar latihan menandakan kamera aktif.
 
 ## Yang masih perlu
 - Formulir persetujuan tertulis (cetak) yang ditinjau pendamping hukum/komunitas.

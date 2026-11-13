@@ -38,6 +38,6 @@ g++ -std=c++17 -I src test/test_protocol.cpp -o /tmp/t && /tmp/t
 | Baterai | `0x180F/0x2A19` | read/notify | persen |
 
 ## Status pengujian
-- ✅ Logika protokol, perintah, tombol, dan baterai: 121 cek di komputer; perakitan foto lintas bahasa (firmware C++ → aplikasi JS) dites di `npm test`.
-- ✅ Dikompilasi oleh CI GitHub Actions (PlatformIO, espressif32 6.9.0).
-- ⏳ **Belum diuji di board asli.** Uji urutan: serial monitor → sambung BLE dari aplikasi → LED menyala → foto masuk → tombol → Wi-Fi.
+- Sudah: Logika protokol, perintah, tombol, dan baterai: 121 cek di komputer; perakitan foto lintas bahasa (firmware C++ → aplikasi JS) dites di `npm test`.
+- Sudah: Dikompilasi oleh CI GitHub Actions (PlatformIO, espressif32 6.9.0).
+- Belum: **Belum diuji di board asli.** Uji urutan: serial monitor → sambung BLE dari aplikasi → LED menyala → foto masuk → tombol → Wi-Fi.

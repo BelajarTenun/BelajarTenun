@@ -9,7 +9,7 @@
 <body class="page">
   <header class="brand">
     <div class="account" id="account"></div>
-    <a href="./">← BelajarTenun</a>
+    <a class="wordmark" href="./">BelajarTenun</a>
     <h1>Progres Belajar</h1>
     <p id="scope"></p>
   </header>
@@ -50,7 +50,7 @@ async function render() {
   const sv = p.survey;
   $('survey').innerHTML = sv?.n ? `<div class="stats">${stat(sv.mudah ?? '-', 'mudah diikuti (1–5)')}${stat(sv.paham ?? '-', 'paham alasan (1–5)')}${stat(sv.percaya_diri ?? '-', 'percaya diri (1–5)')}</div><p class="hint">${sv.n} jawaban.</p><ul>${sv.comments.slice(0, 10).map((c) => `<li>${esc(c)}</li>`).join('')}</ul>` : '<p>Belum ada jawaban.</p>';
   $('sessions').innerHTML = p.sessions.length ? `<table><tr><th>Mulai</th><th>Sumber</th><th>Tahap selesai</th><th>Durasi</th><th>Status</th></tr>${p.sessions.slice(0, 50).map((s) =>
-    `<tr><td>${String(s.start).slice(0, 16).replace('T', ' ')}</td><td>${esc(s.source || '-')}</td><td>${s.stepsDone}</td><td>${s.minutes} mnt</td><td>${s.done ? '✅' : '—'}</td></tr>`).join('')}</table>` : '<p>Belum ada sesi.</p>';
+    `<tr><td>${String(s.start).slice(0, 16).replace('T', ' ')}</td><td>${esc(s.source || '-')}</td><td>${s.stepsDone}</td><td>${s.minutes} mnt</td><td>${s.done ? 'Selesai' : '—'}</td></tr>`).join('')}</table>` : '<p>Belum ada sesi.</p>';
 }
 render();
 </script>

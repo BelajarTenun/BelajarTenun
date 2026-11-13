@@ -9,7 +9,7 @@
 <body class="page">
   <header class="brand">
     <div class="account" id="account"></div>
-    <a href="./">← BelajarTenun</a>
+    <a class="wordmark" href="./">BelajarTenun</a>
     <h1>Anotasi Rekaman</h1>
     <p>Tandai kapan tiap tahap dikerjakan dalam video (seperti anotasi <i>step detection</i> di dataset Watch-Talk-and-Guide). Hasilnya diekspor menjadi frame berlabel untuk uji akurasi, contoh untuk AI, dan data latih model.</p>
   </header>
@@ -21,19 +21,19 @@
     <p class="hint">Waktu sekarang: <b id="now">0.0</b> dtk. Pilih tahap & label, tekan <b>Mulai</b> saat tahap dimulai dan <b>Akhir</b> saat selesai.</p>
     <div class="row">
       <select id="step"></select>
-      <select id="label"><option value="not_yet">⏳ sedang dikerjakan</option><option value="done">✅ berhasil/selesai</option><option value="mistake">⚠️ kesalahan</option></select>
+      <select id="label"><option value="not_yet">Sedang dikerjakan</option><option value="done">Berhasil / selesai</option><option value="mistake">Kesalahan</option></select>
       <select id="mistake" hidden></select>
-      <button id="mark-start">⏱ Mulai</button>
-      <button id="mark-end" class="primary">⏱ Akhir</button>
+      <button id="mark-start">Tandai mulai</button>
+      <button id="mark-end" class="primary">Tandai akhir</button>
     </div>
   </section>
 
   <section class="card">
     <h2>Segmen</h2>
     <div class="row">
-      <button id="auto">🤖 Usulan AI</button>
-      <button id="save" class="primary">💾 Simpan segmen</button>
-      <button id="export">🖼️ Ekspor frame berlabel</button>
+      <button id="auto">Usulan AI</button>
+      <button id="save" class="primary">Simpan segmen</button>
+      <button id="export">Ekspor frame berlabel</button>
     </div>
     <p id="status" class="feedback"></p>
     <div id="segments"></div>
@@ -56,7 +56,7 @@ function renderSegments() {
   $('segments').innerHTML = segments.map((s, i) => `<div class="seg" data-i="${i}">
     <b>${esc(stepTitle(s.stepId))}</b> <span class="pill">${s.label}${s.mistakeIndex ? ' #' + s.mistakeIndex : ''}</span> ${s.by === 'ai' ? '<span class="pill">usulan AI</span>' : ''}
     <input type="number" step="0.1" data-k="start" value="${s.start}"> – <input type="number" step="0.1" data-k="end" value="${s.end}"> dtk
-    <button data-act="play">▶ ${fmt(s.start)}</button>
+    <button data-act="play">Putar ${fmt(s.start)}</button>
     ${s.label === 'done' ? '<button data-act="demo">Jadikan demo</button>' : ''}
     <button data-act="del">Hapus</button></div>`).join('') || '<p class="hint">Belum ada segmen.</p>';
 }
@@ -112,7 +112,7 @@ $('segments').onclick = async (e) => {
 };
 $('save').onclick = async () => {
   if (!segments.length && !confirm('Belum ada segmen. Simpan kosong (menghapus segmen lama)?')) return;
-  try { rec = await api('/api/recordings/segments', { id: rec.id, segments }); recs = recs.map((r) => (r.id === rec.id ? rec : r)); status('Segmen tersimpan ✔', 'ok'); }
+  try { rec = await api('/api/recordings/segments', { id: rec.id, segments }); recs = recs.map((r) => (r.id === rec.id ? rec : r)); status('Segmen tersimpan.', 'ok'); }
   catch (e) { status(e.message, 'warn'); }
 };
 $('auto').onclick = async () => {
@@ -147,7 +147,7 @@ $('export').onclick = async () => {
 recs = (await api('/api/recordings')).recordings.filter((r) => r.files.some((f) => /\.(webm|mp4)$/.test(f)));
 if (!recs.length) { status('Belum ada rekaman video. Rekam dulu di halaman Rekam.', 'warn'); }
 else {
-  $('rec').innerHTML = recs.map((r) => `<option value="${r.id}">${r.stepId === 'full' ? '🎬 ' : ''}${esc(r.id)} · ${esc(r.weaver || '')}</option>`).join('');
+  $('rec').innerHTML = recs.map((r) => `<option value="${r.id}">${r.stepId === 'full' ? 'Sesi penuh · ' : ''}${esc(r.id)} · ${esc(r.weaver || '')}</option>`).join('');
   const want = new URLSearchParams(location.search).get('id');
   if (want && recs.some((r) => r.id === want)) $('rec').value = want;
   $('rec').onchange = (e) => selectRec(e.target.value);
