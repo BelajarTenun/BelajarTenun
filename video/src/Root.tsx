@@ -7,6 +7,7 @@ import { Chip, setFloating } from './theme';
 import { OnAndrew } from './andrew';
 import { FullVideo, FULL_SECONDS } from './full';
 import { Babak1, BABAK1_SECONDS } from './babak1';
+import { StyleTest, STYLE_SECONDS } from './styletest';
 
 // Semua 1920×1080, 30 fps. Nama dengan akhiran "-overlay" dirender transparan untuk ditumpuk di atas footage.
 const S = (sec: number) => Math.round(sec * 30);
@@ -77,6 +78,7 @@ for (const [id, scene, side] of [['SB03-andrew-kacamata', 'kosong', 'kiri'], ['S
 
 list.push(['FULL-animatic', FullVideo, FULL_SECONDS]);
 list.push(['FULL-babak1', Babak1, BABAK1_SECONDS]);
+list.push(['STYLE-test', StyleTest, STYLE_SECONDS]);
 
 const cache = new Map<any, any>();
 const withLight = (Comp: React.FC<any>) => {
