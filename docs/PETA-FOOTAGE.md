@@ -20,16 +20,15 @@ Hasil transkripsi Whisper (lengkap: `docs/TRANSKRIP-FOOTAGE.txt`). Semua file 10
 | 16 | IMG_7637b | "Setiap sesi meninggalkan catatan…" | Suara di bawah animasi |
 | 17 | IMG_7637c | "Dari situ kami bisa mengukur efektivitasnya…" | Suara di bawah animasi |
 | 18 | IMG_7639 | "Pengetahuan yang sudah divalidasi…" | Suara di bawah animasi |
+| 19 | IMG_7639 (baru, 0,4–16,3) | "Video tutorial tidak bisa melihat kesalahan kita… dan tetap setia pada ilmu penenunnya." | Andrew, geser ke kanan |
 | 20 | IMG_7643c | "Kami menguji deteksi tahapnya dengan berbagai video tenun berlabel dari berbagai tradisi." | Suara di bawah animasi |
 | 22 | IMG_7643a | "Kami mulai dari sanggar dan sekolah…" | Andrew, geser ke kiri |
-| 23 | IMG_7643d | "…dari Indonesia ke dunia." | Suara di bawah animasi peta |
+| 23 | IMG_7643 (baru, 0,7–6,7) | "Dari satu tradisi ke seluruh tradisi Indonesia, dari Indonesia ke dunia." | Suara di bawah animasi peta |
 | 25 | IMG_7643b | "BelajarTenun. Belajar menenun, dipandu ilmu Nusantara." | Andrew |
 
 Tidak dipakai sebagai suara: IMG_7653 (obrolan saat merekam, gambarnya dipakai tanpa suara), IMG_7644 (B-roll), IMG_7652 (B-roll).
 
 ## Belum ada
 
-- **Adegan 19** (perbandingan): kalimat "Video tutorial tidak bisa melihat kesalahan kita…" belum direkam.
-- **Adegan 23** bagian awal: "Dari satu tradisi ke seluruh tradisi tenun Nusantara," hanya ada "dari Indonesia ke dunia".
 - **Adegan 21**: "Hasilnya bisa diperiksa ulang siapa saja." (boleh dihapus).
 - Rekam layar HP saat sesi berjalan & rekam layar `npm run evaluate` (tanpa ini, tampilan HP dibuat sebagai animasi yang meniru UI asli).
