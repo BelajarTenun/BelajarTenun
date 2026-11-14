@@ -82,9 +82,7 @@ Alur produk yang ditunjukkan apa adanya: **kacamata = kamera**, tersambung lewat
 
 ## Babak 4 · Akses (1:52–2:12)
 
-**14 · 1:52–2:04 · 🎨**
-- HP penenun (halaman Pendamping) menampilkan POV murid → pesan diketik → gelembung melengkung masuk ke tampilan kacamata.
-- Tutor: "Pesan dari Ibu [nama]: coba tekan lebih pelan."
+*(Adegan 14 · pendamping jarak jauh dihapus: tidak ada suara tutor untuknya.)*
 
 **15 · 2:04–2:12 · 🎤 · [ AKSES ]**
 - Andrew di tengah.
