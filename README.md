@@ -157,6 +157,27 @@ Setiap video punya **status izin** yang menentukan ke mana datanya boleh dipakai
 
 Rekaman partner mengikuti alur yang sama lewat `/rekam.html` dan `/anotasi.html`. Foto yang ditandai "berhasil" otomatis menjadi contoh untuk deteksi kamera, dan akurasinya bisa diukur dengan `npm run evaluate`.
 
+## Evaluasi
+
+Tiga kemampuan tutor diukur terpisah, dengan metrik yang lazim di riset asisten prosedural dari sudut pandang pemakai (*egocentric procedural assistant*):
+
+| Kemampuan | Perintah | Metrik |
+|---|---|---|
+| Pelacakan tahap & deteksi kesalahan dari foto kacamata | `node scripts/evaluate.js` | Akurasi, macro-F1, Cohen's kappa, P/R/F1 per kelas, F1 deteksi kesalahan, ketepatan jenis kesalahan, tingkat salah bilang "selesai", latensi p50/p95 |
+| Pemotongan video jadi tahap | `npm run eval:segmentation` | F1@{10,25,50} (IoU), Edit score, F1 batas tahap ±3 detik |
+| Tanya jawab pemula | `npm run eval:qa` | Recall@k, MRR, penolakan pertanyaan di luar cakupan, keterdukungan jawaban oleh sumber (opsional, `--judge`) |
+| Kartu dataset | `npm run dataset-card` | Komposisi per penenun/tahap/label, cakupan izin, pembagian data |
+
+Protokol:
+
+- **Pembagian per penenun** (60/20/20, deterministik). Frame dari satu penenun hanya ada di satu split, jadi skor uji mengukur kemampuan pada penenun yang belum pernah dilihat. Contoh *few-shot* hanya diambil dari split latih.
+- **Usulan AI vs tinjauan manusia.** Usulan segmen asli AI disimpan terpisah, lalu dibandingkan dengan hasil akhir setelah dikoreksi penenun.
+- **Interval kepercayaan bootstrap 95%** untuk setiap angka utama.
+- **Catatan reproduksi** di setiap hasil: commit, model, penyedia AI, dan sidik jari data uji.
+- Set uji tanya jawab (`data/eval/qa.json`) memakai kata-kata pemula dan sengaja berisi pertanyaan di luar cakupan.
+
+Hasil tersimpan di `logs/eval/` (JSON lengkap + ringkasan Markdown).
+
 ## Struktur repositori
 
 ```
