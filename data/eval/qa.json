@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "description": "Set uji tanya jawab pemula. expected = id entri pengetahuan yang benar; kosong = di luar cakupan, tutor harus menolak (tidak mengarang). Pertanyaan ditulis dengan kata-kata pemula, bukan menyalin pertanyaan di basis pengetahuan.",
+  "items": [
+    { "q": "benang yang memanjang sama yang melintang itu namanya apa ya?", "expected": ["lungsi-pakan"] },
+    { "q": "lungsi itu yang mana sih", "expected": ["lungsi-pakan"] },
+    { "q": "kenapa pakannya nggak boleh dimasukin sembarangan, harus lewat celah?", "expected": ["kenapa-celah"] },
+    { "q": "gimana kalau kainku jadi bergelombang dan nggak rata?", "expected": ["tidak-rata"] },
+    { "q": "tenunanku ada yang renggang ada yang rapat, cara benerinnya?", "expected": ["tidak-rata"] },
+    { "q": "kok kain aku makin lama makin sempit di pinggir", "expected": ["tepi-menyempit"] },
+    { "q": "pinggiran kain narik ke dalam, salahnya di mana?", "expected": ["tepi-menyempit"] },
+    { "q": "belida itu buat apa?", "expected": ["fungsi-pedang"] },
+    { "q": "kayu pipih panjang ini gunanya apa", "expected": ["fungsi-pedang"] },
+    { "q": "alat yang isinya gulungan benang ini namanya apa dan buat apa?", "expected": ["fungsi-sekoci"] },
+    { "q": "sekoci dipakai kapan", "expected": ["fungsi-sekoci"] },
+    { "q": "motif tenun tidore itu artinya apa?", "expected": ["filosofi-tidore"] },
+    { "q": "berapa harga kain tenun di pasar?", "expected": [] },
+    { "q": "mesin tenun listrik merek apa yang bagus?", "expected": [] },
+    { "q": "cara mewarnai benang pakai pewarna sintetis?", "expected": [] },
+    { "q": "siapa presiden pertama indonesia?", "expected": [] }
+  ]
+}
