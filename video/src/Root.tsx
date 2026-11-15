@@ -9,6 +9,7 @@ import { FullVideo, FULL_SECONDS } from './full';
 import { Babak1, BABAK1_SECONDS } from './babak1';
 import { StyleTest, STYLE_SECONDS } from './styletest';
 import { StyleTest2, STYLE2_SECONDS } from './styletest2';
+import { Intro, INTRO_SECONDS } from './intro';
 
 // Semua 1920×1080, 30 fps. Nama dengan akhiran "-overlay" dirender transparan untuk ditumpuk di atas footage.
 const S = (sec: number) => Math.round(sec * 30);
@@ -81,6 +82,7 @@ list.push(['FULL-animatic', FullVideo, FULL_SECONDS]);
 list.push(['FULL-babak1', Babak1, BABAK1_SECONDS]);
 list.push(['STYLE-test', StyleTest, STYLE_SECONDS]);
 list.push(['STYLE-test2', StyleTest2, STYLE2_SECONDS]);
+list.push(['BABAK1-intro', Intro, INTRO_SECONDS]);
 
 const cache = new Map<any, any>();
 const withLight = (Comp: React.FC<any>) => {
