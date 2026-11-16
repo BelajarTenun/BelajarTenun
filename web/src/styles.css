@@ -139,5 +139,5 @@ input[type=radio], input[type=checkbox] { accent-color: var(--accent); width: 20
 
 .partner { margin-top: 44px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .partner span { font-family: "Times New Roman", Times, serif; font-style: italic; font-size: .85rem; letter-spacing: .04em; color: rgba(255,255,255,.65); }
-.partner img { height: 44px; width: auto; max-width: 200px; object-fit: contain; opacity: .92; }
+.partner img { height: 60px; width: auto; max-width: 220px; object-fit: contain; opacity: .92; }
 .partner strong { font-family: "Times New Roman", Times, serif; font-weight: 400; font-size: 1.1rem; letter-spacing: .06em; color: rgba(255,255,255,.88); }
