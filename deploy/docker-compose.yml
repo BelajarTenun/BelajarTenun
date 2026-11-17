@@ -8,8 +8,8 @@
 #  - VPS kosong: set COMPOSE_PROFILES=caddy di .env, Caddy mengambil port 80/443 dan HTTPS otomatis.
 services:
   app:
-    # CD (GitHub Actions) memakai image dari ghcr.io; tanpa APP_IMAGE, dibangun dari sumber.
-    image: ${APP_IMAGE:-belajartenun-app:local}
+    # Image dari ghcr.io (dibangun CI). Untuk membangun dari sumber: docker compose build.
+    image: ${APP_IMAGE:-ghcr.io/belajartenun/belajartenun-app:latest}
     build: ..
     restart: unless-stopped
     env_file: ../.env
@@ -26,7 +26,7 @@ services:
       - "127.0.0.1:${APP_PORT:-8080}:8080"   # hanya dari VPS ini (web server di depannya)
 
   agent:
-    image: ${AGENT_IMAGE:-belajartenun-agent:local}
+    image: ${AGENT_IMAGE:-ghcr.io/belajartenun/belajartenun-agent:latest}
     build: ../agent
     restart: unless-stopped
     env_file: ../.env
