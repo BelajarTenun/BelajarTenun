@@ -17,6 +17,7 @@ import * as pipeline from './lib/pipeline.js';
 import { getAnalysis } from './lib/video-analysis.js';
 import { generateDialogs, evaluateDialog, listDialogs } from './lib/dialog-gen.js';
 import { pairsForModule } from './lib/exo-ego.js';
+import { runDiagnostics } from './lib/diagnostics.js';
 import { googleLoginEnabled, authUrl, profileFromCode } from './lib/google-login.js';
 import { createAccessToken, livekitEnabled, roomForSession, toJsonSchema } from './lib/livekit.js';
 
@@ -26,7 +27,7 @@ async function googleRoute(req, res, url) {
   if (!googleLoginEnabled()) return back('/masuk?galat=google');
   if (url.pathname === '/api/auth/google') {
     const { url: to, state } = authUrl(req);
-    const next = /^\/[\w/-]*$/.test(url.searchParams.get('lanjut') || '') ? url.searchParams.get('lanjut') : '/belajar';
+    const next = /^\/(?!\/)[\w/.-]*$/.test(url.searchParams.get('lanjut') || '') ? url.searchParams.get('lanjut') : '/belajar';
     res.setHeader('set-cookie', `bt_oauth=${state}.${encodeURIComponent(next)}; Path=/api/auth/google; HttpOnly; SameSite=Lax; Max-Age=600${config.publicUrl.startsWith('https') ? '; Secure' : ''}`);
     return back(to);
   }
@@ -36,10 +37,18 @@ async function googleRoute(req, res, url) {
   try {
     const user = await auth.loginWithGoogle(await profileFromCode(req, url.searchParams.get('code')));
     res.setHeader('set-cookie', [auth.sessionCookie(user.id), 'bt_oauth=; Path=/api/auth/google; Max-Age=0']);
-    return back(decodeURIComponent(next));
+    // Tujuan bawaan setelah masuk berbeda per peran: pemula belajar, partner ke Editor, admin ke Dashboard admin.
+    const target = decodeURIComponent(next);
+    return back(target === '/belajar' ? homeFor(user) : target);
   } catch { return back('/masuk?galat=google'); }
 }
 
+const PARTNER_ROLES = ['partner', 'admin'];
+export const homeFor = (user) => ({ admin: '/admin.html', partner: '/editor.html' }[user?.role] ?? '/belajar');
+const TEAM_PAGES = {
+  'admin.html': ['admin'],
+  'editor.html': PARTNER_ROLES, 'rekam.html': PARTNER_ROLES, 'anotasi.html': PARTNER_ROLES, 'sumber.html': PARTNER_ROLES,
+};
 const WEB_DIST = join(ROOT, 'web', 'dist');
 const fail = (code, message) => Object.assign(new Error(message), { code });
 const b64 = (img) => String(img || '').replace(/^data:image\/\w+;base64,/, '');
@@ -97,13 +106,16 @@ const routes = {
   'GET /api/health': async () => ({ ok: true }),
   'GET /api/config': async (b, req) => ({
     ai: aiEnabled(), tts: Boolean(config.ttsKey), model: config.geminiModel, live: (aiEnabled() && !isVertex()) || livekitEnabled(), aiProvider: config.aiProvider, liveModel: config.liveModel,
-    livekit: livekitEnabled(), googleLogin: googleLoginEnabled(),
+    livekit: livekitEnabled(), googleLogin: googleLoginEnabled(), passwordLogin: config.passwordLogin,
+    home: homeFor(await auth.currentUser(req)),
     user: await auth.currentUser(req), authDisabled: config.authDisabled,
   }),
 
   // ----- Akun -----
-  'POST /api/auth/register': async (b, req, res) => { const u = await auth.register(b); if (u.status === 'approved') res.setHeader('set-cookie', auth.sessionCookie(u.id)); return u; },
+  'POST /api/auth/register': async (b, req, res) => {
+    if (!config.passwordLogin) throw fail(403, 'Pendaftaran hanya lewat akun Google'); const u = await auth.register(b); if (u.status === 'approved') res.setHeader('set-cookie', auth.sessionCookie(u.id)); return u; },
   'POST /api/auth/login': async (b, req, res) => {
+    if (!config.passwordLogin) throw fail(403, 'Masuk hanya lewat akun Google');
     const u = await auth.login(b.email, b.password);
     if (u.status !== 'approved') throw fail(403, u.status === 'pending' ? 'Akun menunggu persetujuan admin' : 'Akun dinonaktifkan');
     res.setHeader('set-cookie', auth.sessionCookie(u.id)); return u;
@@ -121,6 +133,8 @@ const routes = {
     await auth.requireRole(req, 'admin');
     return { ai: usageStats(await loadUsage()), activeSessions: sessions.size, unanswered: (await kb.unanswered()).length, recordings: (await data.listRecordings()).length };
   },
+
+  'GET /api/admin/diagnostics': async (b, req) => { await auth.requireRole(req, 'admin'); return runDiagnostics(); },
 
   // ----- Kurikulum -----
   'GET /api/modules': async () => ({ modules: await data.listModules() }),
@@ -265,7 +279,8 @@ const routes = {
     return { generatedAt: new Date().toISOString(), modules: mods, knowledge, sources: srcs };
   },
 
-  'POST /api/tts': async (b) => ({ audio: await tts(b.text) }),
+  // Suara Google TTS berbayar: hanya untuk pengguna yang sudah masuk.
+  'POST /api/tts': async (b, req) => { await auth.requireRole(req); return { audio: await tts(String(b.text || '').slice(0, 1000)) }; },
 
   // ----- Tracer & progres -----
   'POST /api/trace': async (b, req) => {
@@ -363,6 +378,16 @@ export const server = http.createServer(async (req, res) => {
     if (url.pathname.startsWith('/api/')) return sendJson(res, 404, { error: 'Tidak ditemukan' });
     if (url.pathname.startsWith('/recordings/')) return await serveRecording(req, res, url.pathname);
     const file = normalize(url.pathname === '/' ? '/index.html' : url.pathname).replace(/^(\.\.[/\\])+/, '');
+    // Halaman Ruang tim dikunci di server: pemula & tamu tidak pernah menerima HTML-nya.
+    const need = TEAM_PAGES[file.replace(/^\//, '')];
+    if (need) {
+      const user = await auth.currentUser(req);
+      if (!user || !(need.includes(user.role) || user.role === 'admin')) {
+        const to = `/masuk.html?next=${encodeURIComponent(url.pathname)}${user ? '&role=1' : ''}`;
+        return res.writeHead(302, { location: to, 'cache-control': 'no-store', ...SECURITY_HEADERS }).end();
+      }
+      res.setHeader('cache-control', 'no-store');
+    }
     // Aplikasi pemula (React, web/dist) didahulukan; halaman tim & modul JS bersama dari public/.
     let buf = await readFile(join(WEB_DIST, file)).catch(() => null) ?? await readFile(join(ROOT, 'public', file)).catch(() => null);
     let type = MIME[extname(file)];

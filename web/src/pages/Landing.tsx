@@ -18,9 +18,12 @@ export default function Landing() {
           <path className="weft" d="M0 12 C 20 2, 40 2, 60 12 S 100 22, 120 12 S 160 2, 180 12 S 220 22, 240 12 S 280 2, 300 12 S 316 18, 320 12" />
         </svg>
         <p className="tagline">Belajar dari tangan penenun,<br />dibimbing di setiap helai.</p>
-        {config?.user
-          ? <Link className="btn-google" to="/belajar">Lanjut belajar</Link>
-          : <GoogleButton />}
+        {!config?.user ? <GoogleButton />
+          : config.user.role === 'pemula' ? <Link className="btn-google" to="/belajar">Lanjut belajar</Link>
+          : <span className="landing-actions">
+              <a className="btn-google" href={config.home}>{config.user.role === 'admin' ? 'Buka dashboard admin' : 'Buka ruang partner'}</a>
+              <Link className="landing-sub" to="/belajar">atau mulai belajar</Link>
+            </span>}
         <div className="partner">
           <span>in partnership with</span>
           {logoOk
