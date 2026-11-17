@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, Audio, Easing, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame } from 'remotion';
 import { BRAND, glass, Mark } from './brand';
 
 // Babak 1 · Intro (±30 dtk) — footage & suara asli, teks sinkron per kata (Whisper).
@@ -85,73 +85,59 @@ const S01: React.FC = () => {
   );
 };
 
-// ── 02 · animasi penenun garis tipis ─────────────────────────────────────────
-// Satu penenun duduk di alat tenun gedogan: kepala, badan, lengan menyelipkan pakan.
-const Weaver: React.FC<{ x: number; y: number; s?: number; o?: number; t: number; phase?: number; unravel?: number }> = ({ x, y, s = 1, o = 1, t, phase = 0, unravel = 0 }) => {
-  const arm = Math.sin(t * 2.4 + phase); // gerak menyelip
-  const handX = 46 + arm * 16;
-  const rows = 6;
-  return (
-    <g transform={`translate(${x},${y}) scale(${s})`} opacity={o}>
-      {/* lungsi (alat tenun) */}
-      {Array.from({ length: 7 }, (_, i) => <line key={i} x1={40 + i * 9} x2={40 + i * 9} y1={-10} y2={60} stroke={INK} strokeWidth={1.4} opacity={0.75} />)}
-      <line x1={34} x2={100} y1={-10} y2={-10} stroke={INK} strokeWidth={2.4} strokeLinecap="round" />
-      {/* kain yang sudah ditenun (pakan oranye), bisa terurai */}
-      {Array.from({ length: rows }, (_, j) => {
-        const vis = 1 - Math.min(1, Math.max(0, unravel * rows - (rows - 1 - j)));
-        return <line key={j} x1={38} x2={38 + 58 * vis} y1={60 - j * 5} y2={60 - j * 5} stroke={THREAD} strokeWidth={2.6} strokeLinecap="round" opacity={vis} />;
-      })}
-      {/* penenun */}
-      <circle cx={-22} cy={-2} r={13} fill="none" stroke={INK} strokeWidth={2.4} />
-      <path d="M-24 13 Q-36 45 -30 76 L22 76" fill="none" stroke={INK} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" />
-      <path d={`M-24 26 Q8 ${30 + arm * 3} ${handX} ${36 + arm * 2}`} fill="none" stroke={INK} strokeWidth={2.4} strokeLinecap="round" />
-      <circle cx={handX + 2} cy={36 + arm * 2} r={2.6} fill={THREAD} />
-    </g>
-  );
-};
 const W02_A: Wd[] = [['Tapi', 0.15], ['penenun', 0.71], ['senior', 1.09], ['semakin', 1.41], ['sedikit.', 1.83]];
 const W02_B: Wd[] = [['Anak', 2.57], ['muda', 2.75], ['yang', 3.21], ['ingin', 3.37], ['belajar', 3.57], ['sering', 3.95], ['tidak', 4.65], ['punya', 4.79], ['akses', 5.03], ['ke', 5.43], ['guru.', 5.65]];
 const W02_C: Wd[] = [['Dan', 6.59], ['pengetahuannya', 6.73], ['perlahan-lahan', 7.41], ['hilang.', 8.33]];
+// ── 02 · ilustrasi kartun 2D (latar putih), kamera virtual + parallax ──────
+// IL1 penenun dekat → IL2 penenun sendirian (kamera mundur) → IL3 anak muda bingung
+// masuk, benang oranye terulur lalu putus → semuanya memudar ke putih.
+const Ill: React.FC<{ src: string; style?: React.CSSProperties }> = ({ src, style }) => (
+  <Img src={staticFile(src)} style={{ position: 'absolute', width: 1920, height: 1073, top: 3, left: 0, mixBlendMode: 'multiply', ...style }} />
+);
 const S02: React.FC = () => {
   const t = useCurrentFrame() / FPS;
-  const zoom = interpolate(t, [0, 1.6], [1.9, 1], { ...cl, easing: Easing.inOut(Easing.cubic) });
-  const n = 5;
-  const keep = 2; // penenun yang tersisa
-  const youth = ez(t, 2.5, 3.1);
-  const link = ez(t, 3.1, 4.0, Easing.inOut(Easing.cubic));
-  const broken = ez(t, 4.6, 5.0);
-  const unravel = interpolate(t, [6.9, 8.6], [0, 1], { ...cl, easing: Easing.inOut(Easing.cubic) });
+  // A: IL1 push-in pelan, lalu potong ke IL2 dengan kamera mundur dari wajah penenun
+  const pushA = interpolate(t, [0, 1.5], [1.0, 1.06], cl);
+  const outB = interpolate(t, [1.5, 2.7], [1.9, 1.0], { ...cl, easing: Easing.out(Easing.cubic) });
+  const blurB = interpolate(t, [1.5, 1.7], [10, 0], cl);
+  // B: anak muda masuk (whip dari kiri), benang terulur lalu putus
+  const youthIn = interpolate(t, [2.5, 2.8], [1, 0], { ...cl, easing: Easing.out(Easing.cubic) });
+  const link = ez(t, 3.2, 4.1, Easing.inOut(Easing.cubic));
+  const broken = ez(t, 4.55, 5.0, Easing.out(Easing.cubic));
+  // C: memudar ke putih
+  const fadeAll = ez(t, 6.9, 8.6, Easing.inOut(Easing.cubic));
   const lines = [W02_A, W02_B, W02_C];
   const active = t < 2.45 ? 0 : t < 6.6 ? 1 : 2;
   return (
-    <AbsoluteFill style={{ background: `radial-gradient(ellipse at 50% 45%, #FAF9F6, ${PAPER} 70%)` }}>
-      <svg width="1920" height="1080" style={{ position: 'absolute', inset: 0 }}>
-        <g transform={`translate(921 640) scale(${zoom}) translate(-921 -640)`}>
-          {Array.from({ length: n }, (_, i) => {
-            const x = 230 + i * 300;
-            const leaving = i !== keep ? ez(t, 1.0 + ((i * 3) % n) * 0.14, 1.6 + ((i * 3) % n) * 0.14, Easing.inOut(Easing.cubic)) : 0;
-            const fadeKeep = i === keep ? 1 - unravel * 0.85 : 1;
-            return <Weaver key={i} x={x} y={600} s={1.9} t={t} phase={i * 1.7} o={(1 - leaving * 0.92) * fadeKeep} unravel={i === keep ? unravel : 0} />;
-          })}
-          {/* anak muda di kanan, benang penghubung yang putus */}
-          <g opacity={youth}>
-            <circle cx={1700} cy={560} r={24} fill="none" stroke={INK} strokeWidth={4} />
-            <path d="M1700 586 L1700 700 M1700 620 L1668 660 M1700 620 L1732 660 M1700 700 L1680 770 M1700 700 L1720 770" fill="none" stroke={INK} strokeWidth={4} strokeLinecap="round" />
-          </g>
-          <path d={`M921 668 C 1150 520, 1460 520, 1670 640`} fill="none" stroke={THREAD} strokeWidth={3.5} strokeDasharray="900" strokeDashoffset={900 * (1 - link)} opacity={1 - broken * 0.9} />
-          {broken > 0 && (
-            <>
-              <path d="M921 668 C 1020 600, 1110 560, 1220 548" fill="none" stroke={THREAD} strokeWidth={3.5} opacity={0.15 + (1 - broken) * 0.85} transform={`translate(0 ${broken * 30}) rotate(${broken * 5} 1200 548)`} />
-              <path d="M1300 548 C 1420 552, 1560 585, 1670 640" fill="none" stroke={THREAD} strokeWidth={3.5} opacity={0.15 + (1 - broken) * 0.85} transform={`translate(0 ${broken * 30}) rotate(${-broken * 5} 1300 548)`} />
-            </>
-          )}
-        </g>
+    <AbsoluteFill style={{ background: '#FFFFFF', overflow: 'hidden' }}>
+      {t < 1.5 ? (
+        <AbsoluteFill style={{ transform: `scale(${pushA})`, transformOrigin: '42% 45%' }}><Ill src="illust/IL1.png" /></AbsoluteFill>
+      ) : (
+        <AbsoluteFill style={{ transform: `scale(${outB})`, transformOrigin: '63% 52%', filter: `blur(${blurB}px) saturate(${1 - fadeAll})`, opacity: 1 - fadeAll * 0.9 }}>
+          <Ill src="illust/IL2.png" />
+        </AbsoluteFill>
+      )}
+      {t >= 2.5 && (
+        <AbsoluteFill style={{ transform: `translateX(${-youthIn * 700 - 520}px)`, filter: `blur(${youthIn * 30 + fadeAll * 6}px)`, opacity: 1 - fadeAll }}>
+          <Ill src="illust/IL3.png" />
+        </AbsoluteFill>
+      )}
+      {/* benang oranye dari HP anak muda ke alat tenun, lalu putus */}
+      <svg width="1920" height="1080" style={{ position: 'absolute', inset: 0, opacity: 1 - fadeAll }}>
+        {broken < 0.02 ? (
+          <path d="M440 420 C 760 300, 1150 380, 1480 600" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" strokeDasharray="1400" strokeDashoffset={1400 * (1 - link)} />
+        ) : (
+          <>
+            <path d="M440 420 C 600 360, 760 340, 900 345" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" opacity={1 - broken * 0.7} transform={`translate(0 ${broken * 40}) rotate(${broken * 8} 900 345)`} />
+            <path d="M1010 352 C 1200 380, 1350 470, 1480 600" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" opacity={1 - broken * 0.7} transform={`translate(0 ${broken * 40}) rotate(${-broken * 8} 1010 352)`} />
+          </>
+        )}
       </svg>
-      {/* teks kunci: kalimat aktif tinta, sebelumnya memudar */}
-      <div style={{ position: 'absolute', left: 160, top: 150, width: 1500, fontFamily: FONT, fontSize: 56, fontWeight: 600, letterSpacing: -1.6, lineHeight: 1.14, color: INK }}>
+      {/* teks: kalimat aktif tinta, sebelumnya memudar */}
+      <div style={{ position: 'absolute', left: 120, top: 90, width: 1680, fontFamily: FONT, fontSize: 54, fontWeight: 600, letterSpacing: -1.5, lineHeight: 1.14, color: INK }}>
         {lines.map((w, i) => (
-          <div key={i} style={{ opacity: i === active ? 1 : i < active ? 0.22 : 1, height: i <= active ? 'auto' : 0, overflow: 'hidden' }}>
-            {i <= active && <Spoken words={w} t={t} color={i === 2 ? THREAD : INK} />}
+          <div key={i} style={{ opacity: i === active ? 1 : i < active ? 0.22 : 1, display: i <= active ? 'block' : 'none' }}>
+            <Spoken words={w} t={t} color={i === 2 ? THREAD : INK} />
           </div>
         ))}
       </div>
