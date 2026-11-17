@@ -92,7 +92,7 @@ const W02_C: Wd[] = [['Dan', 6.59], ['pengetahuannya', 6.73], ['perlahan-lahan',
 // IL1 penenun dekat → IL2 penenun sendirian (kamera mundur) → IL3 anak muda bingung
 // masuk, benang oranye terulur lalu putus → semuanya memudar ke putih.
 const Ill: React.FC<{ src: string; style?: React.CSSProperties }> = ({ src, style }) => (
-  <Img src={staticFile(src)} style={{ position: 'absolute', width: 1920, height: 1073, top: 3, left: 0, mixBlendMode: 'multiply', ...style }} />
+  <Img src={staticFile(src)} style={{ position: 'absolute', width: 1920, height: 1073, top: 3, left: 0, mixBlendMode: 'multiply', filter: 'brightness(1.04) contrast(1.03)', ...style }} />
 );
 const S02: React.FC = () => {
   const t = useCurrentFrame() / FPS;
@@ -110,6 +110,7 @@ const S02: React.FC = () => {
   const active = t < 2.45 ? 0 : t < 6.6 ? 1 : 2;
   return (
     <AbsoluteFill style={{ background: '#FFFFFF', overflow: 'hidden' }}>
+      <AbsoluteFill style={{ transform: t >= 1.5 ? 'translateY(110px) scale(0.86)' : undefined, transformOrigin: '50% 100%' }}>
       {t < 1.5 ? (
         <AbsoluteFill style={{ transform: `scale(${pushA})`, transformOrigin: '42% 45%' }}><Ill src="illust/IL1.png" /></AbsoluteFill>
       ) : (
@@ -118,21 +119,22 @@ const S02: React.FC = () => {
         </AbsoluteFill>
       )}
       {t >= 2.5 && (
-        <AbsoluteFill style={{ mixBlendMode: 'multiply', transform: `translateX(${-youthIn * 700 - 520}px)`, filter: `blur(${youthIn * 30 + fadeAll * 6}px)`, opacity: 1 - fadeAll }}>
+        <AbsoluteFill style={{ mixBlendMode: 'multiply', transform: `translateX(${-youthIn * 700 - 590}px) translateY(40px) scale(1.2)`, transformOrigin: '50% 92%', filter: `blur(${youthIn * 30 + fadeAll * 6}px)`, opacity: 1 - fadeAll }}>
           <Ill src="illust/IL3.png" />
         </AbsoluteFill>
       )}
       {/* benang oranye dari HP anak muda ke alat tenun, lalu putus */}
       <svg width="1920" height="1080" style={{ position: 'absolute', inset: 0, opacity: 1 - fadeAll }}>
         {broken < 0.02 ? (
-          <path d="M440 420 C 760 470, 1150 600, 1520 650" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" strokeDasharray="1400" strokeDashoffset={1400 * (1 - link)} />
+          <path d="M400 470 C 760 520, 1150 620, 1520 650" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" strokeDasharray="1400" strokeDashoffset={1400 * (1 - link)} />
         ) : (
           <>
-            <path d="M440 420 C 600 445, 760 480, 930 520" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" opacity={1 - broken * 0.7} transform={`translate(0 ${broken * 40}) rotate(${broken * 8} 930 520)`} />
-            <path d="M1040 548 C 1220 590, 1380 625, 1520 650" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" opacity={1 - broken * 0.7} transform={`translate(0 ${broken * 40}) rotate(${-broken * 8} 1040 548)`} />
+            <path d="M400 470 C 600 500, 760 530, 930 560" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" opacity={1 - broken * 0.7} transform={`translate(0 ${broken * 40}) rotate(${broken * 8} 930 560)`} />
+            <path d="M1040 580 C 1220 610, 1380 635, 1520 650" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" opacity={1 - broken * 0.7} transform={`translate(0 ${broken * 40}) rotate(${-broken * 8} 1040 580)`} />
           </>
         )}
       </svg>
+      </AbsoluteFill>
       {/* teks: kalimat aktif tinta, sebelumnya memudar */}
       <div style={{ position: 'absolute', left: 120, top: 90, width: 1680, fontFamily: FONT, fontSize: 54, fontWeight: 600, letterSpacing: -1.5, lineHeight: 1.14, color: INK }}>
         {lines.map((w, i) => (
