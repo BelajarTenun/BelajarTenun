@@ -1,13 +1,15 @@
-/* BelajarTenun – minimalis: tipografi, ruang kosong, garis tipis. Tanpa kotak latar. */
+/* BelajarTenun – minimalis: tipografi, ruang kosong, garis tipis. Tanpa kotak latar.
+   Palet merek (docs/brand): Malam #141c3a · Benang emas #d4b866 · Kain #f5efe2 · Bata #a3361f (aksen kecil). */
 :root {
-  --bg: #fbfaf8; --fg: #1d1b19; --muted: #6f6a64; --line: #e6e2dc; --accent: #a3361f; --accent-fg: #fff;
+  --night: #141c3a; --gold: #d4b866; --gold-ink: #8a6d22; --cloth: #f5efe2; --brick: #a3361f;
+  --bg: #faf6ee; --fg: var(--night); --muted: #5f6377; --line: #e6dfd0; --accent: var(--night); --accent-fg: var(--cloth); --mark: var(--gold-ink);
   --ok: #2f6b4f; --warn: #9a5b00;
-  --serif: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --serif: "Times New Roman", Times, serif;
   --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color-scheme: light dark;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #151413; --fg: #ece8e2; --muted: #9c968e; --line: #2c2a27; --accent: #e0775c; --accent-fg: #151413; --ok: #7fc4a0; --warn: #e3b25a; }
+  :root { --bg: #10162e; --fg: var(--cloth); --muted: #a4a8bb; --line: #262e52; --accent: var(--gold); --accent-fg: var(--night); --mark: var(--gold); --ok: #7fc4a0; --warn: #e3b25a; }
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -24,12 +26,12 @@ p { margin: 0 0 1rem; }
 .nav a, .nav button { text-decoration: none; color: var(--muted); }
 .nav-right { display: flex; gap: 20px; align-items: center; }
 .wordmark { font-family: var(--serif); font-weight: 600; font-size: 1.15rem; color: var(--fg) !important; }
-.eyebrow { display: block; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 .5rem; }
+.eyebrow { display: block; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--mark); margin: 0 0 .5rem; }
 .lead { font-size: 1.15rem; }
 .muted { color: var(--muted); }
 .small { font-size: .88rem; }
 .center { text-align: center; }
-.ok { color: var(--ok); } .warn { color: var(--warn); } .error { color: var(--accent); }
+.ok { color: var(--ok); } .warn { color: var(--warn); } .error { color: var(--brick); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 /* Tombol: pil untuk aksi utama, teks untuk sisanya */
@@ -51,7 +53,7 @@ button.link { text-decoration: underline; color: var(--fg); }
 .plain li:last-child { border-bottom: 0; }
 .steps-line { list-style: none; padding: 0; margin: 0; }
 .steps-line li { display: flex; gap: 16px; padding: 16px 0; }
-.steps-line .num { font-family: var(--serif); font-size: 1.6rem; color: var(--accent); line-height: 1; min-width: 1.2em; }
+.steps-line .num { font-family: var(--serif); font-size: 1.6rem; color: var(--mark); line-height: 1; min-width: 1.2em; }
 .steps-line p { margin: 0; color: var(--muted); }
 .numbered { padding-left: 1.3em; margin: 0; }
 .numbered li { padding: 8px 0; }
@@ -64,7 +66,7 @@ button.link { text-decoration: underline; color: var(--fg); }
 .row { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding: 20px 0; text-decoration: none; }
 .row strong { display: block; font-family: var(--serif); font-size: 1.25rem; margin-bottom: 4px; }
 .row .muted { display: block; font-size: .95rem; }
-.row .arrow { color: var(--accent); font-size: 1.4rem; transition: transform .15s; }
+.row .arrow { color: var(--mark); font-size: 1.4rem; transition: transform .15s; }
 .row:hover .arrow { transform: translateX(4px); }
 
 /* Formulir: garis bawah saja */
@@ -78,7 +80,7 @@ input:focus, textarea:focus { border-bottom-color: var(--accent); }
 .media { margin: 24px 0; }
 .media video, .media img { width: 100%; border-radius: 14px; display: block; background: #000; }
 .media figcaption { margin-top: 8px; }
-.slide { padding: 8px 0 8px 18px; border-left: 2px solid var(--accent); min-height: 180px; }
+.slide { padding: 8px 0 8px 18px; border-left: 2px solid var(--gold); min-height: 180px; }
 .slide h2 { font-size: 1.5rem; }
 .dots { display: flex; gap: 8px; }
 .dots button { width: 8px; height: 8px; padding: 0; border-radius: 50%; border: 0; background: var(--line); }
@@ -107,7 +109,7 @@ input[type=radio], input[type=checkbox] { accent-color: var(--accent); width: 20
 .practice .cam { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hud { position: absolute; inset: 0 0 auto; padding: 16px 20px 48px; padding-top: calc(16px + env(safe-area-inset-top)); background: linear-gradient(rgba(0,0,0,.75), transparent); max-height: 70vh; overflow: auto; }
 .hud h2 { color: #fff; font-size: 1.5rem; }
-.hud .eyebrow { color: #ffb8a6; }
+.hud .eyebrow { color: var(--gold); }
 .bar { height: 3px; background: rgba(255,255,255,.2); margin: 0 72px 12px 0; border-radius: 2px; }
 .bar span { display: block; height: 100%; background: #fff; border-radius: 2px; transition: width .3s; }
 .rec { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #ff4d3d; margin-right: 4px; }
@@ -117,7 +119,7 @@ input[type=radio], input[type=checkbox] { accent-color: var(--accent); width: 20
 .exit { position: absolute; top: calc(12px + env(safe-area-inset-top)); right: 16px; background: none; border: 0; color: #fff; opacity: .8; }
 .controls { position: absolute; inset: auto 0 0; display: flex; gap: 8px; padding: 32px 16px calc(16px + env(safe-area-inset-bottom)); background: linear-gradient(transparent, rgba(0,0,0,.8)); }
 .controls button { flex: 1 1 0; min-width: 0; min-height: 52px; border-radius: 999px; border: 1px solid rgba(255,255,255,.35); background: none; color: #fff; font-weight: 600; }
-.controls button.primary { background: var(--accent); border-color: var(--accent); flex-grow: 1.4; }
+.controls button.primary { background: var(--gold); border-color: var(--gold); color: var(--night); flex-grow: 1.4; }
 .controls button.on { background: #fff; color: #000; }
 .ask { position: absolute; inset: auto 16px calc(100px + env(safe-area-inset-bottom)); display: flex; gap: 8px; }
 .ask input { flex: 1; color: #fff; border-bottom-color: rgba(255,255,255,.5); }
@@ -130,7 +132,7 @@ input[type=radio], input[type=checkbox] { accent-color: var(--accent); width: 20
 .landing::before { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 45% at 50% 28%, rgba(6,10,28,.45), transparent 70%); }
 .landing-hero { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; padding: calc(16vh + env(safe-area-inset-top)) 24px 0; }
 .landing-hero > * { animation: rise .9s cubic-bezier(.2,.7,.2,1) both; }
-.landing-hero > :nth-child(2) { animation-delay: .1s; } .landing-hero > :nth-child(3) { animation-delay: .25s; }
+.landing-hero > :nth-child(2) { animation-delay: .05s; } .landing-hero > :nth-child(3) { animation-delay: .25s; }
 .landing-hero > :nth-child(4) { animation-delay: .45s; } .landing-hero > :nth-child(5) { animation-delay: .6s; } .landing-hero > :nth-child(6) { animation-delay: .8s; }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 .eyebrow-line { display: flex; align-items: center; gap: 14px; margin: 0 0 18px !important; font-family: var(--sans) !important; font-style: normal !important; font-size: .72rem !important; letter-spacing: .32em; text-transform: uppercase; color: #d8c98a !important; }
@@ -160,3 +162,8 @@ input[type=radio], input[type=checkbox] { accent-color: var(--accent); width: 20
   .partner { margin-top: 28px; }
   .partner img { height: 48px; }
 }
+
+/* Logo di navigasi */
+.wordmark { display: inline-flex; align-items: center; gap: 10px; }
+.wordmark img { width: 28px; height: 28px; }
+.landing-mark { width: 52px; height: 52px; margin-bottom: 22px; border-radius: 12px; box-shadow: 0 0 0 1px rgba(212,184,102,.35); }
