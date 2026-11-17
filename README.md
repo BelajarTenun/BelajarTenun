@@ -48,16 +48,27 @@ Pola arsitektur tutornya mengikuti [VisionClaw](https://github.com/sseanliu/Visi
 
 ## Kacamata
 
-Kacamata BelajarTenun dirakit sendiri dari kacamata biasa. **Modul kamera** ditempel di ujung bingkai menghadap ke depan dan menunduk 25° supaya tangan dan lungsi terlihat. Modul kamera tersambung lewat kabel pita ke **casing di gagang** yang berisi XIAO ESP32S3 Sense dan baterai.
+Kacamata memakai satu Seeed Studio XIAO ESP32S3 Sense (kamera menghadap ke depan, melihat tangan dan lungsi) dan baterai kecil. Ada tiga pilihan bentuk, semuanya untuk komponen yang sama:
 
-| Casing dan isinya | Casing tampak depan | Dudukan kamera |
-|:---:|:---:|:---:|
-| <img src="docs/assets/casing-terurai.png" alt="Casing terurai" width="260"> | <img src="docs/assets/casing-depan.png" alt="Casing tampak depan" width="200"> | <img src="docs/assets/dudukan-kamera.png" alt="Dudukan kamera" width="200"> |
-| XIAO (hijau), baterai (abu), kabel kamera (oranye), tutup dengan penjepit gagang | Celah kabel kamera, LED privasi, lubang mikrofon | Ditempel di ujung bingkai, lensa menunduk 25° |
+| Pilihan | Untuk siapa | Asal |
+|---|---|---|
+| **Kacamata omiGlass** (utuh, cetak 3D) | Pengguna tanpa kacamata minus | File asli [omiGlass](https://github.com/BasedHardware/omi/tree/main/omiGlass), MIT |
+| **Case klip OpenGlass** (dijepit ke kacamata apa saja) | Pengguna yang sudah berkacamata | File asli [OpenGlass](https://github.com/BasedHardware/OpenGlass), MIT |
+| **Casing BelajarTenun** (kamera terpisah di ujung bingkai, menunduk 25°) | Eksperimen sudut kamera | Dirancang untuk repo ini |
+
+<p align="center">
+  <img src="docs/assets/omiglass-frame.png" alt="Bagian kacamata omiGlass" width="760">
+</p>
+
+<p align="center">
+  <img src="docs/assets/openglass-case.png" alt="Case klip OpenGlass" width="600">
+</p>
+
+File omiGlass dan OpenGlass disalin tanpa perubahan beserta lisensinya. Desain aslinya belum punya lubang untuk tombol dan LED privasi yang dipakai firmware BelajarTenun, jadi lubang perlu dibor (petunjuk di README tiap folder).
 
 **Komponen utama:** Seeed Studio XIAO ESP32S3 Sense, baterai LiPo 250 mAh (EEMB LP502030), satu tombol, satu LED, dua resistor, dan casing cetak 3D. Daftar lengkap dan skema kabel ada di [`hardware/README.md`](hardware/README.md).
 
-**Untuk MVP, kacamata hanya berisi kamera, tombol, dan LED.** Mikrofon dan suara memakai HP dengan earbuds. Hasilnya casing lebih kecil, baterai lebih awet, dan kualitas suara lebih baik. Varian dengan mikrofon dan speaker di kacamata tersedia sebagai casing v2.
+**Untuk MVP, kacamata hanya berisi kamera, tombol, dan LED.** Mikrofon dan suara memakai HP dengan earbuds. Hasilnya casing lebih kecil, baterai lebih awet, dan kualitas suara lebih baik. Varian dengan mikrofon dan speaker di kacamata tersedia sebagai casing BelajarTenun v2.
 
 | Bagian | Lokasi |
 |---|---|
