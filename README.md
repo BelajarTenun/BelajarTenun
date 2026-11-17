@@ -61,7 +61,8 @@ Kacamata BelajarTenun dirakit sendiri dari kacamata biasa. **Modul kamera** dite
 
 | Bagian | Lokasi |
 |---|---|
-| Model 3D (OpenSCAD parametrik + STL siap cetak) | [`hardware/casing/`](hardware/casing/) |
+| Case klip OpenGlass (STL asli, MIT) | [`hardware/openglass-case/`](hardware/openglass-case/) |
+| Casing BelajarTenun (OpenSCAD parametrik + STL) | [`hardware/casing/`](hardware/casing/) |
 | Firmware (PlatformIO, dikompilasi otomatis oleh CI) | [`firmware/belajartenun-glasses/`](firmware/belajartenun-glasses/) |
 | Komponen, skema kabel, MVP dan v2 | [`hardware/README.md`](hardware/README.md) |
 
