@@ -49,7 +49,7 @@ services:
     ports:
       - "127.0.0.1:${LIVEKIT_PORT:-7880}:7880"  # sinyal WebSocket, diteruskan web server ke livekit.DOMAIN
       - "7881:7881/tcp"              # WebRTC lewat TCP (cadangan)
-      - "50000-50100:50000-50100/udp" # media WebRTC
+      - "51000-51100:51000-51100/udp" # media WebRTC (50060-50100 dipakai LiveKit lain di VPS)
 
   caddy:
     profiles: ["caddy"]          # hanya untuk VPS tanpa web server lain

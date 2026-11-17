@@ -17,7 +17,7 @@ Satu VPS (mis. 2 vCPU / 4 GB, Ubuntu) dengan Docker Compose:
 ## 1. DNS
 
 Arahkan dua record A ke IP VPS: `DOMAIN` dan `livekit.DOMAIN`.
-Buka port 80, 443, 7881/tcp, dan 50000-50100/udp di firewall.
+Buka port 80, 443, 7881/tcp, dan 51000-51100/udp di firewall.
 
 ## 2. Vertex AI
 
