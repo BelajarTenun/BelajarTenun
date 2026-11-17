@@ -259,3 +259,5 @@ button.wide { width: 100%; padding: .8rem; }
   .flow-actions { flex-direction: column-reverse; align-items: stretch; }
   .flow-actions .primary { margin-left: 0; }
 }
+
+.button-link { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 22px; border-radius: 999px; text-decoration: none; }

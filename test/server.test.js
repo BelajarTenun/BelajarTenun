@@ -9,6 +9,7 @@ const dir = mkdtempSync(join(tmpdir(), 'bt-test-'));
 process.env.DATA_DIR = dir;
 process.env.GEMINI_API_KEY = '';
 process.env.AUTH_SECRET = 'rahasia-tes';
+process.env.PASSWORD_LOGIN = '1';
 process.env.AGENT_TOKEN = 'rahasia-agen-untuk-tes-integrasi';
 const { server } = await import('../server.js');
 const { seedDataDir } = await import('../lib/store.js');
@@ -120,4 +121,14 @@ test('video pengenalan modul: hanya dari rekaman yang diizinkan untuk pembelajar
   const mod = (await call('/api/module?id=tidore-dasar')).body;
   assert.ok(mod.intro.summary, 'ringkasan lama tetap ada');
   assert.equal((await call('/api/module/intro-video', { moduleId: 'tidore-dasar', recordingId: ok.body.id })).status, 401, 'pemula/tamu tidak boleh');
+});
+
+test('login kata sandi bisa dimatikan (bawaan produksi: hanya Google)', async () => {
+  const { config } = await import('../lib/config.js');
+  config.passwordLogin = false;
+  try {
+    assert.equal((await call('/api/auth/login', { email: 'p@x.id', password: 'rahasia123' })).status, 403);
+    assert.equal((await call('/api/auth/register', { name: 'X', email: 'x@x.id', password: 'rahasia123' })).status, 403);
+    assert.equal((await call('/api/config')).body.passwordLogin, false);
+  } finally { config.passwordLogin = true; }
 });

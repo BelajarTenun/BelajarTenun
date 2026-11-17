@@ -26,7 +26,7 @@ async function googleRoute(req, res, url) {
   if (!googleLoginEnabled()) return back('/masuk?galat=google');
   if (url.pathname === '/api/auth/google') {
     const { url: to, state } = authUrl(req);
-    const next = /^\/[\w/-]*$/.test(url.searchParams.get('lanjut') || '') ? url.searchParams.get('lanjut') : '/belajar';
+    const next = /^\/(?!\/)[\w/.-]*$/.test(url.searchParams.get('lanjut') || '') ? url.searchParams.get('lanjut') : '/belajar';
     res.setHeader('set-cookie', `bt_oauth=${state}.${encodeURIComponent(next)}; Path=/api/auth/google; HttpOnly; SameSite=Lax; Max-Age=600${config.publicUrl.startsWith('https') ? '; Secure' : ''}`);
     return back(to);
   }
@@ -97,13 +97,15 @@ const routes = {
   'GET /api/health': async () => ({ ok: true }),
   'GET /api/config': async (b, req) => ({
     ai: aiEnabled(), tts: Boolean(config.ttsKey), model: config.geminiModel, live: (aiEnabled() && !isVertex()) || livekitEnabled(), aiProvider: config.aiProvider, liveModel: config.liveModel,
-    livekit: livekitEnabled(), googleLogin: googleLoginEnabled(),
+    livekit: livekitEnabled(), googleLogin: googleLoginEnabled(), passwordLogin: config.passwordLogin,
     user: await auth.currentUser(req), authDisabled: config.authDisabled,
   }),
 
   // ----- Akun -----
-  'POST /api/auth/register': async (b, req, res) => { const u = await auth.register(b); if (u.status === 'approved') res.setHeader('set-cookie', auth.sessionCookie(u.id)); return u; },
+  'POST /api/auth/register': async (b, req, res) => {
+    if (!config.passwordLogin) throw fail(403, 'Pendaftaran hanya lewat akun Google'); const u = await auth.register(b); if (u.status === 'approved') res.setHeader('set-cookie', auth.sessionCookie(u.id)); return u; },
   'POST /api/auth/login': async (b, req, res) => {
+    if (!config.passwordLogin) throw fail(403, 'Masuk hanya lewat akun Google');
     const u = await auth.login(b.email, b.password);
     if (u.status !== 'approved') throw fail(403, u.status === 'pending' ? 'Akun menunggu persetujuan admin' : 'Akun dinonaktifkan');
     res.setHeader('set-cookie', auth.sessionCookie(u.id)); return u;
