@@ -1,5 +1,11 @@
-# BelajarTenun – satu VPS: app (web + API), LiveKit, agen Gemini Live, Caddy (HTTPS otomatis).
-# Jalankan dari folder deploy/:  docker compose up -d --build
+# BelajarTenun – app (web + API), LiveKit, agen Gemini Live.
+# Jalankan dari folder deploy/:  docker compose --env-file ../.env up -d --build
+#
+# Dua cara menerima HTTPS:
+#  - VPS sudah punya web server (Nginx/Caddy/Traefik) untuk aplikasi lain: JANGAN aktifkan profil "caddy".
+#    App dan LiveKit hanya mendengar di 127.0.0.1:${APP_PORT:-8080} dan 127.0.0.1:${LIVEKIT_PORT:-7880};
+#    web server yang ada meneruskan domain BelajarTenun ke sana (contoh: deploy/nginx-belajartenun.conf).
+#  - VPS kosong: set COMPOSE_PROFILES=caddy di .env, Caddy mengambil port 80/443 dan HTTPS otomatis.
 services:
   app:
     # CD (GitHub Actions) memakai image dari ghcr.io; tanpa APP_IMAGE, dibangun dari sumber.
@@ -16,6 +22,8 @@ services:
     volumes:
       - data:/data
       - ./secrets:/secrets:ro
+    ports:
+      - "127.0.0.1:${APP_PORT:-8080}:8080"   # hanya dari VPS ini (web server di depannya)
 
   agent:
     image: ${AGENT_IMAGE:-belajartenun-agent:local}
@@ -39,10 +47,12 @@ services:
     volumes:
       - ./livekit.yaml:/etc/livekit.yaml:ro
     ports:
+      - "127.0.0.1:${LIVEKIT_PORT:-7880}:7880"  # sinyal WebSocket, diteruskan web server ke livekit.DOMAIN
       - "7881:7881/tcp"              # WebRTC lewat TCP (cadangan)
       - "50000-50100:50000-50100/udp" # media WebRTC
 
   caddy:
+    profiles: ["caddy"]          # hanya untuk VPS tanpa web server lain
     image: caddy:2.8.4
     restart: unless-stopped
     environment:
