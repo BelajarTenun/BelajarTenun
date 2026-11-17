@@ -118,18 +118,18 @@ const S02: React.FC = () => {
         </AbsoluteFill>
       )}
       {t >= 2.5 && (
-        <AbsoluteFill style={{ transform: `translateX(${-youthIn * 700 - 520}px)`, filter: `blur(${youthIn * 30 + fadeAll * 6}px)`, opacity: 1 - fadeAll }}>
+        <AbsoluteFill style={{ mixBlendMode: 'multiply', transform: `translateX(${-youthIn * 700 - 520}px)`, filter: `blur(${youthIn * 30 + fadeAll * 6}px)`, opacity: 1 - fadeAll }}>
           <Ill src="illust/IL3.png" />
         </AbsoluteFill>
       )}
       {/* benang oranye dari HP anak muda ke alat tenun, lalu putus */}
       <svg width="1920" height="1080" style={{ position: 'absolute', inset: 0, opacity: 1 - fadeAll }}>
         {broken < 0.02 ? (
-          <path d="M440 420 C 760 300, 1150 380, 1480 600" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" strokeDasharray="1400" strokeDashoffset={1400 * (1 - link)} />
+          <path d="M440 420 C 760 470, 1150 600, 1520 650" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" strokeDasharray="1400" strokeDashoffset={1400 * (1 - link)} />
         ) : (
           <>
-            <path d="M440 420 C 600 360, 760 340, 900 345" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" opacity={1 - broken * 0.7} transform={`translate(0 ${broken * 40}) rotate(${broken * 8} 900 345)`} />
-            <path d="M1010 352 C 1200 380, 1350 470, 1480 600" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" opacity={1 - broken * 0.7} transform={`translate(0 ${broken * 40}) rotate(${-broken * 8} 1010 352)`} />
+            <path d="M440 420 C 600 445, 760 480, 930 520" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" opacity={1 - broken * 0.7} transform={`translate(0 ${broken * 40}) rotate(${broken * 8} 930 520)`} />
+            <path d="M1040 548 C 1220 590, 1380 625, 1520 650" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" opacity={1 - broken * 0.7} transform={`translate(0 ${broken * 40}) rotate(${-broken * 8} 1040 548)`} />
           </>
         )}
       </svg>
