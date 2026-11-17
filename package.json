@@ -16,7 +16,10 @@
     "agent": "python3 agent/main.py dev",
     "import-sources": "node scripts/import_sources.js",
     "import-motif": "node scripts/import_motif_dataset.js",
-    "dialogs": "node scripts/generate_dialogs.js"
+    "dialogs": "node scripts/generate_dialogs.js",
+    "eval:qa": "node scripts/eval_qa.js",
+    "eval:segmentation": "node scripts/eval_segmentation.js",
+    "dataset-card": "node scripts/dataset_card.js"
   },
   "engines": {
     "node": ">=20"
