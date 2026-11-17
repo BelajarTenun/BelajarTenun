@@ -1,5 +1,10 @@
 # Deploy BelajarTenun
 
+> **VPS sudah dipakai aplikasi lain?** Jangan aktifkan Caddy bawaan (port 80/443 akan bentrok).
+> App dan LiveKit hanya mendengar di `127.0.0.1:8080` dan `127.0.0.1:7880`; teruskan domain dari web server
+> yang sudah ada. Contoh Nginx: [`nginx-belajartenun.conf`](nginx-belajartenun.conf). Bila port 8080/7880 sudah
+> terpakai, ubah `APP_PORT` / `LIVEKIT_PORT` di `.env`. VPS kosong: set `COMPOSE_PROFILES=caddy` di `.env`.
+
 Satu VPS (mis. 2 vCPU / 4 GB, Ubuntu) dengan Docker Compose:
 
 | Container | Isi |
