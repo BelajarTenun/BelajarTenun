@@ -36,11 +36,14 @@ async function googleRoute(req, res, url) {
   try {
     const user = await auth.loginWithGoogle(await profileFromCode(req, url.searchParams.get('code')));
     res.setHeader('set-cookie', [auth.sessionCookie(user.id), 'bt_oauth=; Path=/api/auth/google; Max-Age=0']);
-    return back(decodeURIComponent(next));
+    // Tujuan bawaan setelah masuk berbeda per peran: pemula belajar, partner ke Editor, admin ke Dashboard admin.
+    const target = decodeURIComponent(next);
+    return back(target === '/belajar' ? homeFor(user) : target);
   } catch { return back('/masuk?galat=google'); }
 }
 
 const PARTNER_ROLES = ['partner', 'admin'];
+export const homeFor = (user) => ({ admin: '/admin.html', partner: '/editor.html' }[user?.role] ?? '/belajar');
 const TEAM_PAGES = {
   'admin.html': ['admin'],
   'editor.html': PARTNER_ROLES, 'rekam.html': PARTNER_ROLES, 'anotasi.html': PARTNER_ROLES, 'sumber.html': PARTNER_ROLES,
@@ -103,6 +106,7 @@ const routes = {
   'GET /api/config': async (b, req) => ({
     ai: aiEnabled(), tts: Boolean(config.ttsKey), model: config.geminiModel, live: (aiEnabled() && !isVertex()) || livekitEnabled(), aiProvider: config.aiProvider, liveModel: config.liveModel,
     livekit: livekitEnabled(), googleLogin: googleLoginEnabled(), passwordLogin: config.passwordLogin,
+    home: homeFor(await auth.currentUser(req)),
     user: await auth.currentUser(req), authDisabled: config.authDisabled,
   }),
 
