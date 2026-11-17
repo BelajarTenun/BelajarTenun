@@ -8,7 +8,7 @@ export default function Nav({ back }: { back?: { to: string; label: string } }) 
   const keluar = async () => { await api('/api/auth/logout', {}); await refresh(); nav('/'); };
   return (
     <header className="nav">
-      {back ? <Link to={back.to} className="nav-back">← {back.label}</Link> : <Link to="/" className="wordmark">BelajarTenun</Link>}
+      {back ? <Link to={back.to} className="nav-back">← {back.label}</Link> : <Link to="/" className="wordmark"><img src="/icon.svg" alt="" />BelajarTenun</Link>}
       <span className="nav-right">
         {config?.user
           ? <>{config.user.role === 'admin' && <a href="/admin.html">Dashboard admin</a>}{config.user.role === 'partner' && <a href="/editor.html">Ruang partner</a>}<button className="text" onClick={keluar}>Keluar</button></>

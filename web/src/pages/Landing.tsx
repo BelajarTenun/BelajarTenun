@@ -9,6 +9,7 @@ export default function Landing() {
   return (
     <main className="landing">
       <div className="landing-hero">
+        <img className="landing-mark" src="/icon.svg" alt="" />
         <p className="eyebrow-line"><span />Tenun Nusantara<span /></p>
         <h1>BelajarTenun</h1>
         {/* Benang emas yang "ditenun" melintasi judul: lungsi lurus, pakan bergelombang. */}

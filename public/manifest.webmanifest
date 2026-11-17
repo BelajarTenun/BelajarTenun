@@ -3,7 +3,7 @@
   "short_name": "BelajarTenun",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f7f1e8",
-  "theme_color": "#a3361f",
+  "background_color": "#faf6ee",
+  "theme_color": "#141c3a",
   "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
 }
