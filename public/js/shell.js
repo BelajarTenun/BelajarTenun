@@ -6,6 +6,7 @@ const NAV = [
   ['Pemantauan', [['progres.html', 'Progres belajar', 'M4 19V9M10 19V5M16 19v-7M22 19H2'], ['admin.html', 'Admin', 'M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z']]],
   ['Publik', [['arsip.html', 'Arsip tenun', 'M4 7h16v13H4zM3 4h18v3H3zM10 11h4'], ['/belajar', 'Aplikasi pemula', 'M5 12h14M13 6l6 6-6 6']]],
 ];
+const ARROW = '<svg class="ws-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>';
 const icon = (d) => `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
 
 function build() {
@@ -17,10 +18,10 @@ function build() {
   const nav = document.createElement('aside');
   nav.className = 'ws-nav';
   nav.innerHTML = `
-    <a class="ws-logo" href="/"><img src="icon.svg" alt=""><span>BelajarTenun<small>Ruang tim</small></span></a>
+    <a class="ws-logo" href="/"><img src="icon.svg" alt=""><span>BelajarTenun<small>Tim</small></span></a>
     <nav aria-label="Ruang tim">${NAV.map(([title, items]) => `
       <p class="ws-group">${title}</p>
-      ${items.map(([href, label, d]) => `<a href="${href}" class="ws-link${href === here ? ' active' : ''}"${href === here ? ' aria-current="page"' : ''}>${icon(d)}<span>${label}</span></a>`).join('')}`).join('')}
+      ${items.map(([href, label, d]) => `<a href="${href}" class="ws-link${href === here ? ' active' : ''}"${href === here ? ' aria-current="page"' : ''}>${icon(d)}<span>${label}</span>${ARROW}</a>`).join('')}`).join('')}
     </nav>
     <a href="masuk.html" class="ws-link ws-account${here === 'masuk.html' ? ' active' : ''}">${icon('M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c1.5-4 4.5-6 8-6s6.5 2 8 6')}<span id="ws-user">Akun</span></a>`;
 
@@ -48,7 +49,7 @@ function build() {
     if (!user) return;
     const admin = user.role === 'admin';
     document.getElementById('ws-user').textContent = user.name;
-    nav.querySelector('.ws-logo small').textContent = admin ? 'Ruang admin' : 'Ruang partner';
+    nav.querySelector('.ws-logo small').textContent = admin ? 'Admin' : 'Partner';
     nav.querySelector('.ws-account').insertAdjacentHTML('beforeend', `<em class="ws-role ${admin ? 'is-admin' : ''}">${admin ? 'Admin' : 'Partner'}</em>`);
     if (!admin) nav.querySelector('a[href="admin.html"]')?.remove();
     body.dataset.role = user.role;
