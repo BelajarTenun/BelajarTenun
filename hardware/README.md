@@ -18,6 +18,22 @@ Modul kamera ditempel di ujung bingkai menghadap ke depan, tersambung kabel pita
 
 Alasannya: casing lebih kecil dan ringan, baterai lebih awet, dan kualitas suara jauh lebih baik. Arsitektur ini juga sudah jalan end-to-end di repo ini (LiveKit + Gemini Live memakai mik HP). Pola yang sama dipakai [vision-assist](https://github.com/RoboX2020/vision-assist). Pindah ke v2 bila pengguna merasa earbuds mengganggu.
 
+## Casing
+
+Ada tiga pilihan di repo ini:
+
+| | Kacamata omiGlass (terbaru) | Case klip OpenGlass (lama) | Casing BelajarTenun |
+|---|---|---|---|
+| Folder | [`omiglass/`](omiglass/) | [`openglass-case/`](openglass-case/) | [`casing/`](casing/) |
+| Bentuk | Kacamata utuh cetak 3D | Kotak dijepit ke kacamata apa saja | Kotak di gagang + kamera di ujung bingkai |
+| Asal | omiGlass, Based Hardware Contributors, MIT. Disalin tanpa perubahan | OpenGlass, Based Hardware Contributors, MIT. Disalin tanpa perubahan | Dirancang untuk repo ini (OpenSCAD) |
+| Cocok untuk | Pengguna tanpa kacamata minus | Pengguna yang sudah berkacamata | Eksperimen sudut kamera |
+| Tombol & LED | Belum ada lubang (perlu dibor) | Belum ada lubang (perlu dibor) | Sudah ada lubang |
+| File CAD untuk diedit | Ada (STEP) | Tidak (STL saja) | Ada (OpenSCAD) |
+
+<p align="center"><img src="../docs/assets/omiglass-frame.png" alt="Kacamata omiGlass" width="720"></p>
+<p align="center"><img src="../docs/assets/openglass-case.png" alt="Case klip OpenGlass" width="600"></p>
+
 ## Daftar komponen (MVP)
 | Komponen | Jumlah | Catatan |
 |---|---|---|
@@ -27,7 +43,7 @@ Alasannya: casing lebih kecil dan ringan, baterai lebih awet, dan kualitas suara
 | LED 3 mm (merah/putih) + resistor 330 Ω | 1 | LED privasi ke D2 (GPIO3) |
 | Resistor 100 kΩ | 2 | Pembagi tegangan baterai ke D1 (GPIO2) |
 | Kabel tipis 30 AWG, isolasi Kapton, lem | – | |
-| Casing cetak 3D | 1 set | `casing/body.stl`, `casing/lid.stl`, `casing/camera.stl` |
+| Casing cetak 3D | 1 set | Pilih salah satu: kacamata [`omiglass/`](omiglass/), case klip [`openglass-case/`](openglass-case/), atau `casing/body.stl`, `casing/lid.stl`, `casing/camera.stl` |
 | Kacamata biasa | 1 | Gagang ±5 × 11 mm dekat engsel (ubah `temple_t/h` bila berbeda) |
 | Earbuds Bluetooth | 1 | Untuk suara tutor (di HP) |
 
@@ -55,8 +71,8 @@ Pin ini diatur di `firmware/belajartenun-glasses/src/config.h`. Kamera dan mikro
 ## Diambil dari proyek terbuka
 | Proyek | Yang dipakai |
 |---|---|
-| [omiGlass (penerus OpenGlass)](https://github.com/BasedHardware/omi/tree/main/omiGlass) · MIT | UUID & format potongan foto BLE, pola manajemen daya, deep sleep dengan tombol, ukuran casing |
-| [OpenGlass](https://github.com/BasedHardware/OpenGlass) · MIT | Konsep casing kotak + tutup samping, komponen |
+| [omiGlass (penerus OpenGlass)](https://github.com/BasedHardware/omi/tree/main/omiGlass) · MIT | **File 3D kacamata utuh** (disalin utuh ke [`omiglass/`](omiglass/)), UUID & format potongan foto BLE, pola manajemen daya, deep sleep dengan tombol, ukuran casing |
+| [OpenGlass](https://github.com/BasedHardware/OpenGlass) · MIT | **File 3D case klip** (disalin utuh ke [`openglass-case/`](openglass-case/)), daftar komponen |
 | [RIO – Gemini Live di XIAO](https://github.com/mk14ray/RIO-XIAO-ESP32-S3-Gemini-Live-Voice-Assistant) · MIT | Kamera hanya menyala setelah izin, aturannya dikunci di firmware; acuan untuk audio v2 |
 | [vision-assist](https://github.com/RoboX2020/vision-assist) · MIT | Arsitektur MVP: kamera di kacamata, suara di HP + earbuds |
 | [xiao-esp32s3-vision](https://github.com/Arun-Raj-C-R/xiao-esp32s3-vision) | Mode Wi-Fi `GET /capture`, `CAMERA_GRAB_LATEST`, `WiFi.setSleep(false)`, buang foto basi |
