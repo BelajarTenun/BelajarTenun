@@ -10,27 +10,11 @@
   <header class="brand"><a class="wordmark" href="./">BelajarTenun</a><h1>Akun</h1></header>
   <p id="notice" class="feedback"></p>
 
-  <div id="guest" hidden class="grid2">
+  <div id="guest" hidden>
     <section class="card">
-      <h2>Masuk</h2>
-      <form id="login">
-        <label>Email <input id="l-email" type="email" required autocomplete="email"></label>
-        <label>Kata sandi <input id="l-pass" type="password" required autocomplete="current-password"></label>
-        <button class="primary">Masuk</button>
-      </form>
-    </section>
-    <section class="card">
-      <h2>Daftar</h2>
-      <form id="register">
-        <label>Nama <input id="r-name" required></label>
-        <label>Email <input id="r-email" type="email" required></label>
-        <label>Kata sandi (min. 8) <input id="r-pass" type="password" minlength="8" required autocomplete="new-password"></label>
-        <label>Saya mendaftar sebagai
-          <select id="r-role"><option value="pemula">Pemula (belajar menenun)</option><option value="partner">Partner / penenun (perlu persetujuan admin)</option></select>
-        </label>
-        <label>Komunitas / sentra tenun (opsional) <input id="r-comm"></label>
-        <button class="primary">Daftar</button>
-      </form>
+      <h2>Masuk dengan Google</h2>
+      <p class="hint">Akun baru otomatis terdaftar sebagai pemula. Penenun dan tim: setelah masuk pertama kali, minta admin mengubah peranmu menjadi partner.</p>
+      <a id="google" class="primary button-link" href="/api/auth/google">Masuk dengan Google</a>
     </section>
   </div>
 
@@ -66,19 +50,8 @@ async function render() {
   const { tokens } = await api('/api/auth/device-tokens');
   $('t-list').innerHTML = tokens.map((t) => `<li>${esc(t.label)} <small>${t.createdAt.slice(0, 10)}</small> <button data-revoke="${t.id}">Cabut</button></li>`).join('') || '<li>Belum ada.</li>';
 }
-$('login').onsubmit = async (e) => {
-  e.preventDefault();
-  try { await api('/api/auth/login', { email: $('l-email').value, password: $('l-pass').value }); if (next) location.href = next; else render(); }
-  catch (err) { notice(err.message, 'warn'); }
-};
-$('register').onsubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const u = await api('/api/auth/register', { name: $('r-name').value, email: $('r-email').value, password: $('r-pass').value, role: $('r-role').value, community: $('r-comm').value });
-    if (u.status === 'pending') notice('Pendaftaran diterima. Akun partner menunggu persetujuan admin.', 'ok');
-    else { notice(u.role === 'admin' ? 'Kamu pengguna pertama, jadi otomatis menjadi admin.' : 'Selamat datang!', 'ok'); if (next) location.href = next; else render(); }
-  } catch (err) { notice(err.message, 'warn'); }
-};
+$('google').href = `/api/auth/google?lanjut=${encodeURIComponent(next || '/masuk.html')}`;
+if (new URLSearchParams(location.search).get('galat') === 'google') notice('Masuk dengan Google belum berhasil. Coba lagi.', 'warn');
 $('logout').onclick = async () => { await api('/api/auth/logout', {}); render(); };
 $('token').onsubmit = async (e) => {
   e.preventDefault();
