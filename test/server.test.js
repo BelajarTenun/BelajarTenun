@@ -157,3 +157,13 @@ test('tujuan setelah masuk berbeda per peran', async () => {
   assert.equal((await call('/api/config', undefined, 'admin')).body.home, '/admin.html');
   assert.equal((await call('/api/config', undefined, 'murid')).body.home, '/belajar');
 });
+
+test('cek koneksi admin: semua layanan dilaporkan, tanpa AI ditandai dilewati', async () => {
+  assert.equal((await call('/api/admin/diagnostics', undefined, 'partner')).status, 403);
+  const r = (await call('/api/admin/diagnostics', undefined, 'admin')).body;
+  const by = Object.fromEntries(r.checks.map((c) => [c.name, c.status]));
+  assert.equal(by['Penyimpanan data'], 'ok');
+  assert.equal(by['AI: menjawab teks'], 'skip');
+  assert.equal(by['Login Google'], 'gagal');
+  assert.ok(r.checks.length >= 9);
+});
