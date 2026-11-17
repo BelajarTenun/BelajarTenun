@@ -1,148 +1,194 @@
-/* BelajarTenun – Ruang tim (halaman partner & admin).
-   Pola mengikuti dashboard Ilmora: latar kertas terang, sidebar terang yang tipis, hampir tanpa kotak.
-   Bagian dipisah judul kecil + garis tipis; kontrol rounded-md, wadah rounded-lg; satu tombol utama per layar.
-   Warna merek BelajarTenun: Malam #141c3a (aksi utama) · Benang emas #d4b866 (penanda aktif) · Kain (latar). */
+/* BelajarTenun – Ruang tim. Salinan langsung design system dashboard Ilmora (frontend/DESIGN_SYSTEM.md):
+   - tokens: paper #fcf9f2, skala slate Tailwind, hairline 10/15/25%, Inter
+   - Sidebar (components/dashboard/sidebar.tsx), ViewHeader & SectionHeader (dashboard/view-header.tsx)
+   - Button / Input / Select / Textarea / Field / Badge (components/ui), TH / TD / EmptyState (classroom/ui.tsx)
+   - Stat & StatRow (dashboard/views/admin/admin-view.tsx)
+   Perbedaan satu-satunya: aksi utama memakai slate-900 (bukan biru brand Ilmora). */
 
 body.ws {
-  --night: #141c3a; --gold: #d4b866; --gold-ink: #8a6d22; --brick: #a3361f;
-  --paper: #fcf9f2; --paper-alt: #f6f2e8; --surface: #ffffff;
-  --ink: #141c3a; --ink-2: #3a4160; --muted: #6b7088; --faint: #9aa0b4;
-  --line: rgba(20, 28, 58, .10); --line-strong: rgba(20, 28, 58, .18);
-  --accent: var(--night); --accent-ink: #fff; --ok: #2f6b4f; --warn: #9a5b00;
+  --paper: #fcf9f2; --paper-alt: #f9f7f2; --surface: #ffffff;
+  --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0; --slate-300: #cbd5e1; --slate-400: #94a3b8;
+  --slate-500: #64748b; --slate-600: #475569; --slate-700: #334155; --slate-800: #1e293b; --slate-900: #0f172a;
+  --line: rgba(15, 23, 42, .10);         /* border-brand-line/10 */
+  --line-mid: rgba(15, 23, 42, .15);     /* /15 */
+  --line-strong: rgba(15, 23, 42, .25);  /* /25 – SectionHeader, TH */
+  --field-line: rgba(15, 23, 42, .20);   /* INPUT border /20 */
+  --brand: #0f172a; --brand-hover: #1e293b; --on-brand: #ffffff;
+  --emerald-50: #ecfdf5; --emerald-700: #047857; --amber-50: #fffbeb; --amber-800: #92400e; --red-50: #fef2f2; --red-200: #fecaca; --red-700: #b91c1c;
   --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --serif: "Times New Roman", Times, serif;
-  display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: 100vh; height: auto; margin: 0;
-  background: var(--paper); color: var(--ink); font: 14.5px/1.6 var(--font);
+  display: flex; min-height: 100vh; height: auto; margin: 0;
+  background: var(--paper); color: var(--slate-800); font: 14px/1.5 var(--font); -webkit-font-smoothing: antialiased;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) body.ws {
-    --paper: #0f1430; --paper-alt: #141a3a; --surface: #161d40; --ink: #eef0f7; --ink-2: #c9cde0; --muted: #9aa0b8; --faint: #6f7694;
-    --line: rgba(255,255,255,.08); --line-strong: rgba(255,255,255,.16); --accent: var(--gold); --accent-ink: var(--night); --gold-ink: var(--gold);
+    --paper: #191919; --paper-alt: #191919; --surface: #222222;
+    --slate-50: #1f1f1f; --slate-100: #262626; --slate-200: #333333; --slate-300: #444444; --slate-400: #7a7a7a;
+    --slate-500: #9a9a9a; --slate-600: #b5b5b5; --slate-700: #cfcfcf; --slate-800: #e5e5e5; --slate-900: #f5f5f5;
+    --line: rgba(255,255,255,.08); --line-mid: rgba(255,255,255,.12); --line-strong: rgba(255,255,255,.18); --field-line: rgba(255,255,255,.16);
+    --brand: #f5f5f5; --brand-hover: #e5e5e5; --on-brand: #191919;
   }
 }
 
-/* ---------- Sidebar terang ---------- */
-.ws-nav { position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; gap: 1px;
-  padding: 18px 12px; background: var(--paper-alt); border-right: 1px solid var(--line); }
-.ws .ws-logo { display: flex; align-items: center; gap: 10px; padding: 2px 8px 18px; color: var(--ink); text-decoration: none; }
-.ws-logo img { width: 30px; height: 30px; border-radius: 8px; }
-.ws-logo span { font-family: var(--serif); font-size: 1.1rem; line-height: 1.1; }
-.ws-logo small { display: block; font-family: var(--font); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-ink); margin-top: 2px; }
-.ws-group { margin: 14px 10px 4px; font-size: .66rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); }
-.ws .ws-link { position: relative; display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 8px;
-  color: var(--muted); text-decoration: none; font-size: .88rem; font-weight: 500; }
-.ws .ws-link svg { color: var(--faint); flex: none; }
-.ws .ws-link:hover { background: var(--line); color: var(--ink); }
-.ws .ws-link.active { background: var(--line); color: var(--ink); }
-.ws .ws-link.active svg { color: var(--gold-ink); }
-.ws .ws-link.active::before { content: ""; position: absolute; left: -12px; top: 50%; width: 3px; height: 14px; margin-top: -7px; border-radius: 0 3px 3px 0; background: var(--gold); }
-.ws-account { margin-top: auto; padding-top: 12px !important; border-top: 1px solid var(--line); border-radius: 0 !important; }
+/* ---------- Sidebar (w-[240px] p-3 bg-paper, tanpa garis di desktop) ---------- */
+.ws-nav { position: sticky; top: 0; height: 100vh; width: 240px; flex: none; overflow-y: auto; display: flex; flex-direction: column;
+  gap: 2px; padding: 12px; background: var(--paper); color: var(--slate-800); user-select: none; scrollbar-width: none; }
+.ws-nav::-webkit-scrollbar { display: none; }
+.ws .ws-logo { display: flex; align-items: center; gap: 10px; padding: 6px 10px; margin-bottom: 8px; border-radius: 6px; color: var(--slate-800); text-decoration: none; }
+.ws .ws-logo:hover { background: rgba(0,0,0,.05); }
+.ws-logo img { width: 20px; height: 20px; border-radius: 5px; }
+.ws-logo span { font-size: 12px; font-weight: 600; letter-spacing: -.01em; color: var(--slate-800); line-height: 1.2; }
+.ws-logo small { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; letter-spacing: .05em;
+  text-transform: uppercase; background: var(--slate-100); color: var(--slate-500); vertical-align: 1px; }
+.ws-nav nav { display: flex; flex-direction: column; gap: 2px; }
+.ws-group { margin: 12px 0 0; padding: 4px 10px; font-size: 9px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--slate-400); }
+.ws .ws-link { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 400;
+  color: var(--slate-600); text-decoration: none; transition: background .15s, color .15s; }
+.ws .ws-link svg { width: 16px; height: 16px; flex: none; color: var(--slate-500); }
+.ws .ws-link span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ws .ws-link .ws-arrow { width: 14px; height: 14px; opacity: 0; color: var(--slate-400); transition: opacity .2s, transform .3s; }
+.ws .ws-link:hover { background: rgba(0,0,0,.05); color: var(--slate-900); }
+.ws .ws-link:hover svg { color: var(--slate-900); }
+.ws .ws-link:hover .ws-arrow { opacity: 1; transform: translate(2px, -2px) scale(1.1); }
+.ws .ws-link.active { background: rgba(0,0,0,.05); color: var(--slate-900); font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,.05); }
+.ws .ws-link.active svg, .ws .ws-link.active .ws-arrow { color: var(--slate-900); opacity: 1; }
+.ws-account { margin-top: auto; }
+.ws-role { margin-left: auto; font-style: normal; padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; letter-spacing: .05em;
+  text-transform: uppercase; background: var(--slate-100); color: var(--slate-500); }
+.ws-role.is-admin { background: var(--slate-900); color: var(--paper); }
 
-/* ---------- Area konten ---------- */
-.ws-main { min-width: 0; }
-.ws-content { max-width: 1080px; margin: 0 auto; padding: 40px 48px 120px; }
-.ws a { color: var(--ink-2); }
+/* ---------- Area konten (bg-paper, flex-1) ---------- */
+.ws-main { flex: 1; min-width: 0; background: var(--paper); }
+.ws-content { max-width: 1024px; margin: 0 auto; padding: 40px 32px 120px; }
+.ws a { color: var(--slate-700); }
 
-/* Kepala halaman: judul + satu baris konteks; akun di kanan */
-.ws .ws-head { position: relative; display: block; margin: 0 0 36px; padding-right: 220px; }
-.ws .ws-head .ws-eyebrow { margin: 0 0 4px; max-width: none; font-size: .7rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-ink); }
-.ws .ws-head h1 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 2.15rem; line-height: 1.15; color: var(--ink); }
-.ws .ws-head p:not(.ws-eyebrow) { margin: 8px 0 0; max-width: 70ch; color: var(--muted); font-size: .92rem; }
-.ws .account { position: absolute; right: 0; top: 0; font-size: .8rem; color: var(--faint); }
-.ws .account a { color: var(--muted); }
+/* ViewHeader: judul 3xl semibold tracking-tight slate-900, satu baris konteks slate-500 */
+.ws .ws-head { position: relative; margin: 0 0 48px; padding-right: 220px; }
+.ws .ws-head .ws-eyebrow { margin: 0 0 4px; font-size: 12px; color: var(--slate-500); }
+.ws .ws-head h1 { margin: 0; font-family: var(--font); font-size: 30px; line-height: 1.2; font-weight: 600; letter-spacing: -.025em; color: var(--slate-900); }
+.ws .ws-head p:not(.ws-eyebrow) { margin: 4px 0 0; max-width: 72ch; font-size: 14px; color: var(--slate-500); }
+.ws .ws-head p a { color: var(--slate-700); text-underline-offset: 2px; }
+.ws .account { position: absolute; right: 0; top: 4px; font-size: 12px; color: var(--slate-500); }
+.ws .account a { color: var(--slate-500); }
+.ws .account .tag { margin: 0 2px; }
 
-/* Bagian (dulu kartu): tanpa kotak, dipisah judul kecil + garis tipis */
-.ws .card { background: none; border: 0; border-radius: 0; padding: 0; margin: 0 0 44px; box-shadow: none; }
-.ws .card > h2:first-child, .ws .card > h2 { display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  margin: 0 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--line-strong);
-  font-family: var(--font); font-size: .78rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
-.ws .card h3 { font-size: .92rem; font-weight: 600; margin: 22px 0 6px; color: var(--ink); }
-.ws .hint { color: var(--muted); font-size: .86rem; margin: 0 0 12px; max-width: 72ch; }
+/* Bagian (section) dengan SectionHeader: text-sm semibold slate-900, border-b /25, pb-2 */
+.ws .card { background: none; border: 0; border-radius: 0; padding: 0; margin: 0 0 48px; box-shadow: none; }
+.ws .card > h2 { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 16px; padding: 0 0 8px;
+  border-bottom: 1px solid var(--line-strong); font-family: var(--font); font-size: 14px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--slate-900); }
+.ws .card h3 { margin: 20px 0 6px; font-size: 14px; font-weight: 500; color: var(--slate-900); }
+.ws .hint { margin: 0 0 12px; max-width: 72ch; font-size: 12px; color: var(--slate-500); }
 
-/* Isian: putih, rounded-md, garis halus */
+/* Field: label text-sm medium slate-700, jarak 6px, hint text-xs slate-500 */
 @media (min-width: 1000px) {
-  .ws .card:has(> label ~ label) { display: grid; grid-template-columns: 1fr 1fr; column-gap: 24px; align-items: start; }
+  .ws .card:has(> label ~ label) { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; row-gap: 16px; align-items: start; }
   .ws .card:has(> label ~ label) > :not(label), .ws .card:has(> label ~ label) > label:has(textarea),
   .ws .card:has(> label ~ label) > label.toggle { grid-column: 1 / -1; }
+  .ws .card:has(> label ~ label) > h2 { margin-bottom: 0; }
 }
-.ws label { display: block; margin: 12px 0 0; font-size: .8rem; font-weight: 500; color: var(--ink-2); }
-.ws label.toggle, .ws .toggle { display: flex; align-items: center; gap: .6rem; color: var(--ink); font-size: .9rem; font-weight: 400; }
-.ws input:not([type=checkbox]):not([type=radio]):not([type=range]), .ws select, .ws textarea {
-  display: block; width: 100%; margin-top: 6px; padding: 8px 11px; min-height: 38px; font: inherit; font-size: .9rem; color: var(--ink);
-  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 6px; transition: border-color .15s, box-shadow .15s; }
-.ws textarea { min-height: 76px; resize: vertical; }
-.ws input:focus, .ws select:focus, .ws textarea:focus { outline: none; border-color: var(--gold-ink); box-shadow: 0 0 0 3px rgba(212,184,102,.25); }
-.ws input[type=checkbox], .ws input[type=radio] { accent-color: var(--night); width: 16px; height: 16px; }
-.ws .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 24px; }
-.ws .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 14px 0 0; }
+.ws label { display: block; margin: 16px 0 0; font-size: 14px; font-weight: 500; color: var(--slate-700); }
+.ws .card:has(> label ~ label) > label { margin-top: 0; }
+.ws label.toggle, .ws .toggle { display: flex; align-items: center; gap: 8px; font-weight: 400; color: var(--slate-700); }
+
+/* INPUT: rounded-md border /20 bg-surface px-3 py-2 text-sm slate-900 placeholder slate-400; fokus: border gelap + ring /15 */
+.ws input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]), .ws select, .ws textarea {
+  display: block; width: 100%; margin-top: 6px; padding: 8px 12px; min-height: 0; font: inherit; font-size: 14px; line-height: 20px; color: var(--slate-900);
+  background: var(--surface); border: 1px solid var(--field-line); border-radius: 6px; outline: none; box-shadow: none; transition: border-color .15s, box-shadow .15s; }
+.ws input::placeholder, .ws textarea::placeholder { color: var(--slate-400); }
+.ws textarea { min-height: 96px; resize: vertical; line-height: 1.625; }
+.ws input:focus, .ws select:focus, .ws textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 2px rgba(15,23,42,.15); }
+/* SELECT: pr-8 + chevron sendiri (pengganti panah bawaan browser) */
+.ws select { appearance: none; -webkit-appearance: none; padding-right: 32px; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 15 5 5 5-5'/%3E%3Cpath d='m7 9 5-5 5 5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center; background-size: 14px; }
+.ws select:hover, .ws input:not([type=checkbox]):not([type=radio]):hover, .ws textarea:hover { border-color: var(--line-strong); }
+/* Berkas: tombol pilih file bergaya Button secondary sm */
+.ws input[type=file] { display: block; width: 100%; margin-top: 6px; font-size: 13px; color: var(--slate-500); }
+.ws input[type=file]::file-selector-button { margin-right: 10px; height: 32px; padding: 0 12px; border-radius: 6px; border: 1px solid var(--line-strong);
+  background: var(--surface); color: var(--slate-800); font: 500 12px var(--font); cursor: pointer; transition: border-color .15s, color .15s; }
+.ws input[type=file]::file-selector-button:hover { border-color: var(--brand); color: var(--slate-900); }
+.ws input[type=checkbox], .ws input[type=radio] { accent-color: var(--slate-900); width: 16px; height: 16px; margin: 0; }
+.ws .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.ws .grid2 label { margin-top: 0; }
+.ws .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 16px 0 0; }
 .ws .row input, .ws .row select { flex: 1; margin-top: 0 !important; }
 
-/* Tombol: rounded-md; primary hanya untuk satu aksi utama */
-.ws button, .ws .button-link { font: inherit; font-size: .86rem; font-weight: 500; padding: 7px 14px; min-height: 36px; border-radius: 6px;
-  border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); cursor: pointer; text-decoration: none; width: auto; }
-.ws button:hover { background: var(--paper-alt); }
-.ws button.primary, .ws .button-link.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-.ws button.primary:hover { filter: brightness(1.2); background: var(--accent); }
-.ws .card .primary, .ws form > .primary { width: auto; margin-top: 18px; padding: 8px 18px; }
-.ws button.link { border: 0; background: none; padding: 0; min-height: 0; text-decoration: underline; color: var(--ink-2); }
-.ws button:disabled { opacity: .45; cursor: default; }
-.ws .danger { color: var(--brick); }
+/* Button: rounded-md medium; md = h-9 px-4 text-sm; sm = h-8 px-3 text-xs */
+.ws button, .ws .button-link { display: inline-flex; align-items: center; justify-content: center; gap: 6px; width: auto; height: 36px; min-height: 0;
+  padding: 0 16px; border-radius: 6px; font: 500 14px var(--font); white-space: nowrap; cursor: pointer; text-decoration: none;
+  background: var(--surface); color: var(--slate-800); border: 1px solid var(--line-strong); transition: background .15s, border-color .15s, color .15s; }
+.ws button:hover { border-color: var(--brand); color: var(--slate-900); background: var(--surface); }
+.ws button:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(15,23,42,.4); }
+.ws button.primary, .ws .button-link.primary { background: var(--brand); border-color: var(--brand); color: var(--on-brand); }
+.ws button.primary:hover { background: var(--brand-hover); border-color: var(--brand-hover); color: var(--on-brand); filter: none; }
+.ws button.link { height: auto; padding: 0; border: 0; background: none; color: var(--slate-600); text-decoration: underline; font-size: 13px; }
+.ws button.link:hover { color: var(--slate-900); }
+.ws button:disabled { opacity: .5; cursor: not-allowed; }
+.ws .danger, .ws button.danger { color: var(--red-700); }
+.ws button.danger { border-color: var(--red-200); }
+.ws button.danger:hover { background: var(--red-50); border-color: var(--red-200); }
+.ws .card button, .ws form > button { margin-top: 16px; }
+.ws .card > button, .ws .card > .row { justify-self: start; }
+.ws .rec-list button, .ws td button, .ws .seg button { height: 32px; padding: 0 12px; font-size: 12px; margin: 0; }
+.ws .card > h2 button { height: 32px; padding: 0 12px; font-size: 12px; margin: 0; }
 
-/* Angka ringkasan: tanpa kotak, dipisah garis tegak tipis */
-.ws .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0; margin: 0 0 44px;
-  border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line); }
-.ws .stat { background: none; border: 0; border-radius: 0; padding: 18px 20px 16px 0; }
-.ws .stat + .stat { padding-left: 20px; border-left: 1px solid var(--line); }
-.ws .stat b { display: block; font-family: var(--serif); font-weight: 400; font-size: 2.3rem; line-height: 1.05; color: var(--ink); font-variant-numeric: tabular-nums; }
-.ws .stat span { font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+/* StatRow + Stat: tanpa kotak; label xs slate-500, angka 2xl semibold, dipisah garis tegak /10 */
+.ws .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0; margin: 0 0 48px; }
+.ws .stat { display: flex; flex-direction: column-reverse; justify-content: flex-end; background: none; border: 0; border-radius: 0;
+  border-bottom: 1px solid var(--line); padding: 16px 16px 16px 0; }
+.ws .stat + .stat { padding-left: 16px; border-left: 1px solid var(--line); }
+.ws .stat b { display: block; margin-top: 4px; font-family: var(--font); font-size: 24px; line-height: 32px; font-weight: 600; letter-spacing: -.025em; color: var(--slate-900); font-variant-numeric: tabular-nums; }
+.ws .stat span { font-size: 12px; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--slate-500); }
 
-/* Tabel & daftar: baris dengan garis tipis, sorot halus saat disentuh */
-.ws table { width: 100%; border-collapse: collapse; font-size: .88rem; }
-.ws th { text-align: left; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; color: var(--faint); padding: 8px 10px; border-bottom: 1px solid var(--line-strong); }
-.ws td { padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; color: var(--ink-2); }
-.ws tbody tr:hover td { background: rgba(212,184,102,.08); }
-.ws td select { min-height: 30px !important; padding: 3px 8px !important; margin: 0 !important; width: auto !important; }
-.ws .rec-list li { padding: 12px 4px; border-bottom: 1px solid var(--line); }
-.ws .rec-list li:hover { background: rgba(212,184,102,.06); }
-.ws .rec-list button { min-height: 28px; padding: 3px 10px; font-size: .78rem; }
+/* DataTable: TH xs medium slate-500 border-b /25; TD py-3 slate-700 border-b /10; baris hover tint 3% */
+.ws table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+.ws th { padding: 8px 12px; font-size: 12px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--slate-500);
+  border-bottom: 1px solid var(--line-strong); white-space: nowrap; background: none; }
+.ws td { padding: 12px; vertical-align: top; color: var(--slate-700); border-bottom: 1px solid var(--line); }
+.ws tr:hover td { background: rgba(15,23,42,.03); }
+.ws td select { display: inline-block; width: auto !important; margin: 0 !important; padding: 4px 28px 4px 8px !important; font-size: 13px; background-position: right 6px center; }
+.ws .card table { margin-top: 4px; }
 
-/* Status: chip kecil; warna status hanya untuk status */
-.ws .feedback { min-height: 1.4em; font-size: .88rem; }
-.ws .pill, .ws .tag { display: inline-block; border-radius: 6px; padding: 1px 8px; font-size: .72rem; font-weight: 500;
-  border: 1px solid var(--line); background: var(--paper-alt); color: var(--muted); }
-.ws .ok-tag { color: var(--ok); border-color: rgba(47,107,79,.3); background: rgba(47,107,79,.08); }
+/* ListTable / daftar rekaman & sumber */
+.ws .rec-list { list-style: none; margin: 0; padding: 0; }
+.ws .rec-list li { padding: 12px; border-bottom: 1px solid var(--line); color: var(--slate-700); transition: background .15s; }
+.ws .rec-list li:hover { background: rgba(15,23,42,.03); }
+.ws .rec-list small { display: block; font-size: 12px; color: var(--slate-500); }
+
+/* Badge: rounded-md px-1.5 py-0.5 text-xs medium; nada hanya untuk status */
+.ws .pill, .ws .tag { display: inline-flex; align-items: center; padding: 2px 6px; border: 0; border-radius: 6px; font-size: 12px; font-weight: 500;
+  white-space: nowrap; background: var(--slate-100); color: var(--slate-600); }
+.ws .ok-tag { background: var(--emerald-50); color: var(--emerald-700); }
+.ws .bad-tag { background: var(--red-50); color: var(--red-700); }
+.ws .warn-tag { background: var(--amber-50); color: var(--amber-800); }
+
+/* Umpan balik & EmptyState sederhana ("Belum ada …" di dalam bagian) */
+.ws .feedback { min-height: 1.4em; font-size: 14px; color: var(--slate-600); }
+.ws .feedback.ok { color: var(--emerald-700); } .ws .feedback.warn { color: var(--amber-800); }
+.ws .card > p:not(.hint), .ws .card > div > p:only-child { color: var(--slate-500); font-size: 14px; }
 
 /* Media & lini masa anotasi */
-.ws video { width: 100%; max-height: 520px; border-radius: 10px; background: #000; aspect-ratio: 16 / 9; }
-.ws .timeline { height: 10px; background: var(--line); border-radius: 6px; }
+.ws video { width: 100%; max-height: 520px; border-radius: 8px; background: #000; aspect-ratio: 16 / 9; }
+.ws .timeline { height: 8px; background: var(--slate-200); border-radius: 6px; }
+.ws .seg { border-bottom: 1px solid var(--line); }
 
-/* Bilah simpan di bawah area konten */
-.ws .savebar { left: 232px; background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(8px); border-top: 1px solid var(--line); padding: 12px 48px; }
+/* Bilah simpan */
+.ws .savebar { left: 240px; padding: 12px 32px; background: color-mix(in srgb, var(--paper) 85%, transparent); backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line); }
 
 /* HP & tablet: sidebar jadi bilah atas yang bisa digeser */
 @media (max-width: 860px) {
-  body.ws { grid-template-columns: 1fr; }
-  .ws-nav { position: sticky; top: 0; z-index: 20; height: auto; flex-direction: row; align-items: center; overflow-x: auto;
-    padding: 8px 12px; border-right: 0; border-bottom: 1px solid var(--line); }
-  .ws-nav nav { display: flex; gap: 2px; }
-  .ws .ws-logo { padding: 0 8px 0 0; } .ws-logo span { display: none; }
+  body.ws { flex-direction: column; }
+  .ws-nav { position: sticky; top: 0; z-index: 20; height: auto; width: auto; flex-direction: row; align-items: center; overflow-x: auto;
+    padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  .ws-nav nav { flex-direction: row; }
+  .ws .ws-logo { margin: 0; padding: 6px; } .ws-logo span { display: none; }
   .ws-group { display: none; }
-  .ws .ws-link { white-space: nowrap; }
-  .ws .ws-link.active::before { left: 10px; right: 10px; top: auto; bottom: -8px; width: auto; height: 2px; margin: 0; }
-  .ws-account { margin: 0; border: 0 !important; padding-top: 7px !important; }
-  .ws-account span { display: none; }
+  .ws .ws-link { white-space: nowrap; } .ws .ws-link .ws-arrow { display: none; }
+  .ws-account { margin: 0; } .ws-account span, .ws-role { display: none; }
   .ws-content { padding: 24px 16px 120px; }
-  .ws .ws-head h1 { font-size: 1.75rem; }
-  .ws .account { position: static; }
-  .ws .ws-head { padding-right: 0; }
-  .ws .stat + .stat { padding-left: 14px; }
+  .ws .ws-head { padding-right: 0; margin-bottom: 32px; } .ws .ws-head h1 { font-size: 24px; }
+  .ws .account { position: static; margin-bottom: 8px; }
+  .ws .stat + .stat { padding-left: 12px; }
   .ws .savebar { left: 0; padding: 12px 16px; }
 }
-.ws .card > button, .ws .card > .row { justify-self: start; }
-
-/* Label peran di sidebar: admin emas, partner netral */
-.ws-role { margin-left: auto; font-style: normal; font-size: .66rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
-  padding: 2px 7px; border-radius: 5px; border: 1px solid var(--line-strong); color: var(--muted); }
-.ws-role.is-admin { background: var(--night); border-color: var(--night); color: var(--gold); }
-.ws .bad-tag { color: var(--brick); border-color: rgba(163,54,31,.3); background: rgba(163,54,31,.08); }
-.ws .card > h2 button { text-transform: none; letter-spacing: 0; }
+.ws .card > .primary, .ws .card > button { width: auto; justify-self: start; }
