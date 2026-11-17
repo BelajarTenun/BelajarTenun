@@ -147,3 +147,13 @@ test('halaman Ruang tim dikunci di server, bukan hanya di browser', async () => 
   assert.equal((await get('/admin.html', 'admin')).status, 200);
   assert.equal((await get('/arsip.html')).status, 200, 'arsip tetap publik');
 });
+
+test('tujuan setelah masuk berbeda per peran', async () => {
+  const { homeFor } = await import('../server.js');
+  assert.equal(homeFor({ role: 'admin' }), '/admin.html');
+  assert.equal(homeFor({ role: 'partner' }), '/editor.html');
+  assert.equal(homeFor({ role: 'pemula' }), '/belajar');
+  assert.equal(homeFor(null), '/belajar');
+  assert.equal((await call('/api/config', undefined, 'admin')).body.home, '/admin.html');
+  assert.equal((await call('/api/config', undefined, 'murid')).body.home, '/belajar');
+});

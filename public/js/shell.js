@@ -43,8 +43,15 @@ function build() {
   body.classList.add('ws');
   body.prepend(nav, main);
 
+  // Menu & label mengikuti peran: hanya admin yang melihat menu Admin.
   fetch('/api/auth/me', { credentials: 'same-origin' }).then((r) => r.json()).then(({ user }) => {
-    if (user) document.getElementById('ws-user').textContent = `${user.name} · ${user.role}`;
+    if (!user) return;
+    const admin = user.role === 'admin';
+    document.getElementById('ws-user').textContent = user.name;
+    nav.querySelector('.ws-logo small').textContent = admin ? 'Ruang admin' : 'Ruang partner';
+    nav.querySelector('.ws-account').insertAdjacentHTML('beforeend', `<em class="ws-role ${admin ? 'is-admin' : ''}">${admin ? 'Admin' : 'Partner'}</em>`);
+    if (!admin) nav.querySelector('a[href="admin.html"]')?.remove();
+    body.dataset.role = user.role;
   }).catch(() => {});
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build); else build();

@@ -139,3 +139,8 @@ body.ws {
   .ws .savebar { left: 0; padding: 12px 16px; }
 }
 .ws .card > button, .ws .card > .row { justify-self: start; }
+
+/* Label peran di sidebar: admin emas, partner netral */
+.ws-role { margin-left: auto; font-style: normal; font-size: .66rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 5px; border: 1px solid var(--line-strong); color: var(--muted); }
+.ws-role.is-admin { background: var(--night); border-color: var(--night); color: var(--gold); }
