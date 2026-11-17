@@ -17,6 +17,7 @@ import * as pipeline from './lib/pipeline.js';
 import { getAnalysis } from './lib/video-analysis.js';
 import { generateDialogs, evaluateDialog, listDialogs } from './lib/dialog-gen.js';
 import { pairsForModule } from './lib/exo-ego.js';
+import { runDiagnostics } from './lib/diagnostics.js';
 import { googleLoginEnabled, authUrl, profileFromCode } from './lib/google-login.js';
 import { createAccessToken, livekitEnabled, roomForSession, toJsonSchema } from './lib/livekit.js';
 
@@ -132,6 +133,8 @@ const routes = {
     await auth.requireRole(req, 'admin');
     return { ai: usageStats(await loadUsage()), activeSessions: sessions.size, unanswered: (await kb.unanswered()).length, recordings: (await data.listRecordings()).length };
   },
+
+  'GET /api/admin/diagnostics': async (b, req) => { await auth.requireRole(req, 'admin'); return runDiagnostics(); },
 
   // ----- Kurikulum -----
   'GET /api/modules': async () => ({ modules: await data.listModules() }),

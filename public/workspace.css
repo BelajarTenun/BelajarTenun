@@ -144,3 +144,5 @@ body.ws {
 .ws-role { margin-left: auto; font-style: normal; font-size: .66rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
   padding: 2px 7px; border-radius: 5px; border: 1px solid var(--line-strong); color: var(--muted); }
 .ws-role.is-admin { background: var(--night); border-color: var(--night); color: var(--gold); }
+.ws .bad-tag { color: var(--brick); border-color: rgba(163,54,31,.3); background: rgba(163,54,31,.08); }
+.ws .card > h2 button { text-transform: none; letter-spacing: 0; }
