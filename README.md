@@ -18,7 +18,8 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/kacamata-render.png" alt="Kacamata BelajarTenun: kamera di ujung bingkai, casing di gagang" width="760">
+  <img src="docs/assets/omiglass-hero.png" alt="Rangka kacamata omiGlass dengan kotak untuk XIAO ESP32S3 Sense dan baterai (desain asli omiGlass, MIT)" width="520">
+  <br><sub>Rangka kacamata <a href="https://github.com/BasedHardware/omi/tree/main/omiGlass">omiGlass</a> (Based Hardware Contributors, MIT) dengan kotak untuk XIAO ESP32S3 Sense dan baterai.</sub>
 </p>
 
 ## Tentang
