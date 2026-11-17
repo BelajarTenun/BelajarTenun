@@ -11,7 +11,7 @@ export default function Nav({ back }: { back?: { to: string; label: string } }) 
       {back ? <Link to={back.to} className="nav-back">← {back.label}</Link> : <Link to="/" className="wordmark">BelajarTenun</Link>}
       <span className="nav-right">
         {config?.user
-          ? <>{config.user.role !== 'pemula' && <a href="/admin.html">Ruang tim</a>}<button className="text" onClick={keluar}>Keluar</button></>
+          ? <>{['partner', 'admin'].includes(config.user.role) && <a href="/admin.html">Ruang tim</a>}<button className="text" onClick={keluar}>Keluar</button></>
           : <Link to="/masuk">Masuk</Link>}
       </span>
     </header>

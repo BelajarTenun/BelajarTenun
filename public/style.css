@@ -129,7 +129,7 @@ td.ok { color: var(--ok); font-weight: 600; } td.todo { color: var(--warn); }
 
 /* ---------- Layar latihan (tampilan ala lensa kacamata) ---------- */
 #session.active { position: fixed; inset: 0; background: #000; color: #fff; }
-#cam, .cam-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+#session #cam, #session .cam-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hud { position: absolute; top: 0; left: 0; right: 0; padding: max(18px, env(safe-area-inset-top)) 92px 32px 20px;
   background: linear-gradient(rgba(0,0,0,.72), rgba(0,0,0,0)); }
 .hud h2 { margin: .3rem 0; font-size: 1.35rem; }

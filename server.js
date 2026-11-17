@@ -40,6 +40,11 @@ async function googleRoute(req, res, url) {
   } catch { return back('/masuk?galat=google'); }
 }
 
+const PARTNER_ROLES = ['partner', 'admin'];
+const TEAM_PAGES = {
+  'admin.html': ['admin'],
+  'editor.html': PARTNER_ROLES, 'rekam.html': PARTNER_ROLES, 'anotasi.html': PARTNER_ROLES, 'sumber.html': PARTNER_ROLES,
+};
 const WEB_DIST = join(ROOT, 'web', 'dist');
 const fail = (code, message) => Object.assign(new Error(message), { code });
 const b64 = (img) => String(img || '').replace(/^data:image\/\w+;base64,/, '');
@@ -267,7 +272,8 @@ const routes = {
     return { generatedAt: new Date().toISOString(), modules: mods, knowledge, sources: srcs };
   },
 
-  'POST /api/tts': async (b) => ({ audio: await tts(b.text) }),
+  // Suara Google TTS berbayar: hanya untuk pengguna yang sudah masuk.
+  'POST /api/tts': async (b, req) => { await auth.requireRole(req); return { audio: await tts(String(b.text || '').slice(0, 1000)) }; },
 
   // ----- Tracer & progres -----
   'POST /api/trace': async (b, req) => {
@@ -365,6 +371,16 @@ export const server = http.createServer(async (req, res) => {
     if (url.pathname.startsWith('/api/')) return sendJson(res, 404, { error: 'Tidak ditemukan' });
     if (url.pathname.startsWith('/recordings/')) return await serveRecording(req, res, url.pathname);
     const file = normalize(url.pathname === '/' ? '/index.html' : url.pathname).replace(/^(\.\.[/\\])+/, '');
+    // Halaman Ruang tim dikunci di server: pemula & tamu tidak pernah menerima HTML-nya.
+    const need = TEAM_PAGES[file.replace(/^\//, '')];
+    if (need) {
+      const user = await auth.currentUser(req);
+      if (!user || !(need.includes(user.role) || user.role === 'admin')) {
+        const to = `/masuk.html?next=${encodeURIComponent(url.pathname)}${user ? '&role=1' : ''}`;
+        return res.writeHead(302, { location: to, 'cache-control': 'no-store', ...SECURITY_HEADERS }).end();
+      }
+      res.setHeader('cache-control', 'no-store');
+    }
     // Aplikasi pemula (React, web/dist) didahulukan; halaman tim & modul JS bersama dari public/.
     let buf = await readFile(join(WEB_DIST, file)).catch(() => null) ?? await readFile(join(ROOT, 'public', file)).catch(() => null);
     let type = MIME[extname(file)];

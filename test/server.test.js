@@ -132,3 +132,18 @@ test('login kata sandi bisa dimatikan (bawaan produksi: hanya Google)', async ()
     assert.equal((await call('/api/config')).body.passwordLogin, false);
   } finally { config.passwordLogin = true; }
 });
+
+test('halaman Ruang tim dikunci di server, bukan hanya di browser', async () => {
+  const get = (path, who) => fetch(base + path, { redirect: 'manual', headers: who && jar[who] ? { cookie: jar[who] } : {} });
+  const guest = await get('/admin.html');
+  assert.equal(guest.status, 302);
+  assert.match(guest.headers.get('location'), /^\/masuk\.html\?next=%2Fadmin\.html$/);
+  await call('/api/auth/register', { name: 'Murid', email: 'murid@x.id', password: 'rahasia123' }, 'murid');
+  const pemula = await get('/editor.html', 'murid');
+  assert.equal(pemula.status, 302, 'pemula tidak boleh menerima halaman editor');
+  assert.match(pemula.headers.get('location'), /role=1/);
+  assert.equal((await get('/admin.html', 'partner')).status, 302, 'partner tidak boleh membuka admin');
+  assert.equal((await get('/editor.html', 'partner')).status, 200);
+  assert.equal((await get('/admin.html', 'admin')).status, 200);
+  assert.equal((await get('/arsip.html')).status, 200, 'arsip tetap publik');
+});
