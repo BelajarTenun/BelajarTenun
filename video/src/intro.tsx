@@ -1,6 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame } from 'remotion';
 import { BRAND, glass, Mark } from './brand';
+import { Boil, Grain, Question, Steam, Sweat } from './fx';
 
 // Babak 1 · Intro (±30 dtk) — footage & suara asli, teks sinkron per kata (Whisper).
 //   01 Andrew (7633) · 02 animasi penenun + VO 7633 · 03 Andrew memakai kacamata (7634b)
@@ -112,15 +113,19 @@ const S02: React.FC = () => {
     <AbsoluteFill style={{ background: '#FFFFFF', overflow: 'hidden' }}>
       <AbsoluteFill style={{ transform: t >= 1.5 ? 'translateY(110px) scale(0.86)' : undefined, transformOrigin: '50% 100%' }}>
       {t < 1.5 ? (
-        <AbsoluteFill style={{ transform: `scale(${pushA})`, transformOrigin: '42% 45%' }}><Ill src="illust/IL1.png" /></AbsoluteFill>
+        <AbsoluteFill style={{ transform: `scale(${pushA})`, transformOrigin: '42% 45%' }}><Boil id="b1"><Ill src="illust/IL1.png" /></Boil><Steam x={838} y={890} /></AbsoluteFill>
       ) : (
         <AbsoluteFill style={{ transform: `scale(${outB})`, transformOrigin: '63% 52%', filter: `blur(${blurB}px) saturate(${1 - fadeAll})`, opacity: 1 - fadeAll * 0.9 }}>
-          <Ill src="illust/IL2.png" />
+          <Boil id="b2"><Ill src="illust/IL2.png" /></Boil>
+          <Steam x={1200} y={845} />
         </AbsoluteFill>
       )}
       {t >= 2.5 && (
         <AbsoluteFill style={{ mixBlendMode: 'multiply', transform: `translateX(${-youthIn * 700 - 590}px) translateY(40px) scale(1.2)`, transformOrigin: '50% 92%', filter: `blur(${youthIn * 30 + fadeAll * 6}px)`, opacity: 1 - fadeAll }}>
-          <Ill src="illust/IL3.png" />
+          <Boil id="b3"><Ill src="illust/IL3.png" /></Boil>
+          <Sweat x={1040} y={215} start={F(2.9)} />
+          <Question x={1110} y={150} at={F(3.4)} rot={-10} />
+          <Question x={1180} y={110} at={F(5.0)} s={0.8} rot={12} />
         </AbsoluteFill>
       )}
       {/* benang oranye dari HP anak muda ke alat tenun, lalu putus */}
@@ -229,6 +234,7 @@ export const Intro: React.FC = () => {
       <Sequence {...seq(SC.s02)}><WhipIn dir={1}><S02 /></WhipIn></Sequence>
       <Sequence {...seq(SC.s03)}><S03 /></Sequence>
       <Sequence {...seq(SC.s04)}><S04 /></Sequence>
+      <Grain opacity={0.05} />
       {/* suara Andrew (dibersihkan): 01+02 satu rekaman, 03, lalu VO 04 */}
       <Sequence {...seq([0, 13.8])}><Audio src={staticFile('audio/7633-clean.wav')} startFrom={F(0.5)} /></Sequence>
       <Sequence {...seq(SC.s03)}><Audio src={staticFile('audio/7634b-clean.wav')} /></Sequence>
