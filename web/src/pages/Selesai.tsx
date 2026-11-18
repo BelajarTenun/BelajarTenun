@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import Nav from './Nav';
+import Shell, { ViewHeader } from '../components/Shell';
 import { log } from '../lib/api';
 import { useApp } from '../lib/session';
 import { useModule } from '../lib/useModule';
@@ -21,32 +21,28 @@ export default function Selesai() {
   useEffect(() => setCamera(null), []);
 
   return (
-    <main className="page">
-      <Nav />
-      <p className="eyebrow">3 dari 3 · Selesai</p>
-      <h1>Latihan selesai</h1>
-      <p className="lead">Kamu menyelesaikan {module?.steps.length ?? ''} tahap {module?.title}{state?.mins ? ` dalam ±${state.mins} menit` : ''}.</p>
-      {state?.questions ? <p className="muted">{state.questions} pertanyaan diajukan ke tutor.</p> : null}
-
-      <section className="block">
+    <Shell>
+      <ViewHeader crumb={{ to: '/belajar', label: 'Modul' }} title="Latihan selesai" description={module?.title}
+        actions={<><Link className="a-btn" to={`/belajar/${id}`}>Ulangi modul</Link><Link className="a-btn primary" to="/belajar">Kembali ke modul</Link></>} />
+      <div className="a-stats">
+        <div className="a-stat"><span>Tahap selesai</span><b>{module?.steps.length ?? '–'}</b></div>
+        <div className="a-stat"><span>Durasi</span><b>{state?.mins ? `±${state.mins} menit` : '–'}</b></div>
+        <div className="a-stat"><span>Pertanyaan ke tutor</span><b>{state?.questions ?? 0}</b></div>
+      </div>
+      <section className="a-section" style={{ maxWidth: 560 }}>
         <h2>Bagaimana latihanmu?</h2>
-        {terkirim ? <p>Terima kasih atas masukanmu.</p> : (
-          <form className="form" onSubmit={(e) => { e.preventDefault(); log('survey', { module: id, sessionId: state?.sessionId, ...jawab, text: new FormData(e.currentTarget).get('text') }); setTerkirim(true); }}>
+        {terkirim ? <p className="a-text">Terima kasih. Masukanmu membantu penenun memperbaiki modul ini.</p> : (
+          <form onSubmit={(e) => { e.preventDefault(); log('survey', { module: id, sessionId: state?.sessionId, ...jawab, text: new FormData(e.currentTarget).get('text') }); setTerkirim(true); }}>
             {PERTANYAAN.map(([k, q]) => (
-              <fieldset key={k} className="scale"><legend>{q}</legend>
-                {[1, 2, 3, 4, 5].map((n) => <button type="button" key={n} className={jawab[k] === n ? 'on' : ''} onClick={() => setJawab({ ...jawab, [k]: n })}>{n}</button>)}
-              </fieldset>
+              <div key={k} className="a-field">{q}
+                <div className="a-scale">{[1, 2, 3, 4, 5].map((n) => <button type="button" key={n} className={jawab[k] === n ? 'on' : ''} onClick={() => setJawab({ ...jawab, [k]: n })}>{n}</button>)}</div>
+              </div>
             ))}
-            <label>Bagian yang membingungkan<textarea name="text" rows={2} /></label>
-            <button className="btn primary">Kirim</button>
+            <label className="a-field">Bagian yang membingungkan<textarea name="text" rows={3} className="a-input" style={{ marginTop: 6 }} /></label>
+            <button className="a-btn primary" style={{ marginTop: 20 }}>Kirim masukan</button>
           </form>
         )}
       </section>
-
-      <div className="actions">
-        <Link className="btn primary" to="/belajar">Kembali ke modul</Link>
-        <Link className="btn text" to={`/belajar/${id}`}>Tonton pengenalan lagi</Link>
-      </div>
-    </main>
+    </Shell>
   );
 }

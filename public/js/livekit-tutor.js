@@ -44,11 +44,19 @@ export class LiveKitTutor extends EventTarget {
     await r.connect(url, token);
     const mic = await createLocalAudioTrack({ echoCancellation: true, noiseSuppression: true });
     await r.localParticipant.publishTrack(mic);
+    this.mic = mic;
+    // Siapa yang sedang bicara: dipakai indikator "Tutor berbicara / mendengarkan" di layar sesi.
+    r.on(RoomEvent.ActiveSpeakersChanged, (speakers) => this.#emit('speaking', {
+      tutor: speakers.some((p) => p.isAgent || p !== r.localParticipant), user: speakers.includes(r.localParticipant),
+    }));
     const vt = videoTrackFrom(this.source);
     // Nama track = sumber kamera, supaya agen bisa melabeli capture_source (pola VisionClaw).
     if (vt) await r.localParticipant.publishTrack(new LocalVideoTrack(vt), { name: this.source?.kind || 'camera', source: Track.Source.Camera, simulcast: false });
     this.#emit('open', { room: r.name });
   }
+
+  /** Bisukan / nyalakan mikrofon pengguna (tutor tetap terdengar). */
+  async setMuted(muted) { if (!this.mic) return; if (muted) await this.mic.mute(); else await this.mic.unmute(); }
 
   /** Teks dari klien (mis. ketikan) → agen lewat topik chat bawaan LiveKit. */
   async sendText(text) { await this.room?.localParticipant.sendText(text, { topic: 'lk.chat' }); }
