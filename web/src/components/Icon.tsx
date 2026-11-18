@@ -17,6 +17,8 @@ const P: Record<string, string> = {
   micOff: 'M2 2l20 20M9 9v3a3 3 0 0 0 5.1 2.1M15 9.3V5a3 3 0 0 0-5.9-.7M17 16.9A7 7 0 0 1 5 12v-2M19 10v2a7 7 0 0 1-.1 1.2M12 19v3',
   x: 'M18 6 6 18M6 6l12 12',
   check: 'M20 6 9 17l-5-5',
+  flame: 'M12 2c1 3.5 5 6 5 11a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5.5.3 1.6 1 2.5 2 3C12 8 12 5 12 2z',
+  lock: 'M6 11h12v10H6zM8 11V7a4 4 0 0 1 8 0v4',
   send: 'M22 2 11 13M22 2l-7 20-4-9-9-4z',
 };
 export default function Icon({ name, className }: { name: keyof typeof P | string; className?: string }) {
