@@ -20,7 +20,7 @@ export class TutorClient {
 
   async start() {
     await loadLocalModel();
-    const r = await api('/api/session/start', { moduleId: this.moduleId, source: this.source?.kind, audioOnly: this.audioOnly, audio: this.serverTts });
+    const r = await api('/api/session/start', { moduleId: this.moduleId, source: this.source?.kind, audioOnly: this.audioOnly, audio: this.serverTts, startStep: this.startStep ?? 0 });
     this.sessionId = r.sessionId;
     this.tracer.base = { ...this.tracer.base, sessionId: r.sessionId, module: this.moduleId };
     // Label sumber kamera: yang dinyatakan vs yang benar-benar dipakai (VisionClaw capture_source).

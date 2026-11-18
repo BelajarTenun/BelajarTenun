@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Icon from '../components/Icon';
 import { log } from '../lib/api';
 import { useApp } from '../lib/session';
@@ -13,21 +13,22 @@ type Reply = { intent?: string; speak?: string; display?: string; observation?: 
 type Line = { role: 'user' | 'tutor'; text: string };
 
 // Sesi latihan, pola asisten suara (Gemini Live / Omi): kamera + tahap + transkrip.
-// Live: tutor mendengar & berbicara sendiri, kontrol hanya Bisukan mic & Akhiri.
-// Tanpa Live: "Tandai selesai" dan kolom tanya.
+// Sepenuhnya Gemini Live: tutor mendengar, melihat, dan berbicara sendiri. Kontrol hanya Bisukan mic & Selesai sesi.
 export default function Praktik() {
   const { id } = useParams();
   const nav = useNavigate();
   const { config, camera, setCamera } = useApp();
   const { module } = useModule(id);
-  const [stepIdx, setStepIdx] = useState(0);
+  const [params] = useSearchParams();
+  const startStep = Number(params.get('mulai')) || 0;
+  const [stepIdx, setStepIdx] = useState(startStep);
   const [note, setNote] = useState<{ text: string; kind: '' | 'ok' | 'warn' }>({ text: '', kind: '' });
   const [lines, setLines] = useState<Line[]>([]);
   const [live, setLive] = useState<'mati' | 'menyambung' | 'aktif'>('mati');
   const [muted, setMuted] = useState(false);
   const [speaking, setSpeaking] = useState<'tutor' | 'user' | ''>('');
   const [demo, setDemo] = useState(false);
-  const [q, setQ] = useState('');
+  const [liveError, setLiveError] = useState('');
   const tutor = useRef<any>(null);
   const video = useRef<HTMLVideoElement>(null), img = useRef<HTMLImageElement>(null), feed = useRef<HTMLDivElement>(null);
   const stats = useRef({ questions: 0, startedAt: Date.now() });
@@ -38,7 +39,7 @@ export default function Praktik() {
     else if (camera && img.current) camera.element = img.current;
     const say = (role: Line['role'], text: string) => text && setLines((l) => [...l.slice(-30), { role, text }]);
     const t = new TutorClient({
-      moduleId: module.id, source: camera, serverTts: config.tts,
+      moduleId: module.id, source: camera, serverTts: config.tts, startStep,
       ui: {
         show: (r: Reply) => {
           if (r.step) { setStepIdx(r.step.index); setDemo(false); }
@@ -63,23 +64,31 @@ export default function Praktik() {
     log('practice_start', { module: module.id, camera: camera?.kind ?? 'tanpa kamera' });
     (async () => {
       await t.start();
-      if (config.live) {
-        setLive('menyambung');
-        try { await t.startLive(); setLive('aktif'); } catch { setLive('mati'); setNote({ text: 'Mode suara langsung belum tersedia. Pakai tombol di bawah.', kind: 'warn' }); }
-      }
+      await mulaiLive(t);
     })();
     return () => { t.stop(); tutor.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [module, config]);
+
+  async function mulaiLive(t: any) {
+    setLive('menyambung'); setLiveError('');
+    try { await t.startLive(); setLive('aktif'); }
+    catch (e) { setLive('mati'); setLiveError((e as Error).message || 'Tutor suara tidak bisa tersambung.'); }
+  }
 
   useEffect(() => { feed.current?.scrollTo({ top: feed.current.scrollHeight }); }, [lines]);
 
   if (!module) return <div className="s-wrap"><p className="a-muted" style={{ padding: 24 }}>Memuat…</p></div>;
   const step = module.steps[stepIdx];
   const total = module.steps.length;
-  const akhiri = () => { if (confirm('Akhiri sesi latihan?')) { tutor.current?.stop(); setCamera(null); nav(`/belajar/${module.id}`); } };
+  // Selesai sesi: tutup Live, catat, lalu ke ringkasan sesi. Bila belum semua tahap, sesi bisa dilanjutkan dari beranda.
+  const selesai = () => {
+    const mins = Math.max(1, Math.round((Date.now() - stats.current.startedAt) / 60000));
+    const sessionId = tutor.current?.sessionId;
+    tutor.current?.stop(); setCamera(null);
+    nav(`/belajar/${module.id}/selesai`, { state: { mins, questions: stats.current.questions, sessionId, reached: stepIdx, total } });
+  };
   const toggleMic = () => { const m = !muted; setMuted(m); tutor.current?.setMuted(m); };
-  const tanya = (e: React.FormEvent) => { e.preventDefault(); if (!q.trim()) return; setLines((l) => [...l, { role: 'user', text: q }]); tutor.current?.say(q); setQ(''); };
   const voice = live === 'aktif' ? (muted ? { cls: '', text: 'Mikrofon dibisukan' } : speaking === 'tutor' ? { cls: 'speak', text: 'Tutor berbicara…' } : { cls: 'listen', text: 'Tutor mendengarkan' })
     : live === 'menyambung' ? { cls: '', text: 'Menyambungkan tutor suara…' } : null;
 
@@ -92,7 +101,6 @@ export default function Praktik() {
           <div className="s-bar"><i style={{ width: `${(stepIdx / total) * 100}%` }} /></div>
         </div>
         {live === 'aktif' && <span className="a-badge ok"><span className="a-dot" />Live</span>}
-        <button className="a-btn danger sm" onClick={akhiri}><Icon name="x" />Akhiri</button>
       </header>
 
       <div className="s-body">
@@ -120,7 +128,7 @@ export default function Praktik() {
             <div className="a-section" style={{ marginBottom: 0 }}><h2>Percakapan</h2></div>
             <div className="s-feed" ref={feed}>
               {lines.length === 0
-                ? <p className="a-small a-muted">{live === 'aktif' ? 'Bicara langsung dengan tutor, misalnya "sudah" atau "kenapa benangnya lewat sini?"' : 'Pertanyaanmu dan jawaban tutor muncul di sini.'}</p>
+                ? <p className="a-small a-muted">Bicara langsung dengan tutor, misalnya "sudah", "ulangi", atau "kenapa benangnya lewat sini?"</p>
                 : lines.map((l, i) => <div key={i} className={`s-msg ${l.role}`}>{l.text}</div>)}
             </div>
           </section>
@@ -135,18 +143,13 @@ export default function Praktik() {
       </div>
 
       <footer className="s-dock">
-        {live !== 'mati' ? <>
-          <span className="s-voice"><span className={`s-orb ${voice?.cls ?? ''}`} />{voice?.text}</span>
-          <button className={`a-btn s-mic${muted ? ' off' : ''}`} onClick={toggleMic} aria-pressed={muted} title={muted ? 'Nyalakan mikrofon' : 'Bisukan mikrofon'} disabled={live !== 'aktif'}>
-            <Icon name={muted ? 'micOff' : 'mic'} />
-          </button>
-        </> : <>
-          <form className="s-ask" onSubmit={tanya} style={{ flex: 1, maxWidth: 520 }}>
-            <input className="a-input" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Tanya tutor…" aria-label="Tanya tutor" />
-            <button className="a-btn" aria-label="Kirim"><Icon name="send" /></button>
-          </form>
-          <button className="a-btn primary lg" onClick={() => tutor.current?.button('next')}><Icon name="check" />Tandai selesai</button>
-        </>}
+        {liveError
+          ? <span className="s-voice warn-text">Tutor suara belum tersambung. <button className="a-btn sm" onClick={() => tutor.current && mulaiLive(tutor.current)}>Coba lagi</button></span>
+          : <span className="s-voice"><span className={`s-orb ${voice?.cls ?? ''}`} />{voice?.text ?? 'Menyiapkan…'}</span>}
+        <button className={`a-btn s-mic${muted ? ' off' : ''}`} onClick={toggleMic} aria-pressed={muted} aria-label={muted ? 'Nyalakan mikrofon' : 'Bisukan mikrofon'} title={muted ? 'Nyalakan mikrofon' : 'Bisukan mikrofon'} disabled={live !== 'aktif'}>
+          <Icon name={muted ? 'micOff' : 'mic'} />
+        </button>
+        <button className="a-btn lg" onClick={selesai}>Selesai sesi</button>
       </footer>
     </div>
   );

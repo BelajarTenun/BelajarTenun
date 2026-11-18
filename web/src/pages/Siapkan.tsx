@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import Shell, { ViewHeader } from '../components/Shell';
 import Icon from '../components/Icon';
 import { log } from '../lib/api';
@@ -17,6 +17,8 @@ export default function Siapkan() {
   const { id } = useParams();
   const nav = useNavigate();
   const { module } = useModule(id);
+  const [params] = useSearchParams();
+  const lanjut = params.get('mulai') ? `?mulai=${Number(params.get('mulai'))}` : '';
   const { camera, setCamera } = useApp();
   const bt = GlassesCamera.supported();
   const [pilih, setPilih] = useState<Pilihan>(bt ? 'belajartenun' : 'phone');
@@ -78,8 +80,8 @@ export default function Siapkan() {
         </section>
       </div>
       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', flexWrap: 'wrap', borderTop: '1px solid var(--line)', paddingTop: 16 }}>
-        <button className="a-btn ghost" onClick={() => { setCamera(null); nav(`/belajar/${id}/praktik`); }}>Lanjut tanpa kamera</button>
-        <button className="a-btn primary lg" disabled={!camera} onClick={() => nav(`/belajar/${id}/praktik`)}><Icon name="play" />Mulai latihan</button>
+        <button className="a-btn ghost" onClick={() => { setCamera(null); nav(`/belajar/${id}/praktik${lanjut}`); }}>Lanjut tanpa kamera</button>
+        <button className="a-btn primary lg" disabled={!camera} onClick={() => nav(`/belajar/${id}/praktik${lanjut}`)}><Icon name="play" />{lanjut ? 'Lanjutkan latihan' : 'Mulai latihan'}</button>
       </div>
     </Shell>
   );
