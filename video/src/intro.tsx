@@ -43,8 +43,11 @@ export const camAt = (keys: Key[], t: number) => {
 };
 export const Cam: React.FC<{ keys: Key[]; children: React.ReactNode; blurGain?: number }> = ({ keys, children, blurGain = 1 }) => {
   const t = useCurrentFrame() / FPS;
-  const [, x, y, s] = camAt(keys, t);
-  const [, xp, yp, sp] = camAt(keys, t - 1 / FPS);
+  // skala minimum agar geseran tidak memperlihatkan pinggir
+  const fit = (k: Key) => Math.max(k[3], 1 + (2 * Math.abs(k[1])) / 1920 + 0.01, 1 + (2 * Math.abs(k[2])) / 1080 + 0.01);
+  const now = camAt(keys, t), prev = camAt(keys, t - 1 / FPS);
+  const [, x, y] = now, s = fit(now);
+  const [, xp, yp] = prev, sp = fit(prev);
   const v = Math.hypot(x - xp, y - yp) + Math.abs(s - sp) * 900;
   const blur = Math.min(14, v * 0.35 * blurGain);
   return <AbsoluteFill style={{ transform: `translate(${x}px, ${y}px) scale(${s})`, filter: blur > 0.3 ? `blur(${blur}px)` : undefined }}>{children}</AbsoluteFill>;
@@ -56,12 +59,12 @@ export const Clip: React.FC<{ src: string; from?: number }> = ({ src, from = 0 }
 export const WhipIn: React.FC<{ dir?: number; children: React.ReactNode }> = ({ dir = 1, children }) => {
   const f = useCurrentFrame();
   const p = interpolate(f, [0, 7], [1, 0], { ...cl, easing: Easing.out(Easing.cubic) });
-  return <AbsoluteFill style={{ transform: `translateX(${dir * p * 520}px)`, filter: p > 0.02 ? `blur(${p * 36}px)` : undefined }}>{children}</AbsoluteFill>;
+  return <AbsoluteFill style={{ transform: `translateX(${dir * p * 520}px) scale(${1 + p * 0.6})`, filter: p > 0.02 ? `blur(${p * 36}px)` : undefined }}>{children}</AbsoluteFill>;
 };
 export const WhipOut: React.FC<{ dir?: number; dur: number; children: React.ReactNode }> = ({ dir = -1, dur, children }) => {
   const f = useCurrentFrame();
   const p = interpolate(f, [dur - 6, dur], [0, 1], { ...cl, easing: Easing.in(Easing.cubic) });
-  return <AbsoluteFill style={{ transform: `translateX(${dir * p * 520}px)`, filter: p > 0.02 ? `blur(${p * 36}px)` : undefined }}>{children}</AbsoluteFill>;
+  return <AbsoluteFill style={{ transform: `translateX(${dir * p * 520}px) scale(${1 + p * 0.6})`, filter: p > 0.02 ? `blur(${p * 36}px)` : undefined }}>{children}</AbsoluteFill>;
 };
 
 // ── 01 · "Selama ratusan tahun, menenun diajarkan dari tangan ke tangan." ─────
@@ -75,6 +78,11 @@ export const S01: React.FC = () => {
   return (
     <AbsoluteFill>
       <Cam keys={keys}><Clip src="footage/7633-full.mp4" from={0.5} /></Cam>
+      {/* lower-third nama */}
+      <div style={{ position: 'absolute', left: 70, bottom: 80, padding: '18px 26px', borderRadius: 22, ...glass(0.42), opacity: ez(t, 0.8, 1.2) * (1 - ez(t, 4.2, 4.5)), transform: `translateX(${(1 - ez(t, 0.8, 1.3, Easing.out(Easing.cubic))) * -40}px)`, fontFamily: FONT, color: LOGO.navy }}>
+        <div style={{ fontSize: 34, fontWeight: 650, letterSpacing: -0.8 }}>Noe Andrew JM Silalahi</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 6, fontSize: 22, fontWeight: 500, opacity: 0.8 }}><Mark size={22} />Ketua Tim BelajarTenun</div>
+      </div>
       {/* kaca lembut di belakang teks agar terbaca di latar terang */}
       <div style={{ position: 'absolute', left: 1040, top: 330, width: 800, padding: '40px 46px', borderRadius: 32, ...glass(0.38), opacity: ez(t, 0.25, 0.7) * out }}>
         <div style={{ fontFamily: FONT, fontSize: 64, fontWeight: 600, lineHeight: 1.1, letterSpacing: -1.8, color: INK }}>

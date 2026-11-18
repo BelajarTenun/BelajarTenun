@@ -23,7 +23,7 @@ const Sub: React.FC<{ words: Wd[]; place?: 'bottom' | 'right' | 'left'; size?: n
   const c = chunks[idx];
   const box: React.CSSProperties = place === 'bottom'
     ? { left: 0, right: 0, bottom: 84, textAlign: 'center' }
-    : place === 'right' ? { right: 90, top: 380, width: 760 } : { left: 90, top: 380, width: 760 };
+    : place === 'right' ? { right: 70, top: 640, width: 700 } : { left: 70, top: 640, width: 700 };
   return (
     <div style={{ position: 'absolute', ...box }}>
       <span key={idx} style={{ display: 'inline-block', padding: place === 'bottom' ? '16px 30px' : '30px 36px', borderRadius: 26, ...glass(0.42), fontFamily: FONT, fontSize: place === 'bottom' ? size : size + 12, fontWeight: 600, letterSpacing: -1, lineHeight: 1.15, color: INK }}>
@@ -35,8 +35,11 @@ const Sub: React.FC<{ words: Wd[]; place?: 'bottom' | 'right' | 'left'; size?: n
 const Chip: React.FC<{ label: string; at?: number }> = ({ label, at = 0.3 }) => {
   const t = useCurrentFrame() / FPS;
   const p = ez(t, at, at + 0.4);
-  return <div style={{ position: 'absolute', left: 64, top: 52, padding: '10px 18px', borderRadius: 999, ...glass(0.42), fontFamily: FONT, fontSize: 18, fontWeight: 700, letterSpacing: 3, color: INK, opacity: p, filter: `blur(${(1 - p) * 6}px)` }}>{label}</div>;
+  return <><Pops times={[at]} vol={0.35} /><div style={{ position: 'absolute', left: 64, top: 52, padding: '10px 18px', borderRadius: 999, ...glass(0.42), fontFamily: FONT, fontSize: 18, fontWeight: 700, letterSpacing: 3, color: INK, opacity: p, filter: `blur(${(1 - p) * 6}px)` }}>{label}</div></>;
 };
+const Pops: React.FC<{ times: number[]; vol?: number }> = ({ times, vol = 0.5 }) => (
+  <>{times.map((s, i) => <Sequence key={i} from={Math.max(0, F(s))} durationInFrames={F(0.4)}><Audio src={staticFile('sfx/pop.wav')} volume={vol} /></Sequence>)}</>
+);
 const White: React.FC<{ children: React.ReactNode }> = ({ children }) => <AbsoluteFill style={{ background: '#fff' }}>{children}</AbsoluteFill>;
 
 // ── Adegan Andrew: reframe ke samping + teks per frasa di sisi kosong ─────────
@@ -60,7 +63,7 @@ const MiniWeaver: React.FC<{ t: number; i: number }> = ({ t, i }) => (
     <Loom x={108} y={160} s={0.55} t={t * (0.9 + (i % 3) * 0.12) + i} woven={0.4 + (i % 4) * 0.12} />
   </svg>
 );
-const LIC = ['CC BY', 'Domain publik', 'CC BY-SA', 'CC0', 'CC BY', 'Arsip museum', 'CC BY', 'CC0', 'Dataset riset'];
+const REFS: [string, string][] = [['ref/silungkang.mp4', 'Silungkang · Sumbar'], ['ref/ntt.mp4', 'Nusa Tenggara Timur'], ['ref/sumut.mp4', 'Sumatera Utara'], ['ref/lombok.mp4', 'Songket Lombok'], ['ref/proses.mp4', 'Proses menenun'], ['ref/silungkang2.mp4', 'Silungkang · Sumbar']];
 const S05: React.FC = () => {
   const t = useCurrentFrame() / FPS;
   const words = W([['Ilmu', 0.91], ['tenun', 1.55], ['sebenarnya', 1.97], ['sudah', 2.51], ['ada', 2.67], ['di', 3.01], ['mana-mana,', 3.17], ['ribuan', 3.93], ['video', 4.67], ['dan', 4.99], ['arsip', 5.23], ['yang', 6.03], ['dibagikan', 6.29], ['terbuka', 6.67], ['di', 7.09], ['internet,', 7.21], ['dan', 7.47], ['banyak', 7.89], ['tradisi.', 8.17]], 0.6);
@@ -68,13 +71,13 @@ const S05: React.FC = () => {
   return (
     <AbsoluteFill>
       <Cam keys={keys}><Clip src="footage/7635b-full.mp4" from={0.6} /></Cam>
-      <div style={{ position: 'absolute', left: 980, top: 120, width: 860, display: 'grid', gridTemplateColumns: 'repeat(3, 270px)', gap: 18 }}>
-        {LIC.map((l, i) => {
-          const at = 3.4 + i * 0.16; // "ribuan video…"
+      <div style={{ position: 'absolute', left: 1010, top: 110, width: 840, display: 'grid', gridTemplateColumns: 'repeat(2, 400px)', gap: 20 }}>
+        {REFS.map(([src, l], i) => {
+          const at = 3.4 + i * 0.22; // "ribuan video…"
           const p = ez(t, at, at + 0.45, Easing.out(Easing.back(1.6)));
           return (
-            <div key={i} style={{ position: 'relative', width: 270, borderRadius: 18, overflow: 'hidden', ...glass(0.5), padding: 0, opacity: Math.min(1, p * 1.4), transform: `scale(${0.6 + p * 0.4}) rotate(${(1 - p) * (i % 2 ? 6 : -6)}deg)` }}>
-              <div style={{ width: 270, height: 162 }}><MiniWeaver t={t} i={i} /></div>
+            <div key={i} style={{ position: 'relative', width: 400, borderRadius: 18, overflow: 'hidden', ...glass(0.5), padding: 0, opacity: Math.min(1, p * 1.4), transform: `scale(${0.6 + p * 0.4}) rotate(${(1 - p) * (i % 2 ? 6 : -6)}deg)` }}>
+              <div style={{ width: 400, height: 225 }}><OffthreadVideo src={staticFile(src)} muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
               <div style={{ position: 'absolute', left: 10, bottom: 10, padding: '4px 10px', borderRadius: 8, background: 'rgba(20,28,58,0.85)', color: '#fff', fontFamily: FONT, fontSize: 14, fontWeight: 700 }}>{l}</div>
               <div style={{ position: 'absolute', right: 10, bottom: 10, width: 26, height: 26, borderRadius: 13, background: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <div style={{ width: 0, height: 0, borderLeft: '10px solid #141c3a', borderTop: '6px solid transparent', borderBottom: '6px solid transparent', marginLeft: 3 }} />
@@ -83,6 +86,7 @@ const S05: React.FC = () => {
           );
         })}
       </div>
+      <Pops times={REFS.map((_, i) => 3.4 + i * 0.22)} />
       <Sub words={words} />
     </AbsoluteFill>
   );
@@ -145,6 +149,7 @@ const S06: React.FC = () => {
           );
         })}
       </div>
+      <Pops times={[1.0, 1.3, 2.4, 3.5, 4.4, 7.8]} />
       {/* "banyak penenun menjadi satu": kartu-kartu kecil menyatu ke modul */}
       {merge > 0 && (
         <>
@@ -153,7 +158,7 @@ const S06: React.FC = () => {
             const r = 420 * (1 - merge);
             return (
               <div key={i} style={{ position: 'absolute', left: 960 + Math.cos(a) * r - 110, top: 470 + Math.sin(a) * r * 0.6 - 66, width: 220, height: 132, borderRadius: 16, overflow: 'hidden', opacity: (1 - merge) * 0.9 + 0.1, transform: `scale(${1 - merge * 0.6})`, boxShadow: '0 10px 30px rgba(0,0,0,0.08)' }}>
-                <MiniWeaver t={t} i={i + 2} />
+                <OffthreadVideo src={staticFile(REFS[i][0])} muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
             );
           })}
@@ -193,6 +198,7 @@ const S07: React.FC = () => {
         <div style={{ fontSize: 20, color: state === 2 ? '#141c3a' : 'rgba(20,28,58,0.55)', fontWeight: 700, marginTop: 22, opacity: state === 2 ? 1 : 0.0 }}>✓ Diperiksa penenun</div>
       </div>
       <Chip label="KUALITAS" at={4.0} />
+      <Pops times={[0.4, 3.4, 6.3]} />
       <Sub words={words} />
     </White>
   );
@@ -256,10 +262,10 @@ const SEGS: Seg[] = [];
   add({ dur: 7.0, v: { src: 'footage/7647-full.mp4', from: 21.5 }, tutor: 'T4', phone: true, stage: 'Merapatkan pakan', mark: 'koreksi' });
   add({ dur: 3.7, v: { src: 'footage/7647-full.mp4', from: 24.6 }, andrew: { src: 'audio/7647-clean.wav', from: 24.6 }, phone: true, stage: 'Merapatkan pakan', mark: 'koreksi' });
   add({ dur: 3.4, v: { src: 'footage/7647-full.mp4', from: 28.3 }, tutor: 'T5', phone: true, stage: 'Merapatkan pakan', mark: 'benar' });
-  add({ dur: 2.4, v: { src: 'footage/7650-full.mp4', from: 22.8, vertical: true }, andrew: { src: 'audio/7650-clean.wav', from: 22.8 }, phone: true, stage: 'Merapatkan pakan', mark: 'tanya' });
-  add({ dur: 4.9, v: { src: 'footage/7650-full.mp4', from: 25.2, vertical: true }, tutor: 'T6', phone: true, stage: 'Merapatkan pakan' });
-  add({ dur: 2.5, v: { src: 'footage/7650-full.mp4', from: 33.8, vertical: true }, andrew: { src: 'audio/7650-clean.wav', from: 33.8 }, phone: true, stage: 'Merapatkan pakan', mark: 'tanya' });
-  add({ dur: 7.1, v: { src: 'footage/7650-full.mp4', from: 36.4, vertical: true }, tutor: 'T7', phone: true, stage: 'Merapatkan pakan', mark: 'catat' });
+  add({ dur: 2.4, v: { src: 'footage/7650-land.mp4', from: 22.8, keys: [[0, 0, 0, 1.1], [2.4, 0, 0, 1.0]] }, andrew: { src: 'audio/7650-clean.wav', from: 22.8 }, phone: true, stage: 'Merapatkan pakan', mark: 'tanya' });
+  add({ dur: 4.9, v: { src: 'footage/7650-land.mp4', from: 25.2 }, tutor: 'T6', phone: true, stage: 'Merapatkan pakan' });
+  add({ dur: 2.5, v: { src: 'footage/7650-land.mp4', from: 33.8, keys: [[0, 0, 0, 1.1], [2.5, 0, 0, 1.0]] }, andrew: { src: 'audio/7650-clean.wav', from: 33.8 }, phone: true, stage: 'Merapatkan pakan', mark: 'tanya' });
+  add({ dur: 7.1, v: { src: 'footage/7650-land.mp4', from: 36.4 }, tutor: 'T7', phone: true, stage: 'Merapatkan pakan', mark: 'catat' });
 }
 const TUT0 = 0.3; // tutor mulai 0,3 dtk setelah segmen (setelah earcon)
 const segAt = (i: number) => SEGS[i].a0;
@@ -343,6 +349,7 @@ const S16: React.FC = () => {
           return <div key={l as string} style={{ display: 'flex', alignItems: 'baseline', gap: 20, padding: '26px 32px', borderRadius: 26, background: '#fff', border: '1px solid rgba(20,28,58,0.12)', boxShadow: '0 20px 50px rgba(0,0,0,0.06)', opacity: Math.min(1, p * 1.3), transform: `translateY(${(1 - p) * 30}px)`, fontFamily: FONT }}><span style={{ fontSize: 64, fontWeight: 700, color: THREAD, letterSpacing: -2 }}>{n}</span><span style={{ fontSize: 30, fontWeight: 600, color: INK }}>{l}</span></div>;
         })}
       </div>
+      <Pops times={[1.2, 2.0, 4.5]} />
       <Sub words={words} />
     </White>
   );
@@ -398,6 +405,7 @@ const S18: React.FC = () => {
         })}
       </div>
       <Chip label="PELESTARIAN" at={3.0} />
+      <Pops times={[1.2, 1.5, 1.8, 2.1, 2.4]} vol={0.35} />
       <Sub words={words} />
     </White>
   );
@@ -410,8 +418,8 @@ const S19: React.FC = () => {
   const rows: [string, string[], number][] = [['Melihat kesalahan murid', ['—', '●', '●'], 0.6], ['Kapan & di mana saja', ['●', '—', '●'], 4.0], ['Isi divalidasi penenun', ['?', '●', '●'], 9.6], ['Tangan tetap bebas', ['—', '●', '●'], 11.0], ['Istilah bahasa daerah', ['jarang', '●', '●'], 13.5]];
   return (
     <AbsoluteFill>
-      <Cam keys={[[0, 0, 0, 1], [0.15, 0, 0, 1], [1.0, 300, 20, 1.3], [17, 312, 26, 1.33]]}><Clip src="footage/7639new-full.mp4" from={0.2} /></Cam>
-      <div style={{ position: 'absolute', left: 70, top: 130, width: 1000, padding: '34px 38px', borderRadius: 30, ...glass(0.5), fontFamily: FONT, color: INK, opacity: ez(t, 0.4, 0.9) }}>
+      <Cam keys={[[0, 0, 0, 1], [0.15, 0, 0, 1], [1.0, 350, 20, 1.38], [17, 360, 26, 1.4]]}><Clip src="footage/7639new-full.mp4" from={0.2} /></Cam>
+      <div style={{ position: 'absolute', left: 60, top: 120, width: 880, padding: '30px 32px', borderRadius: 30, ...glass(0.5), fontFamily: FONT, color: INK, opacity: ez(t, 0.4, 0.9) }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr 1.1fr', fontSize: 18, fontWeight: 700, color: 'rgba(20,28,58,0.55)', paddingBottom: 14, borderBottom: '2px solid rgba(20,28,58,0.12)' }}>
           <div /><div style={{ textAlign: 'center' }}>Video tutorial</div><div style={{ textAlign: 'center' }}>Kelas tatap muka</div><div style={{ textAlign: 'center', color: THREAD }}>BelajarTenun</div>
         </div>
@@ -422,6 +430,7 @@ const S19: React.FC = () => {
           </div>
         ))}
       </div>
+      <Pops times={rows.map((r) => r[2])} />
       <Sub words={words} max={8} />
     </AbsoluteFill>
   );
@@ -431,16 +440,20 @@ const S19: React.FC = () => {
 const S20: React.FC = () => {
   const t = useCurrentFrame() / FPS;
   const words = W([['Kami', 0.0], ['menguji', 0.52], ['deteksi', 1.36], ['tahapnya', 1.62], ['dengan', 2.12], ['berbagai', 2.46], ['video', 2.88], ['tenun', 3.28], ['berlabel', 3.72], ['dari', 4.14], ['berbagai', 4.86], ['tradisi.', 5.22]]);
-  const cards = [['[N]', 'video tenun diuji', 1.0], ['[x]%', 'akurasi deteksi tahap', 2.6], ['[y] dtk', 'waktu respons tutor', 4.0]];
+  const cards = [['128', 'video tenun diuji', 1.0, 128, 0], ['87%', 'akurasi deteksi tahap', 2.6, 87, 0], ['1,8 dtk', 'waktu respons tutor', 4.0, 1.8, 1]] as const;
   return (
     <White>
       <div style={{ position: 'absolute', top: 170, width: '100%', textAlign: 'center', fontFamily: FONT, fontSize: 56, fontWeight: 650, letterSpacing: -1.5, color: INK }}>Hasil uji</div>
       <div style={{ position: 'absolute', top: 340, width: '100%', display: 'flex', justifyContent: 'center', gap: 40 }}>
-        {cards.map(([n, l, a]) => {
+        {cards.map(([n, l, a, v, dec]) => {
           const p = ez(t, a as number, (a as number) + 0.45, Easing.out(Easing.back(1.7)));
-          return <div key={l as string} style={{ width: 420, height: 300, borderRadius: 30, background: '#fff', border: '1px solid rgba(20,28,58,0.12)', boxShadow: '0 24px 60px rgba(0,0,0,0.07)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: Math.min(1, p * 1.3), transform: `translateY(${(1 - p) * 40}px)`, fontFamily: FONT }}><div style={{ fontSize: 96, fontWeight: 700, color: THREAD, letterSpacing: -3 }}>{n}</div><div style={{ fontSize: 26, fontWeight: 600, color: 'rgba(20,28,58,0.55)' }}>{l}</div></div>;
+          const c = (v as number) * ez(t, a as number, (a as number) + 1.1, Easing.out(Easing.cubic));
+          const shown = (dec ? c.toFixed(1).replace('.', ',') : Math.round(c).toString()) + (String(n).includes('%') ? '%' : String(n).includes('dtk') ? ' dtk' : '');
+          return <div key={l as string} style={{ width: 420, height: 300, borderRadius: 30, background: '#fff', border: '1px solid rgba(20,28,58,0.12)', boxShadow: '0 24px 60px rgba(0,0,0,0.07)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: Math.min(1, p * 1.3), transform: `translateY(${(1 - p) * 40}px)`, fontFamily: FONT }}><div style={{ fontSize: 96, fontWeight: 700, color: INK, letterSpacing: -3 }}>{shown}</div><div style={{ width: 60, height: 5, borderRadius: 3, background: THREAD, margin: '6px 0 12px' }} /><div style={{ fontSize: 26, fontWeight: 600, color: 'rgba(20,28,58,0.55)' }}>{l}</div></div>;
         })}
       </div>
+      <div style={{ position: 'absolute', top: 690, width: '100%', textAlign: 'center', fontFamily: FONT, fontSize: 20, color: 'rgba(20,28,58,0.5)' }}>Angka ilustrasi (mockup)</div>
+      <Pops times={[1.0, 2.6, 4.0]} />
       <Sub words={words} />
     </White>
   );
@@ -464,6 +477,7 @@ const S22: React.FC = () => {
         {col('NILAI', ['Penghasilan untuk penenun', 'Murid baru', 'Pasar kain meluas'], 5.2)}
         {col('SKEMA', ['[Langganan sanggar]', '[Paket kacamata]', '[Kemitraan]'], 8.6)}
       </div>
+      <Pops times={[1.0, 5.2, 8.6]} />
       <Sub words={words} />
     </AbsoluteFill>
   );
@@ -494,6 +508,7 @@ const S23: React.FC = () => {
           ))}
         </g>
       </svg>
+      <Pops times={SPOTS.map((_, i) => (i === 0 ? 0.4 : 1.5 + i * 0.22))} vol={0.35} />
       <div style={{ position: 'absolute', top: 120, width: '100%', textAlign: 'center', fontFamily: FONT, fontSize: 30, fontWeight: 800, letterSpacing: 5, color: 'rgba(20,28,58,0.55)', opacity: ez(t, 5.4, 6.0) }}>INDONESIA CULTURAL POWER</div>
       <Sub words={words} />
     </White>
@@ -530,7 +545,7 @@ const S26: React.FC = () => {
         <Mark size={130} draw={d} />
         <div style={{ fontFamily: LOGO.serif, fontSize: 120, fontWeight: 400, letterSpacing: -1, color: LOGO.navy, opacity: n, filter: `blur(${(1 - n) * 10}px)` }}>BelajarTenun</div>
         <div style={{ fontFamily: FONT, fontSize: 32, color: 'rgba(20,28,58,0.55)', opacity: ez(t, 1.4, 1.9) }}>Belajar menenun, dipandu ilmu Nusantara.</div>
-        <div style={{ marginTop: 10, padding: '12px 30px', borderRadius: 999, background: LOGO.navy, color: '#fff', fontFamily: FONT, fontSize: 30, fontWeight: 600, opacity: ez(t, 2.0, 2.5) }}>belajartenun.id</div>
+        <div style={{ marginTop: 10, padding: '12px 30px', borderRadius: 999, background: LOGO.navy, color: '#fff', fontFamily: FONT, fontSize: 30, fontWeight: 600, opacity: ez(t, 2.0, 2.5) }}>belajartenun.com</div>
       </AbsoluteFill>
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', fontFamily: FONT, color: 'rgba(20,28,58,0.55)', fontSize: 24, lineHeight: 1.9, textAlign: 'center', opacity: cr }}>
         <div style={{ fontWeight: 700, color: INK, fontSize: 28, marginBottom: 12 }}>Kredit</div>
@@ -563,7 +578,7 @@ const ROWS: Row[] = [
   ['22', 11.8, <S22 />, { src: 'audio/7643a-clean.wav', from: 0.4 }, 'whip'],
   ['23', 7.2, <S23 />, { src: 'audio/7643new-clean.wav', from: 0.4 }, 'whip'],
   ['24', 3.9, <S24 />, null, 'cut'],
-  ['25', 5.2, <S25 />, { src: 'audio/7643b-clean.wav', from: 0 }, 'cut'],
+  ['25', 6.4, <S25 />, { src: 'audio/7643b-clean.wav', from: 0 }, 'cut'],
   ['26', 9.0, <S26 />, null, 'cut'],
 ];
 const STARTS = ROWS.reduce<number[]>((a, r, i) => [...a, i === 0 ? 0 : a[i - 1] + ROWS[i - 1][1]], []);
