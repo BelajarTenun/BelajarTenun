@@ -1,20 +1,21 @@
 import React from 'react';
 import { AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame } from 'remotion';
 import { BRAND, glass, Mark } from './brand';
-import { Boil, Grain, Question, Steam, Sweat } from './fx';
+import { Grain } from './fx';
+import { Stick, Loom, POSES, poseAt, weaving, handsOf } from './stick';
 
 // Babak 1 · Intro (±30 dtk) — footage & suara asli, teks sinkron per kata (Whisper).
 //   01 Andrew (7633) · 02 animasi penenun + VO 7633 · 03 Andrew memakai kacamata (7634b)
 //   04 identitas produk + B-roll (7644, 7652, 7653, 7647) + VO 7634a
-const FPS = 30;
-const F = (x: number) => Math.round(x * FPS);
-const cl = { extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const };
-const ez = (t: number, a: number, b: number, e = Easing.out(Easing.exp)) => interpolate(t, [a, b], [0, 1], { ...cl, easing: e });
+export const FPS = 30;
+export const F = (x: number) => Math.round(x * FPS);
+export const cl = { extrapolateLeft: 'clamp' as const, extrapolateRight: 'clamp' as const };
+export const ez = (t: number, a: number, b: number, e = Easing.out(Easing.exp)) => interpolate(t, [a, b], [0, 1], { ...cl, easing: e });
 const { ink: INK, thread: THREAD, paper: PAPER, font: FONT } = BRAND;
 
-type Wd = [string, number];
+export type Wd = [string, number];
 // Kata muncul saat diucapkan: blur → tajam, abu → tinta. Waktu dalam detik lokal adegan.
-const Spoken: React.FC<{ words: Wd[]; t: number; color?: string; dim?: string }> = ({ words, t, color = INK, dim = 'rgba(21,24,28,0.18)' }) => (
+export const Spoken: React.FC<{ words: Wd[]; t: number; color?: string; dim?: string }> = ({ words, t, color = INK, dim = 'rgba(21,24,28,0.18)' }) => (
   <>
     {words.map(([w, at], i) => {
       const p = ez(t, at - 0.08, at + 0.22);
@@ -28,8 +29,8 @@ const Spoken: React.FC<{ words: Wd[]; t: number; color?: string; dim?: string }>
 // ── Kamera virtual ─────────────────────────────────────────────────────────
 // keys: [detik, geserX, geserY, skala]. Antar-keyframe: ease in-out. Motion blur otomatis
 // mengikuti kecepatan (gerak cepat = blur, diam = tajam).
-type Key = [number, number, number, number];
-const camAt = (keys: Key[], t: number) => {
+export type Key = [number, number, number, number];
+export const camAt = (keys: Key[], t: number) => {
   if (t <= keys[0][0]) return keys[0];
   for (let i = 1; i < keys.length; i++) {
     const [t1, x1, y1, s1] = keys[i], [t0, x0, y0, s0] = keys[i - 1];
@@ -40,7 +41,7 @@ const camAt = (keys: Key[], t: number) => {
   }
   return keys[keys.length - 1];
 };
-const Cam: React.FC<{ keys: Key[]; children: React.ReactNode; blurGain?: number }> = ({ keys, children, blurGain = 1 }) => {
+export const Cam: React.FC<{ keys: Key[]; children: React.ReactNode; blurGain?: number }> = ({ keys, children, blurGain = 1 }) => {
   const t = useCurrentFrame() / FPS;
   const [, x, y, s] = camAt(keys, t);
   const [, xp, yp, sp] = camAt(keys, t - 1 / FPS);
@@ -48,16 +49,16 @@ const Cam: React.FC<{ keys: Key[]; children: React.ReactNode; blurGain?: number 
   const blur = Math.min(14, v * 0.35 * blurGain);
   return <AbsoluteFill style={{ transform: `translate(${x}px, ${y}px) scale(${s})`, filter: blur > 0.3 ? `blur(${blur}px)` : undefined }}>{children}</AbsoluteFill>;
 };
-const Clip: React.FC<{ src: string; from?: number }> = ({ src, from = 0 }) => (
+export const Clip: React.FC<{ src: string; from?: number }> = ({ src, from = 0 }) => (
   <OffthreadVideo src={staticFile(src)} startFrom={F(from)} muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
 );
 // Whip pan: masuk dari samping dengan blur kuat, mendarat tajam dalam ±0,23 dtk.
-const WhipIn: React.FC<{ dir?: number; children: React.ReactNode }> = ({ dir = 1, children }) => {
+export const WhipIn: React.FC<{ dir?: number; children: React.ReactNode }> = ({ dir = 1, children }) => {
   const f = useCurrentFrame();
   const p = interpolate(f, [0, 7], [1, 0], { ...cl, easing: Easing.out(Easing.cubic) });
   return <AbsoluteFill style={{ transform: `translateX(${dir * p * 520}px)`, filter: p > 0.02 ? `blur(${p * 36}px)` : undefined }}>{children}</AbsoluteFill>;
 };
-const WhipOut: React.FC<{ dir?: number; dur: number; children: React.ReactNode }> = ({ dir = -1, dur, children }) => {
+export const WhipOut: React.FC<{ dir?: number; dur: number; children: React.ReactNode }> = ({ dir = -1, dur, children }) => {
   const f = useCurrentFrame();
   const p = interpolate(f, [dur - 6, dur], [0, 1], { ...cl, easing: Easing.in(Easing.cubic) });
   return <AbsoluteFill style={{ transform: `translateX(${dir * p * 520}px)`, filter: p > 0.02 ? `blur(${p * 36}px)` : undefined }}>{children}</AbsoluteFill>;
@@ -67,7 +68,7 @@ const WhipOut: React.FC<{ dir?: number; dur: number; children: React.ReactNode }
 const W01_1: Wd[] = [['Selama', 0.35], ['ratusan', 1.13], ['tahun,', 1.53]];
 const W01_2: Wd[] = [['menenun', 2.33], ['diajarkan', 2.87]];
 const W01_3: Wd[] = [['dari', 3.33], ['tangan', 3.55], ['ke', 3.97], ['tangan.', 4.1]];
-const S01: React.FC = () => {
+export const S01: React.FC = () => {
   const t = useCurrentFrame() / FPS;
   const out = 1 - ez(t, 4.55, 4.8, Easing.in(Easing.cubic));
   const keys: Key[] = [[0, 0, 0, 1], [0.15, 0, 0, 1], [1.05, -235, 20, 1.27], [2.2, -235, 20, 1.27], [2.5, -262, 40, 1.37], [4.8, -268, 44, 1.39]];
@@ -92,55 +93,54 @@ const W02_C: Wd[] = [['Dan', 6.59], ['pengetahuannya', 6.73], ['perlahan-lahan',
 // ── 02 · ilustrasi kartun 2D (latar putih), kamera virtual + parallax ──────
 // IL1 penenun dekat → IL2 penenun sendirian (kamera mundur) → IL3 anak muda bingung
 // masuk, benang oranye terulur lalu putus → semuanya memudar ke putih.
-const Ill: React.FC<{ src: string; style?: React.CSSProperties }> = ({ src, style }) => (
-  <Img src={staticFile(src)} style={{ position: 'absolute', width: 1920, height: 1073, top: 3, left: 0, mixBlendMode: 'multiply', filter: 'brightness(1.04) contrast(1.03)', ...style }} />
-);
-const S02: React.FC = () => {
+export const S02: React.FC = () => {
   const t = useCurrentFrame() / FPS;
-  // A: IL1 push-in pelan, lalu potong ke IL2 dengan kamera mundur dari wajah penenun
-  const pushA = interpolate(t, [0, 1.5], [1.0, 1.06], cl);
-  const outB = interpolate(t, [1.5, 2.7], [1.9, 1.0], { ...cl, easing: Easing.out(Easing.cubic) });
-  const blurB = interpolate(t, [1.5, 1.7], [10, 0], cl);
-  // B: anak muda masuk (whip dari kiri), benang terulur lalu putus
-  const youthIn = interpolate(t, [2.5, 2.8], [1, 0], { ...cl, easing: Easing.out(Easing.cubic) });
-  const link = ez(t, 3.2, 4.1, Easing.inOut(Easing.cubic));
-  const broken = ez(t, 4.55, 5.0, Easing.out(Easing.cubic));
-  // C: memudar ke putih
-  const fadeAll = ez(t, 6.9, 8.6, Easing.inOut(Easing.cubic));
+  const zoom = interpolate(t, [0, 1.7, 2.3, 3.4], [1.75, 1, 1, 1.55], { ...cl, easing: Easing.inOut(Easing.cubic) });
+  const camX = interpolate(t, [0, 1.7, 2.3, 3.4], [950, 950, 950, 1290], { ...cl, easing: Easing.inOut(Easing.cubic) });
+  const n = 5, keep = 2, sc = 0.82, baseY = 790;
+  const xs = Array.from({ length: n }, (_, i) => 170 + i * 330);
+  // anak muda berjalan masuk dari kanan lalu bingung
+  const walk = ez(t, 2.5, 3.4, Easing.out(Easing.cubic));
+  const yx = 1880 - walk * 230;
+  const step = t > 2.5 && t < 3.4 ? Math.sin((t - 2.5) * 14) : 0;
+  const youthPose = t < 3.4
+    ? { ...POSES.stand, legL: [-6 + step * 22, 4] as [number, number], legR: [6 - step * 22, -4] as [number, number], armL: [-12 - step * 18, 8] as [number, number], armR: [12 + step * 18, -8] as [number, number] }
+    : poseAt([[3.4, POSES.stand], [3.8, POSES.confused], [6.4, POSES.confused], [6.9, POSES.phone]], t);
+  const link = ez(t, 3.7, 4.5, Easing.inOut(Easing.cubic));
+  const broken = ez(t, 4.6, 5.1, Easing.out(Easing.cubic));
+  const fade = ez(t, 6.9, 8.7, Easing.inOut(Easing.cubic));
+  const woven = interpolate(t, [6.9, 8.6], [0.85, 0], cl);
+  const hand = handsOf(yx, baseY, 1, youthPose).R;
+  const post: [number, number] = [xs[keep] + 70 + 210 * sc, baseY - 146 * sc];
   const lines = [W02_A, W02_B, W02_C];
   const active = t < 2.45 ? 0 : t < 6.6 ? 1 : 2;
   return (
-    <AbsoluteFill style={{ background: '#FFFFFF', overflow: 'hidden' }}>
-      <AbsoluteFill style={{ transform: t >= 1.5 ? 'translateY(110px) scale(0.86)' : undefined, transformOrigin: '50% 100%' }}>
-      {t < 1.5 ? (
-        <AbsoluteFill style={{ transform: `scale(${pushA})`, transformOrigin: '42% 45%' }}><Boil id="b1"><Ill src="illust/IL1.png" /></Boil><Steam x={838} y={890} /></AbsoluteFill>
-      ) : (
-        <AbsoluteFill style={{ transform: `scale(${outB})`, transformOrigin: '63% 52%', filter: `blur(${blurB}px) saturate(${1 - fadeAll})`, opacity: 1 - fadeAll * 0.9 }}>
-          <Boil id="b2"><Ill src="illust/IL2.png" /></Boil>
-          <Steam x={1200} y={845} />
-        </AbsoluteFill>
-      )}
-      {t >= 2.5 && (
-        <AbsoluteFill style={{ mixBlendMode: 'multiply', transform: `translateX(${-youthIn * 700 - 590}px) translateY(40px) scale(1.2)`, transformOrigin: '50% 92%', filter: `blur(${youthIn * 30 + fadeAll * 6}px)`, opacity: 1 - fadeAll }}>
-          <Boil id="b3"><Ill src="illust/IL3.png" /></Boil>
-          <Sweat x={1040} y={215} start={F(2.9)} />
-          <Question x={1110} y={150} at={F(3.4)} rot={-10} />
-          <Question x={1180} y={110} at={F(5.0)} s={0.8} rot={12} />
-        </AbsoluteFill>
-      )}
-      {/* benang oranye dari HP anak muda ke alat tenun, lalu putus */}
-      <svg width="1920" height="1080" style={{ position: 'absolute', inset: 0, opacity: 1 - fadeAll }}>
-        {broken < 0.02 ? (
-          <path d="M400 470 C 760 520, 1150 620, 1520 650" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" strokeDasharray="1400" strokeDashoffset={1400 * (1 - link)} />
-        ) : (
-          <>
-            <path d="M400 470 C 600 500, 760 530, 930 560" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" opacity={1 - broken * 0.7} transform={`translate(0 ${broken * 40}) rotate(${broken * 8} 930 560)`} />
-            <path d="M1040 580 C 1220 610, 1380 635, 1520 650" fill="none" stroke={THREAD} strokeWidth={4} strokeLinecap="round" opacity={1 - broken * 0.7} transform={`translate(0 ${broken * 40}) rotate(${-broken * 8} 1040 580)`} />
-          </>
-        )}
+    <AbsoluteFill style={{ background: '#FFFFFF' }}>
+      <svg width="1920" height="1080" style={{ position: 'absolute', inset: 0 }}>
+        <g transform={`translate(960 ${baseY - 120}) scale(${zoom}) translate(${-camX} ${-(baseY - 80)})`}>
+          {xs.map((x, i) => {
+            const leave = i === keep ? 0 : ez(t, 0.9 + ((i * 3) % n) * 0.18, 1.5 + ((i * 3) % n) * 0.18, Easing.inOut(Easing.cubic));
+            const o = (1 - leave) * (i === keep ? 1 - fade * 0.85 : 1);
+            if (o <= 0.01) return null;
+            return (
+              <g key={i} opacity={o} transform={`translate(0 ${leave * 40})`}>
+                <Stick x={x} y={baseY} s={sc} pose={weaving(t, 0.9, i * 0.37)} t={t + i} hair="bun" accent={THREAD} />
+                <Loom x={x + 70} y={baseY} s={sc} t={t * 0.9 + i * 0.37} woven={i === keep ? woven : 0.85} />
+              </g>
+            );
+          })}
+          {t > 2.5 && <Stick x={yx} y={baseY} s={1} pose={youthPose} t={t} hair="short" prop="phone" opacity={1 - fade} />}
+          {/* benang dari alat tenun ke tangan anak muda, lalu putus */}
+          {t > 3.7 && (broken < 0.02 ? (
+            <path d={`M${post[0]} ${post[1]} Q ${(post[0] + hand[0]) / 2} ${Math.min(post[1], hand[1]) - 120} ${hand[0]} ${hand[1]}`} fill="none" stroke={THREAD} strokeWidth={5} strokeLinecap="round" strokeDasharray="900" strokeDashoffset={900 * (1 - link)} />
+          ) : (
+            <g opacity={(1 - broken * 0.6) * (1 - fade)}>
+              <path d={`M${post[0]} ${post[1]} Q ${post[0] + 120} ${post[1] - 110} ${post[0] + 220} ${post[1] - 70 + broken * 90}`} fill="none" stroke={THREAD} strokeWidth={5} strokeLinecap="round" />
+              <path d={`M${hand[0]} ${hand[1]} Q ${hand[0] - 90} ${hand[1] - 120} ${hand[0] - 190} ${hand[1] - 60 + broken * 90}`} fill="none" stroke={THREAD} strokeWidth={5} strokeLinecap="round" />
+            </g>
+          ))}
+        </g>
       </svg>
-      </AbsoluteFill>
-      {/* teks: kalimat aktif tinta, sebelumnya memudar */}
       <div style={{ position: 'absolute', left: 120, top: 90, width: 1680, fontFamily: FONT, fontSize: 54, fontWeight: 600, letterSpacing: -1.5, lineHeight: 1.14, color: INK }}>
         {lines.map((w, i) => (
           <div key={i} style={{ opacity: i === active ? 1 : i < active ? 0.22 : 1, display: i <= active ? 'block' : 'none' }}>
@@ -155,12 +155,12 @@ const S02: React.FC = () => {
 // ── 03 · "Bagaimana kalau ilmunya bisa ikut… di mata kita?" ──────────────────
 const W03_1: Wd[] = [['Bagaimana', 0.05], ['kalau', 0.83], ['ilmunya', 1.09], ['bisa', 1.51], ['ikut…', 1.67]];
 const W03_2: Wd[] = [['di', 2.05], ['mata', 4.03], ['kita?', 4.19]];
-const S03: React.FC = () => {
+export const S03: React.FC = () => {
   const t = useCurrentFrame() / FPS;
   // kacamata ±(1020, 390): titik p di tengah layar saat skala k → geser (−60k, 150k)
-  const k1 = 2.1, k2 = 7;
-  const keys: Key[] = [[0, 0, 0, 1], [3.9, 0, 0, 1.06], [4.2, -60 * k1, 150 * k1, k1], [4.45, -60 * k1, 150 * k1, k1 * 1.03], [4.7, -60 * k2, 150 * k2, k2]];
-  const flash = ez(t, 4.55, 4.7, Easing.in(Easing.cubic));
+  const k1 = 1.32;
+  const keys: Key[] = [[0, 0, 0, 1], [3.9, 0, 0, 1.04], [4.2, -60 * k1, 150 * k1, k1], [4.7, -60 * 1.38, 150 * 1.38, 1.38]];
+  const flash = ez(t, 4.5, 4.7, Easing.in(Easing.cubic));
   return (
     <AbsoluteFill>
       <Cam keys={keys} blurGain={0.6}><Clip src="footage/7634b-full.mp4" /></Cam>
@@ -177,7 +177,7 @@ const S03: React.FC = () => {
 // ── 04 · identitas produk + B-roll, teks sinkron VO 7634a ───────────────────
 // Waktu lokal = waktu di 7634a − 0,3.
 const o4 = 0.3;
-const Caption: React.FC<{ words: Wd[]; t: number }> = ({ words, t }) => (
+export const Caption: React.FC<{ words: Wd[]; t: number }> = ({ words, t }) => (
   <div style={{ position: 'absolute', left: 0, right: 0, bottom: 96, textAlign: 'center' }}>
     <span style={{ display: 'inline-block', padding: '16px 30px', borderRadius: 24, ...glass(0.36), fontFamily: FONT, fontSize: 44, fontWeight: 600, letterSpacing: -1 }}>
       <Spoken words={words} t={t} />
@@ -188,7 +188,7 @@ const W04_B: Wd[] = [['adalah', 1.4], ['tutor', 1.88], ['AI', 2.2], ['di', 2.4],
 const W04_C: Wd[] = [['pengetahuan', 4.08], ['dan', 4.76], ['teknologi', 5.02], ['tradisional', 5.88], ['menenun,', 6.26]].map(([w, s]) => [w, (s as number) - o4]) as Wd[];
 const W04_D: Wd[] = [['termasuk', 7.2], ['istilahnya', 7.82], ['dalam', 8.52], ['bahasa', 8.76], ['daerah,', 9.14]].map(([w, s]) => [w, (s as number) - o4]) as Wd[];
 const W04_E: Wd[] = [['langsung', 9.86], ['saat', 10.38], ['kita', 10.64], ['mencoba.', 10.86]].map(([w, s]) => [w, (s as number) - o4]) as Wd[];
-const S04: React.FC = () => {
+export const S04: React.FC = () => {
   const t = useCurrentFrame() / FPS;
   const mark = ez(t, 0, 1.0, Easing.out(Easing.cubic));
   const name = ez(t, 0.2, 0.7);
