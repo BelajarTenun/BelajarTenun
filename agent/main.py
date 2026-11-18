@@ -248,7 +248,9 @@ async def entrypoint(ctx: JobContext) -> None:
 
     await session.start(room=ctx.room, agent=agent, room_input_options=RoomInputOptions(video_enabled=True))
     tracer.emit("live_start", engine="livekit+gemini")
-    await session.generate_reply(instructions="Sapa murid dengan singkat, lalu panggil get_current_step dan bacakan instruksi tahap pertama.")
+    await session.generate_reply(instructions=("Lihat dulu gambar kamera murid. Sapa singkat, sebutkan dalam satu kalimat apa yang kamu lihat "
+        "(kalau alat tenun belum terlihat, minta murid mengarahkan kamera ke lungsi dan tangannya). "
+        "Lalu panggil get_current_step dan jelaskan tahap ini dengan mengaitkannya ke yang terlihat di kamera."))
 
 
 if __name__ == "__main__":
