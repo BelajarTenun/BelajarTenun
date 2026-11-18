@@ -26,9 +26,14 @@ export class LiveKitTutor extends EventTarget {
     const { url, token } = await this.api('/api/livekit/token', { sessionId: this.sessionId });
     this.room = new Room({ adaptiveStream: true, dynacast: true });
     const r = this.room;
-    r.on(RoomEvent.TrackSubscribed, (track) => {
-      if (track.kind === Track.Kind.Audio) { const el = track.attach(); el.dataset.bt = 'tutor-audio'; document.body.append(el); }
+    // Hanya suara agen tutor yang diputar, satu elemen saja. Suara peserta lain (mis. tab kedua milik
+    // pengguna sendiri di room yang sama) tidak diputar supaya ucapan pengguna tidak terdengar memantul.
+    r.on(RoomEvent.TrackSubscribed, (track, _pub, participant) => {
+      if (track.kind !== Track.Kind.Audio || !participant?.isAgent) return;
+      document.querySelectorAll('audio[data-bt="tutor-audio"]').forEach((a) => a.remove());
+      const el = track.attach(); el.dataset.bt = 'tutor-audio'; document.body.append(el);
     });
+    r.on(RoomEvent.TrackUnsubscribed, (track) => track.detach().forEach((el) => el.remove()));
     r.on(RoomEvent.DataReceived, (payload, participant, kind, topic) => {
       if (topic !== UI_TOPIC) return;
       try { this.#emit('ui', JSON.parse(new TextDecoder().decode(payload))); } catch {}
@@ -42,17 +47,22 @@ export class LiveKitTutor extends EventTarget {
     r.on(RoomEvent.Disconnected, (reason) => this.#emit('close', { code: reason }));
 
     await r.connect(url, token);
-    const mic = await createLocalAudioTrack({ echoCancellation: true, noiseSuppression: true });
-    await r.localParticipant.publishTrack(mic);
-    this.mic = mic;
     // Siapa yang sedang bicara: dipakai indikator "Tutor berbicara / mendengarkan" di layar sesi.
     r.on(RoomEvent.ActiveSpeakersChanged, (speakers) => this.#emit('speaking', {
-      tutor: speakers.some((p) => p.isAgent || p !== r.localParticipant), user: speakers.includes(r.localParticipant),
+      tutor: speakers.some((p) => p !== r.localParticipant), user: speakers.includes(r.localParticipant),
     }));
+    // Terbitkan mic dan kamera dengan batas waktu: kalau jalur kirim (publisher) tidak tersambung,
+    // tampilkan galat yang jelas alih-alih macet di "Menyambungkan…".
+    const withTimeout = (p, ms, what) => Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error(`${what} tidak terkirim ke server (batas waktu)`)), ms))]);
+    const mic = await createLocalAudioTrack({ echoCancellation: true, noiseSuppression: true, autoGainControl: true });
+    this.mic = mic;
+    await withTimeout(r.localParticipant.publishTrack(mic, { source: Track.Source.Microphone }), 15000, 'Suara mikrofon');
+    this.#emit('open', { room: r.name });
     const vt = videoTrackFrom(this.source);
     // Nama track = sumber kamera, supaya agen bisa melabeli capture_source (pola VisionClaw).
-    if (vt) await r.localParticipant.publishTrack(new LocalVideoTrack(vt), { name: this.source?.kind || 'camera', source: Track.Source.Camera, simulcast: false });
-    this.#emit('open', { room: r.name });
+    if (!vt) { this.#emit('status', { text: 'Kamera tidak terkirim: sumber kamera tidak ditemukan' }); return; }
+    withTimeout(r.localParticipant.publishTrack(new LocalVideoTrack(vt), { name: this.source?.kind || 'camera', source: Track.Source.Camera, simulcast: false }), 15000, 'Gambar kamera')
+      .catch((e) => this.#emit('status', { text: e.message }));
   }
 
   /** Bisukan / nyalakan mikrofon pengguna (tutor tetap terdengar). */
