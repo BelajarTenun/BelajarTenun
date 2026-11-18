@@ -1,6 +1,6 @@
 import React from 'react';
 import { AbsoluteFill, Audio, Easing, interpolate, OffthreadVideo, Sequence, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
-import { BRAND, glass, Mark } from './brand';
+import { BRAND, glass, Mark, LOGO } from './brand';
 import { Grain } from './fx';
 import { Stick, Loom, POSES, poseAt, weaving, handsOf, THREAD, INK as SINK } from './stick';
 import { FPS, F, cl, ez, Wd, Spoken, Key, Cam, Clip, WhipIn, WhipOut, S01, S02, S03, S04 } from './intro';
@@ -208,7 +208,7 @@ const PhoneT: React.FC<{ lines: Line[]; stage: string; speaking: boolean; visibl
       <div style={{ position: 'relative', width: '100%', height: '100%', borderRadius: 52, overflow: 'hidden', background: 'rgba(250,249,246,0.9)', fontFamily: FONT, color: INK }}>
         <div style={{ position: 'absolute', left: 28, right: 28, top: 56, display: 'flex', alignItems: 'center', gap: 10 }}>
           <Mark size={26} speaking={speaking} />
-          <div style={{ fontSize: 20, fontWeight: 600, letterSpacing: -0.3 }}>BelajarTenun</div>
+          <div style={{ fontFamily: LOGO.serif, fontSize: 23, color: LOGO.navy }}>BelajarTenun</div>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#3F8F67' }}><span style={{ width: 8, height: 8, borderRadius: 4, background: '#3FAF7E' }} />Kacamata</div>
         </div>
         <div style={{ position: 'absolute', left: 28, top: 100, fontSize: 28, fontWeight: 650, letterSpacing: -0.8 }}>{stage}</div>
@@ -528,9 +528,9 @@ const S26: React.FC = () => {
     <White>
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 28, opacity: 1 - cr }}>
         <Mark size={130} draw={d} />
-        <div style={{ fontFamily: FONT, fontSize: 96, fontWeight: 650, letterSpacing: -3, color: INK, opacity: n, filter: `blur(${(1 - n) * 10}px)` }}>BelajarTenun</div>
+        <div style={{ fontFamily: LOGO.serif, fontSize: 120, fontWeight: 400, letterSpacing: -1, color: LOGO.navy, opacity: n, filter: `blur(${(1 - n) * 10}px)` }}>BelajarTenun</div>
         <div style={{ fontFamily: FONT, fontSize: 32, color: '#7D756D', opacity: ez(t, 1.4, 1.9) }}>Belajar menenun, dipandu ilmu Nusantara.</div>
-        <div style={{ marginTop: 10, padding: '12px 30px', borderRadius: 999, background: INK, color: '#fff', fontFamily: FONT, fontSize: 30, fontWeight: 600, opacity: ez(t, 2.0, 2.5) }}>belajartenun.id</div>
+        <div style={{ marginTop: 10, padding: '12px 30px', borderRadius: 999, background: LOGO.navy, color: '#fff', fontFamily: FONT, fontSize: 30, fontWeight: 600, opacity: ez(t, 2.0, 2.5) }}>belajartenun.id</div>
       </AbsoluteFill>
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', fontFamily: FONT, color: '#6E6760', fontSize: 24, lineHeight: 1.9, textAlign: 'center', opacity: cr }}>
         <div style={{ fontWeight: 700, color: INK, fontSize: 28, marginBottom: 12 }}>Kredit</div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { AbsoluteFill, Audio, Easing, Img, interpolate, OffthreadVideo, Sequence, staticFile, useCurrentFrame } from 'remotion';
-import { BRAND, glass, Mark } from './brand';
+import { BRAND, glass, Mark, LOGO } from './brand';
 import { Grain } from './fx';
 import { Stick, Loom, POSES, poseAt, weaving, handsOf } from './stick';
 
@@ -201,7 +201,7 @@ export const S04: React.FC = () => {
       <Sequence {...shot(0, cut[0])}>
         <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 30, background: `radial-gradient(ellipse at 50% 45%, #FAF9F6, ${PAPER} 70%)` }}>
           <Mark size={120} draw={mark} />
-          <div style={{ fontFamily: FONT, fontSize: 84, fontWeight: 600, letterSpacing: -2.6, color: INK, opacity: name, filter: `blur(${(1 - name) * 10}px)` }}>BelajarTenun</div>
+          <div style={{ fontFamily: LOGO.serif, fontSize: 104, fontWeight: 400, letterSpacing: -1, color: LOGO.navy, opacity: name, filter: `blur(${(1 - name) * 10}px)` }}>BelajarTenun</div>
         </AbsoluteFill>
       </Sequence>
       {/* B: kacamata & benang (7644) */}
@@ -216,7 +216,7 @@ export const S04: React.FC = () => {
         <Caption words={W04_E} t={t} />
         <div style={{ position: 'absolute', left: 64, top: 56, display: 'flex', alignItems: 'center', gap: 12, padding: '12px 18px', borderRadius: 18, ...glass(0.36), opacity: ez(t, cut[3] + 0.3, cut[3] + 0.8) }}>
           <Mark size={26} speaking />
-          <span style={{ fontFamily: FONT, fontSize: 22, fontWeight: 600, color: INK, letterSpacing: -0.4 }}>BelajarTenun</span>
+          <span style={{ fontFamily: LOGO.serif, fontSize: 26, color: LOGO.navy }}>BelajarTenun</span>
         </div>
       </Sequence>
     </AbsoluteFill>
