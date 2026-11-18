@@ -4,7 +4,7 @@ import GoogleButton from './GoogleButton';
 import { useApp } from '../lib/session';
 
 // Landing: bilah atas (logo kiri, tautan + Masuk kanan), judul besar di tengah,
-// baris kemitraan sebagai "bukti sosial", satu tombol pil besar. Awan tipis melayang pelan di langit lukisan.
+// baris kemitraan sebagai "bukti sosial", satu tombol pil besar. Awan bergumpal melayang pelan di langit lukisan.
 export default function Landing() {
   const { config } = useApp();
   const [logoOk, setLogoOk] = useState(true);
@@ -16,8 +16,13 @@ export default function Landing() {
 
   return (
     <main className="landing">
+      <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true"><defs>
+<filter id="awan-dasar" x="-50%" y="-80%" width="200%" height="260%"><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="5" seed="3"/><feDisplacementMap in="SourceGraphic" scale="150"/><feGaussianBlur stdDeviation="3"/></filter>
+<filter id="awan-bayang" x="-50%" y="-80%" width="200%" height="260%"><feTurbulence type="fractalNoise" baseFrequency=".013" numOctaves="4" seed="7"/><feDisplacementMap in="SourceGraphic" scale="110"/><feGaussianBlur stdDeviation="10"/></filter>
+<filter id="awan-sorot" x="-50%" y="-80%" width="200%" height="260%"><feTurbulence type="fractalNoise" baseFrequency=".014" numOctaves="5" seed="11"/><feDisplacementMap in="SourceGraphic" scale="120"/><feGaussianBlur stdDeviation="6"/></filter>
+</defs></svg>
       <div className="clouds" aria-hidden="true">
-        <span className="cloud c1" /><span className="cloud c2" /><span className="cloud c3" /><span className="cloud c4" /><span className="cloud c5" />
+        {[1, 2, 3, 4, 5].map((n) => <span key={n} className={`awan a${n}`}><i className="dasar" /><i className="bayang" /><i className="sorot" /></span>)}
       </div>
 
       <header className="landing-nav">
