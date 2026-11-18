@@ -538,21 +538,13 @@ const S26: React.FC = () => {
   const t = useCurrentFrame() / FPS;
   const d = ez(t, 0, 1.0, Easing.out(Easing.cubic));
   const n = ez(t, 0.6, 1.1);
-  const cr = ez(t, 4.2, 4.8);
   return (
     <White>
-      <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 28, opacity: 1 - cr }}>
+      <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 28 }}>
         <Mark size={130} draw={d} />
         <div style={{ fontFamily: LOGO.serif, fontSize: 120, fontWeight: 400, letterSpacing: -1, color: LOGO.navy, opacity: n, filter: `blur(${(1 - n) * 10}px)` }}>BelajarTenun</div>
         <div style={{ fontFamily: FONT, fontSize: 32, color: 'rgba(20,28,58,0.55)', opacity: ez(t, 1.4, 1.9) }}>Belajar menenun, dipandu ilmu Nusantara.</div>
         <div style={{ marginTop: 10, padding: '12px 30px', borderRadius: 999, background: LOGO.navy, color: '#fff', fontFamily: FONT, fontSize: 30, fontWeight: 600, opacity: ez(t, 2.0, 2.5) }}>belajartenun.com</div>
-      </AbsoluteFill>
-      <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', fontFamily: FONT, color: 'rgba(20,28,58,0.55)', fontSize: 24, lineHeight: 1.9, textAlign: 'center', opacity: cr }}>
-        <div style={{ fontWeight: 700, color: INK, fontSize: 28, marginBottom: 12 }}>Kredit</div>
-        <div>Video tenun: [judul] · [pembuat] · [lisensi]</div>
-        <div>Musik: [judul] · [lisensi]</div>
-        <div>Suara tutor: ElevenLabs · Font: Inter (OFL)</div>
-        <div>BUDAYA GO! 2026 · Inovasi Digital · Pembelajaran dan Edukasi Digital Berbasis Budaya</div>
       </AbsoluteFill>
     </White>
   );
@@ -579,7 +571,7 @@ const ROWS: Row[] = [
   ['23', 7.2, <S23 />, { src: 'audio/7643new-clean.wav', from: 0.4 }, 'whip'],
   ['24', 3.9, <S24 />, null, 'cut'],
   ['25', 6.4, <S25 />, { src: 'audio/7643b-clean.wav', from: 0 }, 'cut'],
-  ['26', 9.0, <S26 />, null, 'cut'],
+  ['26', 4.6, <S26 />, null, 'cut'],
 ];
 const STARTS = ROWS.reduce<number[]>((a, r, i) => [...a, i === 0 ? 0 : a[i - 1] + ROWS[i - 1][1]], []);
 export const FULL3_SECONDS = Math.ceil(STARTS[STARTS.length - 1] + ROWS[ROWS.length - 1][1]);
