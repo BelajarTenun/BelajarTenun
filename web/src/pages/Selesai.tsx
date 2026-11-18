@@ -4,6 +4,9 @@ import Shell, { ViewHeader } from '../components/Shell';
 import { log } from '../lib/api';
 import { useApp } from '../lib/session';
 import { useModule } from '../lib/useModule';
+import Icon from '../components/Icon';
+import { api } from '../lib/api';
+import { streak, type Sesi } from '../lib/progres';
 
 const PERTANYAAN: [string, string][] = [
   ['mudah', 'Seberapa mudah mengikuti panduan?'],
@@ -19,7 +22,10 @@ export default function Selesai() {
   const belumTuntas = state?.total != null && (state.reached ?? 0) < state.total - 1;
   const [jawab, setJawab] = useState<Record<string, number>>({});
   const [terkirim, setTerkirim] = useState(false);
-  useEffect(() => setCamera(null), []);
+  const [hari, setHari] = useState<number | null>(null);
+  useEffect(() => { setCamera(null); api<{ sessions: Sesi[] }>('/api/progress?mine=1').then((r) => setHari(streak(r.sessions).n)).catch(() => {}); }, []);
+  const total = state?.total ?? module?.steps.length ?? 0;
+  const capai = belumTuntas ? (state?.reached ?? 0) + 1 : total;
 
   return (
     <Shell>
@@ -27,6 +33,14 @@ export default function Selesai() {
         actions={belumTuntas
           ? <><Link className="a-btn" to="/belajar">Ke beranda</Link><Link className="a-btn primary" to={`/belajar/${id}/siapkan?mulai=${state!.reached}`}>Lanjutkan sesi</Link></>
           : <><Link className="a-btn" to={`/belajar/${id}`}>Ulangi modul</Link><Link className="a-btn primary" to="/belajar">Ke beranda</Link></>} />
+      <div className="a-celebrate">
+        <svg className="ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" /><circle className="fill" cx="60" cy="60" r="52" style={{ strokeDashoffset: 327 * (1 - (total ? capai / total : 1)) }} /></svg>
+        <div className="txt">
+          <b>{capai} dari {total} tahap</b>
+          <span>{belumTuntas ? 'Kemajuanmu tersimpan. Lanjutkan kapan saja dari tahap ini.' : 'Semua tahap modul ini sudah kamu lalui.'}</span>
+          {hari != null && hari > 0 && <span className="pill"><Icon name="flame" />{hari} hari berturut-turut</span>}
+        </div>
+      </div>
       <div className="a-stats">
         <div className="a-stat"><span>Tahap dicapai</span><b>{belumTuntas ? `${(state?.reached ?? 0) + 1}/${state?.total}` : module?.steps.length ?? '–'}</b></div>
         <div className="a-stat"><span>Durasi</span><b>{state?.mins ? `±${state.mins} menit` : '–'}</b></div>
