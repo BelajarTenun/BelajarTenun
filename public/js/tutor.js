@@ -129,6 +129,7 @@ export class TutorClient {
     on('ui', (r) => this.handle({ ...r, speak: '' }));
     on('frame', (d) => d.gapMs && this.tracer.emit('view_gap', { ms: d.gapMs, speaking: d.speaking }));
     on('status', (d) => this.ui.status?.(d.text));
+    on('speaking', (d) => this.ui.speaking?.(d));
     on('agent', () => this.ui.status?.('Tutor bergabung'));
     on('close', (d) => { this.ui.status?.(`Live berhenti (${d.code})`); earcon('lost'); this.live = null; });
     speechSynthesis.cancel(); this.audio?.pause();
@@ -136,5 +137,6 @@ export class TutorClient {
     earcon('connected');
     this.tracer.emit('live_start', { engine: this.liveEngine });
   }
+  setMuted(muted) { this.live?.setMuted?.(muted); this.tracer.emit('mic', { muted }); }
   stopLive() { this.live?.stop(); this.live = null; this.tracer.emit('live_stop', {}); }
 }

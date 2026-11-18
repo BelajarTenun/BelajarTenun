@@ -11,6 +11,7 @@ const Siapkan = lazy(() => import('./pages/Siapkan'));
 const Praktik = lazy(() => import('./pages/Praktik'));
 import Selesai from './pages/Selesai';
 import './styles.css';
+import './app.css';
 
 function Perlu({ children }: { children: JSX.Element }) {
   const { config } = useApp();

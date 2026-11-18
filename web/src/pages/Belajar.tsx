@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Nav from './Nav';
+import Shell, { ViewHeader } from '../components/Shell';
+import Icon from '../components/Icon';
 import { api, type ModuleSummary } from '../lib/api';
 import { useApp } from '../lib/session';
 
@@ -9,27 +10,27 @@ export default function Belajar() {
   const [modules, setModules] = useState<ModuleSummary[] | null>(null);
   useEffect(() => { api<{ modules: ModuleSummary[] }>('/api/modules').then((r) => setModules(r.modules)); }, []);
   return (
-    <main className="page">
-      <Nav />
-      <p className="eyebrow">Halo, {config?.user?.name}</p>
-      <h1>Pilih modul</h1>
-      {!modules ? <p className="muted">Memuat…</p> : modules.length === 0 ? <p className="muted">Belum ada modul yang diterbitkan.</p> : (
-        <ul className="list">
-          {modules.map((m) => (
-            <li key={m.id}>
-              <Link to={`/belajar/${m.id}`} className="row">
-                <span>
-                  <small className="eyebrow">{m.tradition || 'Tenun'} · {m.steps} tahap</small>
-                  <strong>{m.title}</strong>
-                  {m.description && <span className="muted">{m.description}</span>}
-                </span>
-                <span className="arrow" aria-hidden>→</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-      <p className="muted small"><a href="/progres.html">Progres latihanku</a></p>
-    </main>
+    <Shell>
+      <ViewHeader title="Modul" description={`Halo, ${config?.user?.name?.split(' ')[0] ?? ''}. Pilih modul untuk mulai berlatih dengan tutor.`} />
+      <section className="a-section">
+        <h2>Semua modul {modules && <small>{modules.length} modul</small>}</h2>
+        {!modules ? <p className="a-muted">Memuat…</p> : modules.length === 0
+          ? <div className="a-empty"><Icon name="book" /><b>Belum ada modul</b><span>Modul muncul di sini setelah diterbitkan oleh penenun mitra.</span></div>
+          : (
+            <ul className="a-list">
+              {modules.map((m) => (
+                <li key={m.id}>
+                  <Link to={`/belajar/${m.id}`} className="a-row">
+                    <span className="tile"><Icon name="loom" /></span>
+                    <span className="body"><span className="title">{m.title}</span>{m.description && <span className="desc" style={{ display: 'block' }}>{m.description}</span>}</span>
+                    <span className="meta"><span className="a-badge">{m.tradition || 'Tenun'}</span><span className="a-badge">{m.steps} tahap</span></span>
+                    <Icon name="chevronRight" className="go" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+      </section>
+    </Shell>
   );
 }
