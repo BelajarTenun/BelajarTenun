@@ -199,7 +199,7 @@ export const S04: React.FC = () => {
     <AbsoluteFill style={{ background: PAPER }}>
       {/* A: tanda tenunan ditenun + nama, saat "BelajarTenun" diucapkan */}
       <Sequence {...shot(0, cut[0])}>
-        <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 30, background: `radial-gradient(ellipse at 50% 45%, #FAF9F6, ${PAPER} 70%)` }}>
+        <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 30, background: `radial-gradient(ellipse at 50% 45%, #ffffff, ${PAPER} 70%)` }}>
           <Mark size={120} draw={mark} />
           <div style={{ fontFamily: LOGO.serif, fontSize: 104, fontWeight: 400, letterSpacing: -1, color: LOGO.navy, opacity: name, filter: `blur(${(1 - name) * 10}px)` }}>BelajarTenun</div>
         </AbsoluteFill>

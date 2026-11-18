@@ -4,20 +4,21 @@ import { interpolate, useCurrentFrame } from 'remotion';
 // Identitas BelajarTenun: tanda tenunan 3×3. Lungsi = tinta (tegak), pakan = oranye benang (mendatar).
 // Saat tutor bicara, pakan "ditenun" bergantian mengikuti suara: inilah indikator AI, bukan bola generik.
 export const BRAND = {
-  ink: '#15181C',
-  paper: '#F3F1EC',
-  thread: '#E5652E', // oranye benang di footage
+  ink: '#141c3a',
+  paper: '#ffffff',
+  thread: '#d4b866', // oranye benang di footage
   mute: 'rgba(21,24,28,0.45)',
   font: "Inter, 'Helvetica Neue', Arial, sans-serif",
 };
 
 // Kaca: putih buram tipis, tepi terang, bayangan lembut.
+// Kaca: putih buram tipis, tepi terang, bayangan lembut (navy).
 export const glass = (o = 0.42): React.CSSProperties => ({
   background: `linear-gradient(160deg, rgba(255,255,255,${o + 0.12}), rgba(255,255,255,${o - 0.08}))`,
   backdropFilter: 'blur(28px) saturate(170%)',
   WebkitBackdropFilter: 'blur(28px) saturate(170%)',
   border: '1px solid rgba(255,255,255,0.55)',
-  boxShadow: '0 30px 80px rgba(10,12,16,0.22), inset 0 1px 0 rgba(255,255,255,0.7)',
+  boxShadow: '0 30px 80px rgba(20,28,58,0.20), inset 0 1px 0 rgba(255,255,255,0.7)',
 });
 
 // Logo resmi BelajarTenun (docs/brand/logo-mark.svg): anyaman polos di kotak navy,

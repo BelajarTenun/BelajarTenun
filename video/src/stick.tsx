@@ -4,8 +4,8 @@ import { Easing } from 'remotion';
 // Figur stik dengan kerangka sendi (forward kinematics) dan pose ber-keyframe.
 // Gerak luwes: antar-pose di-ease, ditambah napas, sedikit goyang kepala, dan follow-through.
 
-export const INK = '#1C1F24';
-export const THREAD = '#E5652E';
+export const INK = '#141c3a';
+export const THREAD = '#d4b866';
 
 // Sudut dalam derajat. 0 = lurus ke bawah, positif = berputar ke kanan (searah jarum jam dari bawah ke kanan).
 export type Pose = {

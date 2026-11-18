@@ -55,7 +55,7 @@ const AndrewTalk: React.FC<{ src: string; from: number; words: Wd[]; side?: 'kir
 // ── 05 · grid video tenun (kartu animasi figur stik) di samping Andrew ─────────
 const MiniWeaver: React.FC<{ t: number; i: number }> = ({ t, i }) => (
   <svg width="300" height="180" viewBox="0 0 300 180">
-    <rect width="300" height="180" fill={['#F4EFE8', '#EEF1F4', '#F2EEF4', '#EEF3EE'][i % 4]} />
+    <rect width="300" height="180" fill={['#f5efe2', '#f5efe2', '#f5efe2', '#f5efe2'][i % 4]} />
     <Stick x={70} y={160} s={0.55} pose={weaving(t, 0.9 + (i % 3) * 0.12, i)} t={t + i} hair={i % 2 ? 'bun' : 'short'} accent={THREAD} />
     <Loom x={108} y={160} s={0.55} t={t * (0.9 + (i % 3) * 0.12) + i} woven={0.4 + (i % 4) * 0.12} />
   </svg>
@@ -75,9 +75,9 @@ const S05: React.FC = () => {
           return (
             <div key={i} style={{ position: 'relative', width: 270, borderRadius: 18, overflow: 'hidden', ...glass(0.5), padding: 0, opacity: Math.min(1, p * 1.4), transform: `scale(${0.6 + p * 0.4}) rotate(${(1 - p) * (i % 2 ? 6 : -6)}deg)` }}>
               <div style={{ width: 270, height: 162 }}><MiniWeaver t={t} i={i} /></div>
-              <div style={{ position: 'absolute', left: 10, bottom: 10, padding: '4px 10px', borderRadius: 8, background: 'rgba(28,31,36,0.78)', color: '#fff', fontFamily: FONT, fontSize: 14, fontWeight: 700 }}>{l}</div>
+              <div style={{ position: 'absolute', left: 10, bottom: 10, padding: '4px 10px', borderRadius: 8, background: 'rgba(20,28,58,0.85)', color: '#fff', fontFamily: FONT, fontSize: 14, fontWeight: 700 }}>{l}</div>
               <div style={{ position: 'absolute', right: 10, bottom: 10, width: 26, height: 26, borderRadius: 13, background: 'rgba(255,255,255,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ width: 0, height: 0, borderLeft: '10px solid #1C1F24', borderTop: '6px solid transparent', borderBottom: '6px solid transparent', marginLeft: 3 }} />
+                <div style={{ width: 0, height: 0, borderLeft: '10px solid #141c3a', borderTop: '6px solid transparent', borderBottom: '6px solid transparent', marginLeft: 3 }} />
               </div>
             </div>
           );
@@ -111,7 +111,7 @@ const S06: React.FC = () => {
   return (
     <White>
       {/* kartu video kiri */}
-      <div style={{ position: 'absolute', left: 90, top: 110, width: 1040, height: 700, borderRadius: 28, overflow: 'hidden', background: '#F6F4F0', border: '1px solid #ECE8E2', transform: `scale(${1 - merge * 0.55}) translate(${merge * 420}px, ${merge * 120}px)`, transformOrigin: '50% 50%' }}>
+      <div style={{ position: 'absolute', left: 90, top: 110, width: 1040, height: 700, borderRadius: 28, overflow: 'hidden', background: '#f5efe2', border: '1px solid rgba(20,28,58,0.12)', transform: `scale(${1 - merge * 0.55}) translate(${merge * 420}px, ${merge * 120}px)`, transformOrigin: '50% 50%' }}>
         <svg width="1040" height="700" style={{ position: 'absolute', inset: 0 }}>
           <g transform="translate(-90 -110)">
             <Stick x={X} y={Y} s={S} pose={pose} t={t} hair="bun" accent={THREAD} />
@@ -128,7 +128,7 @@ const S06: React.FC = () => {
       <div style={{ position: 'absolute', left: 90, top: 840, width: 1040, display: 'flex', gap: 10, opacity: 1 - merge }}>
         {STAGES.map((s, i) => (
           <div key={s} style={{ flex: 1, opacity: ez(t, 2.2 + i * 0.2, 2.5 + i * 0.2) }}>
-            <div style={{ height: 8, borderRadius: 4, background: i <= stageN ? THREAD : '#E7E3DD' }} />
+            <div style={{ height: 8, borderRadius: 4, background: i <= stageN ? THREAD : '#f5efe2' }} />
             <div style={{ fontFamily: FONT, fontSize: 18, fontWeight: 600, color: INK, marginTop: 10 }}>{i + 1}. {s}</div>
           </div>
         ))}
@@ -138,8 +138,8 @@ const S06: React.FC = () => {
         {[['TAHAP', '2 · Membuka mulut lungsi', 2.4], ['ISTILAH', 'lungsi · pakan · belida', 3.5], ['KESALAHAN UMUM', 'Pakan terlalu kencang', 4.4]].map(([k, v, at]) => {
           const p = ez(t, at as number, (at as number) + 0.4, Easing.out(Easing.back(1.5)));
           return (
-            <div key={k as string} style={{ padding: '22px 26px', borderRadius: 22, background: '#fff', border: '1px solid #ECE8E2', boxShadow: '0 16px 40px rgba(0,0,0,0.06)', opacity: Math.min(1, p * 1.3), transform: `translateX(${(1 - p) * 60}px)` }}>
-              <div style={{ fontFamily: FONT, fontSize: 15, fontWeight: 700, letterSpacing: 2, color: '#9A938B' }}>{k}</div>
+            <div key={k as string} style={{ padding: '22px 26px', borderRadius: 22, background: '#fff', border: '1px solid rgba(20,28,58,0.12)', boxShadow: '0 16px 40px rgba(0,0,0,0.06)', opacity: Math.min(1, p * 1.3), transform: `translateX(${(1 - p) * 60}px)` }}>
+              <div style={{ fontFamily: FONT, fontSize: 15, fontWeight: 700, letterSpacing: 2, color: 'rgba(20,28,58,0.55)' }}>{k}</div>
               <div style={{ fontFamily: FONT, fontSize: 34, fontWeight: 600, letterSpacing: -0.8, color: INK, marginTop: 6 }}>{v}</div>
             </div>
           );
@@ -160,7 +160,7 @@ const S06: React.FC = () => {
           <div style={{ position: 'absolute', left: 760, top: 380, width: 400, padding: '28px 30px', borderRadius: 26, background: '#fff', border: `2px solid ${THREAD}`, boxShadow: '0 30px 70px rgba(0,0,0,0.1)', opacity: ez(t, 7.8, 8.4), transform: `scale(${0.8 + ez(t, 7.8, 8.4, Easing.out(Easing.back(1.6))) * 0.2})`, fontFamily: FONT }}>
             <Mark size={36} />
             <div style={{ fontSize: 34, fontWeight: 700, letterSpacing: -0.8, color: INK, marginTop: 14 }}>Modul dasar menenun</div>
-            <div style={{ fontSize: 20, color: '#8A837B', marginTop: 6 }}>5 tahap · digabung dari banyak penenun</div>
+            <div style={{ fontSize: 20, color: 'rgba(20,28,58,0.55)', marginTop: 6 }}>5 tahap · digabung dari banyak penenun</div>
           </div>
         </>
       )}
@@ -176,7 +176,7 @@ const S07: React.FC = () => {
   const state = t < 3.4 ? 0 : t < 6.3 ? 1 : 2;
   const pose = poseAt([[0, POSES.phone], [5.6, POSES.phone], [6.4, POSES.thumbs], [9, POSES.thumbs]], t);
   const sitPose = { ...pose, legL: POSES.weaveA.legL, legR: POSES.weaveA.legR, sit: 1 };
-  const labels = [['USULAN AI', '#5B9BF0'], ['DIUBAH PENENUN', '#C9A24E'], ['TERVALIDASI PENENUN', '#3FA36B']];
+  const labels = [['USULAN AI', '#141c3a'], ['DIUBAH PENENUN', '#d4b866'], ['TERVALIDASI PENENUN', '#141c3a']];
   const pop = spring({ frame: Math.max(0, useCurrentFrame() - F(state === 0 ? 0.4 : state === 1 ? 3.4 : 6.3)), fps: FPS, config: { damping: 12, stiffness: 180 } });
   const text = state === 0 ? 'Angkat belida agar mulut lungsi terbuka lebar.' : 'Angkat belida perlahan agar mulut lungsi terbuka.';
   return (
@@ -184,13 +184,13 @@ const S07: React.FC = () => {
       <svg width="1920" height="1080" style={{ position: 'absolute', inset: 0 }}>
         <Stick x={460} y={800} s={1.8} pose={sitPose} t={t} hair="bun" accent={THREAD} prop="phone" />
       </svg>
-      <div style={{ position: 'absolute', left: 860, top: 230, width: 900, padding: '40px 44px', borderRadius: 30, background: '#fff', border: '1px solid #ECE8E2', boxShadow: '0 30px 80px rgba(0,0,0,0.08)', fontFamily: FONT }}>
+      <div style={{ position: 'absolute', left: 860, top: 230, width: 900, padding: '40px 44px', borderRadius: 30, background: '#fff', border: '1px solid rgba(20,28,58,0.12)', boxShadow: '0 30px 80px rgba(0,0,0,0.08)', fontFamily: FONT }}>
         <div style={{ display: 'inline-block', padding: '8px 16px', borderRadius: 999, background: labels[state][1], color: '#fff', fontSize: 16, fontWeight: 800, letterSpacing: 2, transform: `scale(${0.85 + pop * 0.15})` }}>{labels[state][0]}</div>
-        <div style={{ fontSize: 22, color: '#9A938B', marginTop: 22, fontWeight: 600 }}>Tahap 2 · Membuka mulut lungsi</div>
+        <div style={{ fontSize: 22, color: 'rgba(20,28,58,0.55)', marginTop: 22, fontWeight: 600 }}>Tahap 2 · Membuka mulut lungsi</div>
         <div style={{ fontSize: 48, fontWeight: 600, letterSpacing: -1.2, lineHeight: 1.18, color: INK, marginTop: 10 }}>
           {text}{state === 1 && <span style={{ opacity: Math.floor(t * 3) % 2 }}>|</span>}
         </div>
-        <div style={{ fontSize: 20, color: state === 2 ? '#3FA36B' : '#B5AEA6', fontWeight: 700, marginTop: 22, opacity: state === 2 ? 1 : 0.0 }}>✓ Diperiksa penenun</div>
+        <div style={{ fontSize: 20, color: state === 2 ? '#141c3a' : 'rgba(20,28,58,0.55)', fontWeight: 700, marginTop: 22, opacity: state === 2 ? 1 : 0.0 }}>✓ Diperiksa penenun</div>
       </div>
       <Chip label="KUALITAS" at={4.0} />
       <Sub words={words} />
@@ -205,11 +205,11 @@ const PhoneT: React.FC<{ lines: Line[]; stage: string; speaking: boolean; visibl
   const shown = lines.filter((l) => t >= l.words[0][1] - 0.05);
   return (
     <div style={{ position: 'absolute', right: 96, top: 92, width: 440, height: 896, borderRadius: 62, padding: 10, ...glass(0.3), opacity: visible, transform: `perspective(1600px) translateX(${(1 - visible) * 90}px) rotateY(${-8 + tilt}deg) rotateX(2deg)`, filter: `blur(${(1 - visible) * 10}px)` }}>
-      <div style={{ position: 'relative', width: '100%', height: '100%', borderRadius: 52, overflow: 'hidden', background: 'rgba(250,249,246,0.9)', fontFamily: FONT, color: INK }}>
+      <div style={{ position: 'relative', width: '100%', height: '100%', borderRadius: 52, overflow: 'hidden', background: '#f5efe2', fontFamily: FONT, color: INK }}>
         <div style={{ position: 'absolute', left: 28, right: 28, top: 56, display: 'flex', alignItems: 'center', gap: 10 }}>
           <Mark size={26} speaking={speaking} />
           <div style={{ fontFamily: LOGO.serif, fontSize: 23, color: LOGO.navy }}>BelajarTenun</div>
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#3F8F67' }}><span style={{ width: 8, height: 8, borderRadius: 4, background: '#3FAF7E' }} />Kacamata</div>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#141c3a' }}><span style={{ width: 8, height: 8, borderRadius: 4, background: '#d4b866' }} />Kacamata</div>
         </div>
         <div style={{ position: 'absolute', left: 28, top: 100, fontSize: 28, fontWeight: 650, letterSpacing: -0.8 }}>{stage}</div>
         <div style={{ position: 'absolute', left: 20, right: 20, top: 160, bottom: 30, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', gap: 12, overflow: 'hidden' }}>
@@ -304,19 +304,19 @@ const Learn: React.FC = () => {
         </Sequence>
       ))}
       {/* sorotan di POV */}
-      {seg.mark === 'koreksi' && <svg width="1920" height="1080" style={{ position: 'absolute', inset: 0 }}><circle cx={560} cy={760} r={130 + Math.sin(tl * 5) * 6} fill="none" stroke="#F0A04B" strokeWidth={5} opacity={ez(tl, 0, 0.3)} /></svg>}
-      {seg.mark === 'benar' && <svg width="1920" height="1080" style={{ position: 'absolute', inset: 0 }}><circle cx={560} cy={760} r={130} fill="none" stroke="#3FAF7E" strokeWidth={5} opacity={1 - ez(tl, 2.2, 3.2)} /><path d="M520 760 l30 30 l60 -70" fill="none" stroke="#3FAF7E" strokeWidth={10} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="160" strokeDashoffset={160 * (1 - ez(tl, 0.1, 0.6))} /></svg>}
+      {seg.mark === 'koreksi' && <svg width="1920" height="1080" style={{ position: 'absolute', inset: 0 }}><circle cx={560} cy={760} r={130 + Math.sin(tl * 5) * 6} fill="none" stroke="#d4b866" strokeWidth={5} opacity={ez(tl, 0, 0.3)} /></svg>}
+      {seg.mark === 'benar' && <svg width="1920" height="1080" style={{ position: 'absolute', inset: 0 }}><circle cx={560} cy={760} r={130} fill="none" stroke="#d4b866" strokeWidth={5} opacity={1 - ez(tl, 2.2, 3.2)} /><path d="M520 760 l30 30 l60 -70" fill="none" stroke="#d4b866" strokeWidth={10} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="160" strokeDashoffset={160 * (1 - ez(tl, 0.1, 0.6))} /></svg>}
       {seg.mark === 'istilah' && (
         <div style={{ position: 'absolute', left: 120, top: 150, display: 'flex', flexDirection: 'column', gap: 16 }}>
           {[['PAKAN', 'benang yang masuk mendatar'], ['Tradisi A', '[istilah 1]'], ['Tradisi B', '[istilah 2]'], ['Tradisi C', '[istilah 3]']].map(([k, v], j) => {
             const p = ez(tl, 0.4 + j * 0.9, 0.8 + j * 0.9, Easing.out(Easing.back(1.4)));
-            return <div key={k} style={{ padding: '16px 22px', borderRadius: 20, ...glass(0.5), opacity: Math.min(1, p * 1.3), transform: `translateX(${(1 - p) * -50}px)`, fontFamily: FONT, color: INK }}><div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, color: '#7D756D' }}>{k}</div><div style={{ fontSize: j === 0 ? 30 : 36, fontWeight: 650 }}>{v}</div></div>;
+            return <div key={k} style={{ padding: '16px 22px', borderRadius: 20, ...glass(0.5), opacity: Math.min(1, p * 1.3), transform: `translateX(${(1 - p) * -50}px)`, fontFamily: FONT, color: INK }}><div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, color: 'rgba(20,28,58,0.55)' }}>{k}</div><div style={{ fontSize: j === 0 ? 30 : 36, fontWeight: 650 }}>{v}</div></div>;
           })}
         </div>
       )}
       {seg.mark === 'catat' && (
         <div style={{ position: 'absolute', left: 340, top: 420, padding: '22px 26px', borderRadius: 22, ...glass(0.55), fontFamily: FONT, color: INK, opacity: ez(tl, 3.6, 4.1), transform: `scale(${0.85 + ez(tl, 3.6, 4.1, Easing.out(Easing.back(1.6))) * 0.15})` }}>
-          <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, color: '#7D756D' }}>TIDAK MENGARANG JAWABAN</div>
+          <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, color: 'rgba(20,28,58,0.55)' }}>TIDAK MENGARANG JAWABAN</div>
           <div style={{ fontSize: 30, fontWeight: 650, marginTop: 6 }}>Dicatat untuk penenun · +1</div>
         </div>
       )}
@@ -340,7 +340,7 @@ const S16: React.FC = () => {
       <div style={{ position: 'absolute', left: 980, top: 200, width: 760, display: 'flex', flexDirection: 'column', gap: 20 }}>
         {rows.map(([n, l, a]) => {
           const p = ez(t, a as number, (a as number) + 0.4, Easing.out(Easing.back(1.6)));
-          return <div key={l as string} style={{ display: 'flex', alignItems: 'baseline', gap: 20, padding: '26px 32px', borderRadius: 26, background: '#fff', border: '1px solid #ECE8E2', boxShadow: '0 20px 50px rgba(0,0,0,0.06)', opacity: Math.min(1, p * 1.3), transform: `translateY(${(1 - p) * 30}px)`, fontFamily: FONT }}><span style={{ fontSize: 64, fontWeight: 700, color: THREAD, letterSpacing: -2 }}>{n}</span><span style={{ fontSize: 30, fontWeight: 600, color: INK }}>{l}</span></div>;
+          return <div key={l as string} style={{ display: 'flex', alignItems: 'baseline', gap: 20, padding: '26px 32px', borderRadius: 26, background: '#fff', border: '1px solid rgba(20,28,58,0.12)', boxShadow: '0 20px 50px rgba(0,0,0,0.06)', opacity: Math.min(1, p * 1.3), transform: `translateY(${(1 - p) * 30}px)`, fontFamily: FONT }}><span style={{ fontSize: 64, fontWeight: 700, color: THREAD, letterSpacing: -2 }}>{n}</span><span style={{ fontSize: 30, fontWeight: 600, color: INK }}>{l}</span></div>;
         })}
       </div>
       <Sub words={words} />
@@ -356,14 +356,14 @@ const S17: React.FC = () => {
   return (
     <White>
       <div style={{ position: 'absolute', left: 200, top: 120, fontFamily: FONT, fontSize: 56, fontWeight: 650, letterSpacing: -1.5, color: INK }}>Tingkat selesai per tahap</div>
-      <div style={{ position: 'absolute', left: 200, top: 196, fontFamily: FONT, fontSize: 18, color: '#A39C94' }}>Contoh tampilan halaman Progres</div>
+      <div style={{ position: 'absolute', left: 200, top: 196, fontFamily: FONT, fontSize: 18, color: 'rgba(20,28,58,0.55)' }}>Contoh tampilan halaman Progres</div>
       {data.map((v, i) => {
         const h = ez(t, 0.3 + i * 0.12, 1.1 + i * 0.12, Easing.out(Easing.cubic)) * v * 5.2;
         const hi = i === 3 && t > 2.6;
         return (
           <div key={i} style={{ position: 'absolute', left: 240 + i * 300, bottom: 250, width: 170, fontFamily: FONT }}>
             <div style={{ textAlign: 'center', fontSize: 30, fontWeight: 700, color: hi ? THREAD : INK, marginBottom: 10 }}>{Math.round(h / 5.2)}%</div>
-            <div style={{ height: h, borderRadius: 14, background: hi ? THREAD : '#E9E5DF' }} />
+            <div style={{ height: h, borderRadius: 14, background: hi ? THREAD : '#f5efe2' }} />
             <div style={{ position: 'absolute', top: '100%', marginTop: 16, width: 240, left: -35, textAlign: 'center', fontSize: 20, fontWeight: 600, color: INK }}>{STAGES[i]}</div>
           </div>
         );
@@ -394,7 +394,7 @@ const S18: React.FC = () => {
       <div style={{ position: 'absolute', left: 1080, top: 150 - ez(t, 1, 6.6) * 120, width: 700, display: 'flex', flexDirection: 'column', gap: 18 }}>
         {['Membuka mulut lungsi', 'Istilah: pakan', 'Kesalahan: pinggir menyempit', 'Merapatkan pakan', 'Istilah: belida'].map((s, i) => {
           const p = ez(t, 1.2 + i * 0.3, 1.6 + i * 0.3, Easing.out(Easing.back(1.4)));
-          return <div key={s} style={{ padding: '22px 26px', borderRadius: 22, background: '#fff', border: '1px solid #ECE8E2', boxShadow: '0 16px 40px rgba(0,0,0,0.06)', opacity: Math.min(1, p * 1.3), transform: `translateX(${(1 - p) * 50}px)`, fontFamily: FONT }}><div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, color: '#3FA36B' }}>✓ TERVALIDASI</div><div style={{ fontSize: 30, fontWeight: 650, color: INK, marginTop: 4 }}>{s}</div><div style={{ fontSize: 16, color: '#A39C94', marginTop: 4 }}>Sumber: [pembuat] · CC BY · JSON · CSV</div></div>;
+          return <div key={s} style={{ padding: '22px 26px', borderRadius: 22, background: '#fff', border: '1px solid rgba(20,28,58,0.12)', boxShadow: '0 16px 40px rgba(0,0,0,0.06)', opacity: Math.min(1, p * 1.3), transform: `translateX(${(1 - p) * 50}px)`, fontFamily: FONT }}><div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, color: '#141c3a' }}>✓ TERVALIDASI</div><div style={{ fontSize: 30, fontWeight: 650, color: INK, marginTop: 4 }}>{s}</div><div style={{ fontSize: 16, color: 'rgba(20,28,58,0.55)', marginTop: 4 }}>Sumber: [pembuat] · CC BY · JSON · CSV</div></div>;
         })}
       </div>
       <Chip label="PELESTARIAN" at={3.0} />
@@ -412,13 +412,13 @@ const S19: React.FC = () => {
     <AbsoluteFill>
       <Cam keys={[[0, 0, 0, 1], [0.15, 0, 0, 1], [1.0, 300, 20, 1.3], [17, 312, 26, 1.33]]}><Clip src="footage/7639new-full.mp4" from={0.2} /></Cam>
       <div style={{ position: 'absolute', left: 70, top: 130, width: 1000, padding: '34px 38px', borderRadius: 30, ...glass(0.5), fontFamily: FONT, color: INK, opacity: ez(t, 0.4, 0.9) }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr 1.1fr', fontSize: 18, fontWeight: 700, color: '#6E6760', paddingBottom: 14, borderBottom: '2px solid rgba(28,31,36,0.15)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr 1.1fr', fontSize: 18, fontWeight: 700, color: 'rgba(20,28,58,0.55)', paddingBottom: 14, borderBottom: '2px solid rgba(20,28,58,0.12)' }}>
           <div /><div style={{ textAlign: 'center' }}>Video tutorial</div><div style={{ textAlign: 'center' }}>Kelas tatap muka</div><div style={{ textAlign: 'center', color: THREAD }}>BelajarTenun</div>
         </div>
         {rows.map(([l, v, a]) => (
-          <div key={l} style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr 1.1fr', fontSize: 26, fontWeight: 600, padding: '18px 0', borderBottom: '1px solid rgba(28,31,36,0.08)', opacity: ez(t, a, a + 0.35) }}>
+          <div key={l} style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr 1.1fr', fontSize: 26, fontWeight: 600, padding: '18px 0', borderBottom: '1px solid rgba(20,28,58,0.12)', opacity: ez(t, a, a + 0.35) }}>
             <div>{l}</div>
-            {v.map((x, k) => <div key={k} style={{ textAlign: 'center', fontWeight: 800, color: x === '●' ? (k === 2 ? THREAD : INK) : '#B8B1A9', transform: `scale(${k === 2 ? 0.7 + ez(t, a + 0.15, a + 0.5, Easing.out(Easing.back(2))) * 0.3 : 1})` }}>{x}</div>)}
+            {v.map((x, k) => <div key={k} style={{ textAlign: 'center', fontWeight: 800, color: x === '●' ? (k === 2 ? THREAD : INK) : 'rgba(20,28,58,0.55)', transform: `scale(${k === 2 ? 0.7 + ez(t, a + 0.15, a + 0.5, Easing.out(Easing.back(2))) * 0.3 : 1})` }}>{x}</div>)}
           </div>
         ))}
       </div>
@@ -438,7 +438,7 @@ const S20: React.FC = () => {
       <div style={{ position: 'absolute', top: 340, width: '100%', display: 'flex', justifyContent: 'center', gap: 40 }}>
         {cards.map(([n, l, a]) => {
           const p = ez(t, a as number, (a as number) + 0.45, Easing.out(Easing.back(1.7)));
-          return <div key={l as string} style={{ width: 420, height: 300, borderRadius: 30, background: '#fff', border: '1px solid #ECE8E2', boxShadow: '0 24px 60px rgba(0,0,0,0.07)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: Math.min(1, p * 1.3), transform: `translateY(${(1 - p) * 40}px)`, fontFamily: FONT }}><div style={{ fontSize: 96, fontWeight: 700, color: THREAD, letterSpacing: -3 }}>{n}</div><div style={{ fontSize: 26, fontWeight: 600, color: '#6E6760' }}>{l}</div></div>;
+          return <div key={l as string} style={{ width: 420, height: 300, borderRadius: 30, background: '#fff', border: '1px solid rgba(20,28,58,0.12)', boxShadow: '0 24px 60px rgba(0,0,0,0.07)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: Math.min(1, p * 1.3), transform: `translateY(${(1 - p) * 40}px)`, fontFamily: FONT }}><div style={{ fontSize: 96, fontWeight: 700, color: THREAD, letterSpacing: -3 }}>{n}</div><div style={{ fontSize: 26, fontWeight: 600, color: 'rgba(20,28,58,0.55)' }}>{l}</div></div>;
         })}
       </div>
       <Sub words={words} />
@@ -452,7 +452,7 @@ const S22: React.FC = () => {
   const words = W([['Kami', 0.62], ['mulai', 1.16], ['dari', 1.56], ['sanggar', 2.0], ['dan', 2.54], ['sekolah.', 2.96], ['Setiap', 3.74], ['modul', 4.54], ['yang', 5.02], ['divalidasi', 5.52], ['memberikan', 6.18], ['penghasilan', 6.76], ['kepada', 7.48], ['para', 7.82], ['penenun,', 8.22], ['dan', 9.04], ['setiap', 9.34], ['murid', 9.72], ['baru', 10.0], ['dapat', 10.32], ['memperluas', 10.6], ['ilmu', 11.26], ['mereka.', 11.54]], 0.4);
   const col = (title: string, items: string[], a: number) => (
     <div style={{ width: 250 }}>
-      <div style={{ fontFamily: FONT, fontSize: 15, fontWeight: 800, letterSpacing: 2, color: '#6E6760', opacity: ez(t, a, a + 0.3) }}>{title}</div>
+      <div style={{ fontFamily: FONT, fontSize: 15, fontWeight: 800, letterSpacing: 2, color: 'rgba(20,28,58,0.55)', opacity: ez(t, a, a + 0.3) }}>{title}</div>
       {items.map((s, i) => { const p = ez(t, a + 0.2 + i * 0.15, a + 0.55 + i * 0.15, Easing.out(Easing.back(1.5))); return <div key={s} style={{ marginTop: 12, padding: '14px 16px', borderRadius: 16, background: '#fff', boxShadow: '0 8px 24px rgba(0,0,0,0.06)', fontFamily: FONT, fontSize: 21, fontWeight: 600, color: INK, opacity: Math.min(1, p * 1.3), transform: `translateY(${(1 - p) * 16}px)` }}>{s}</div>; })}
     </div>
   );
@@ -480,7 +480,7 @@ const S23: React.FC = () => {
     <White>
       <svg width="1920" height="1080" style={{ position: 'absolute', inset: 0 }}>
         <g transform={`translate(1080 560) scale(${zoom}) translate(-1080 -560)`}>
-          <path d={ISLANDS} fill="#EEEAE3" stroke="#D9D3CA" strokeWidth={2} />
+          <path d={ISLANDS} fill="#f5efe2" stroke="rgba(20,28,58,0.12)" strokeWidth={2} />
           {SPOTS.map(([x, y], i) => {
             const a = i === 0 ? 0.4 : 1.5 + i * 0.22;
             const p = ez(t, a, a + 0.4, Easing.out(Easing.back(2)));
@@ -494,7 +494,7 @@ const S23: React.FC = () => {
           ))}
         </g>
       </svg>
-      <div style={{ position: 'absolute', top: 120, width: '100%', textAlign: 'center', fontFamily: FONT, fontSize: 30, fontWeight: 800, letterSpacing: 5, color: '#8A837B', opacity: ez(t, 5.4, 6.0) }}>INDONESIA CULTURAL POWER</div>
+      <div style={{ position: 'absolute', top: 120, width: '100%', textAlign: 'center', fontFamily: FONT, fontSize: 30, fontWeight: 800, letterSpacing: 5, color: 'rgba(20,28,58,0.55)', opacity: ez(t, 5.4, 6.0) }}>INDONESIA CULTURAL POWER</div>
       <Sub words={words} />
     </White>
   );
@@ -529,10 +529,10 @@ const S26: React.FC = () => {
       <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 28, opacity: 1 - cr }}>
         <Mark size={130} draw={d} />
         <div style={{ fontFamily: LOGO.serif, fontSize: 120, fontWeight: 400, letterSpacing: -1, color: LOGO.navy, opacity: n, filter: `blur(${(1 - n) * 10}px)` }}>BelajarTenun</div>
-        <div style={{ fontFamily: FONT, fontSize: 32, color: '#7D756D', opacity: ez(t, 1.4, 1.9) }}>Belajar menenun, dipandu ilmu Nusantara.</div>
+        <div style={{ fontFamily: FONT, fontSize: 32, color: 'rgba(20,28,58,0.55)', opacity: ez(t, 1.4, 1.9) }}>Belajar menenun, dipandu ilmu Nusantara.</div>
         <div style={{ marginTop: 10, padding: '12px 30px', borderRadius: 999, background: LOGO.navy, color: '#fff', fontFamily: FONT, fontSize: 30, fontWeight: 600, opacity: ez(t, 2.0, 2.5) }}>belajartenun.id</div>
       </AbsoluteFill>
-      <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', fontFamily: FONT, color: '#6E6760', fontSize: 24, lineHeight: 1.9, textAlign: 'center', opacity: cr }}>
+      <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center', fontFamily: FONT, color: 'rgba(20,28,58,0.55)', fontSize: 24, lineHeight: 1.9, textAlign: 'center', opacity: cr }}>
         <div style={{ fontWeight: 700, color: INK, fontSize: 28, marginBottom: 12 }}>Kredit</div>
         <div>Video tenun: [judul] · [pembuat] · [lisensi]</div>
         <div>Musik: [judul] · [lisensi]</div>
