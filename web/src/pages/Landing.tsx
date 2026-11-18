@@ -8,6 +8,7 @@ import { useApp } from '../lib/session';
 export default function Landing() {
   const { config } = useApp();
   const [logoOk, setLogoOk] = useState(true);
+  const [videoOk, setVideoOk] = useState(true);
   const user = config?.user;
 
   const cta = !user ? <GoogleButton className="hero-cta" />
@@ -15,6 +16,7 @@ export default function Landing() {
     : <a className="btn-google hero-cta" href={config.home}>{user.role === 'admin' ? 'Buka dashboard admin' : 'Buka ruang partner'}</a>;
 
   return (
+    <div className="landing-page">
     <main className="landing">
       <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true"><defs>
 <filter id="awan-dasar" x="-50%" y="-80%" width="200%" height="260%"><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="5" seed="3"/><feDisplacementMap in="SourceGraphic" scale="150"/><feGaussianBlur stdDeviation="3"/></filter>
@@ -50,7 +52,17 @@ export default function Landing() {
         {user && user.role !== 'pemula' && <Link className="landing-sub" to="/belajar">atau mulai belajar</Link>}
       </section>
 
-      <a className="landing-more" href="/arsip.html">Lihat arsip tenun<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m6 9 6 6 6-6" /></svg></a>
+      <a className="landing-more" href={videoOk ? '#video' : '/arsip.html'}>{videoOk ? 'Lihat cara kerjanya' : 'Lihat arsip tenun'}<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m6 9 6 6 6-6" /></svg></a>
     </main>
+
+      {videoOk && (
+        <section id="video" className="landing-video">
+          <h2>Lihat BelajarTenun bekerja</h2>
+          <div className="glass">
+            <video src="/video-utuh-v4.mp4" controls playsInline preload="metadata" onError={() => setVideoOk(false)} />
+          </div>
+        </section>
+      )}
+    </div>
   );
 }
