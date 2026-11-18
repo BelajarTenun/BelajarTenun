@@ -24,7 +24,9 @@ Buka port 80, 443, 7881/tcp, dan 51000-51100/udp di firewall.
 1. Aktifkan Vertex AI API di project Google Cloud.
 2. Buat service account dengan peran **Vertex AI User**
    (tambah **Storage Object Admin** bila memakai `VERTEX_GCS_BUCKET` untuk analisis video).
-3. Unduh kuncinya ke `deploy/secrets/vertex-sa.json` (folder ini tidak masuk git).
+3. Unduh kuncinya ke `deploy/secrets/vertex-sa.json` (folder ini tidak masuk git), lalu izinkan container membacanya:
+   `sudo chgrp 1000 deploy/secrets/vertex-sa.json && sudo chmod 640 deploy/secrets/vertex-sa.json`
+   (app dan agen berjalan sebagai uid/gid 1000).
 
 ## 3. Konfigurasi
 
