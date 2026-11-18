@@ -167,3 +167,13 @@ test('cek koneksi admin: semua layanan dilaporkan, tanpa AI ditandai dilewati', 
   assert.equal(by['Login Google'], 'gagal');
   assert.ok(r.checks.length >= 9);
 });
+
+test('lanjutkan sesi: mulai dari tahap tertentu dan tercatat di ringkasan progres', async () => {
+  const s = (await call('/api/session/start', { startStep: 2 }, 'admin')).body;
+  assert.equal(s.step.index, 2);
+  assert.equal((await call('/api/session/start', { startStep: 99 }, 'admin')).body.step.index, 4, 'dibatasi ke tahap terakhir');
+  const p = (await call('/api/progress?mine=1', undefined, 'admin')).body;
+  const mine = p.sessions.find((x) => x.id === s.sessionId);
+  assert.equal(mine.reached, 2);
+  assert.equal(mine.done, false);
+});

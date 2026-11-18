@@ -75,7 +75,7 @@ async function startSession(body, user) {
     checkStep: (step, frames, opts) => checkStep(module, step, frames, opts),
     ask: (q, step) => kb.answer(q, { step, moduleId: module.id, userId: user?.id }),
     log: (ev) => data.logEvent(ev).catch(() => {}),
-  }, Date.now, { userId: user?.id ?? null, source: String(body.source || 'phone').slice(0, 20), audioOnly: Boolean(body.audioOnly) });
+  }, Date.now, { userId: user?.id ?? null, source: String(body.source || 'phone').slice(0, 20), audioOnly: Boolean(body.audioOnly), startIndex: Number(body.startStep) || 0 });
   sessions.set(session.state.id, { session, touched: Date.now(), userId: user?.id ?? null });
   return session;
 }

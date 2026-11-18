@@ -198,3 +198,18 @@ html, body { background: var(--paper); color: var(--s800); font: 14px/1.5 var(--
 .btn-google.a-google { height: 40px; min-height: 0; width: 100%; border-radius: 6px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--s800); font: 500 14px var(--font); }
 .btn-google.a-google:hover { border-color: var(--brand); background: var(--surface); }
 .a-shell h1, .a-shell h2, .a-shell h3, .s-wrap h1, .s-wrap h2, .a-auth h1 { font-family: var(--font); }
+.s-voice.warn-text { color: var(--warn); } .s-voice .a-btn { margin-left: 8px; }
+/* Lanjutkan sesi */
+.a-resume { display: flex; align-items: center; gap: 16px; padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.a-resume .tile { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border-radius: 8px; background: var(--s100); color: var(--s600); }
+.a-resume .tile svg { width: 20px; height: 20px; }
+.a-resume .body { flex: 1; min-width: 0; }
+.a-resume .title { font-size: 15px; font-weight: 600; color: var(--s900); }
+.a-resume .desc { margin-top: 2px; font-size: 13px; color: var(--s500); }
+@media (max-width: 560px) { .a-resume { flex-wrap: wrap; } .a-resume .a-btn { width: 100%; } }
+/* DataTable (TH/TD Ilmora) */
+.a-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+.a-table th { padding: 8px 12px; font-size: 12px; font-weight: 500; color: var(--s500); border-bottom: 1px solid var(--line-strong); white-space: nowrap; }
+.a-table td { padding: 12px; color: var(--s700); border-bottom: 1px solid var(--line); white-space: nowrap; }
+.a-table tr:hover td { background: rgba(15,23,42,.03); }
+.a-table a { color: var(--s900); font-weight: 500; text-decoration: none; } .a-table a:hover { text-decoration: underline; }

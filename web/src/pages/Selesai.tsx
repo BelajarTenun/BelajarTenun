@@ -15,17 +15,20 @@ export default function Selesai() {
   const { id } = useParams();
   const { module } = useModule(id);
   const { setCamera } = useApp();
-  const { state } = useLocation() as { state: { mins?: number; questions?: number; sessionId?: string } | null };
+  const { state } = useLocation() as { state: { mins?: number; questions?: number; sessionId?: string; reached?: number; total?: number } | null };
+  const belumTuntas = state?.total != null && (state.reached ?? 0) < state.total - 1;
   const [jawab, setJawab] = useState<Record<string, number>>({});
   const [terkirim, setTerkirim] = useState(false);
   useEffect(() => setCamera(null), []);
 
   return (
     <Shell>
-      <ViewHeader crumb={{ to: '/belajar', label: 'Modul' }} title="Latihan selesai" description={module?.title}
-        actions={<><Link className="a-btn" to={`/belajar/${id}`}>Ulangi modul</Link><Link className="a-btn primary" to="/belajar">Kembali ke modul</Link></>} />
+      <ViewHeader crumb={{ to: '/belajar', label: 'Modul' }} title={belumTuntas ? 'Sesi disimpan' : 'Latihan selesai'} description={module?.title}
+        actions={belumTuntas
+          ? <><Link className="a-btn" to="/belajar">Ke beranda</Link><Link className="a-btn primary" to={`/belajar/${id}/siapkan?mulai=${state!.reached}`}>Lanjutkan sesi</Link></>
+          : <><Link className="a-btn" to={`/belajar/${id}`}>Ulangi modul</Link><Link className="a-btn primary" to="/belajar">Ke beranda</Link></>} />
       <div className="a-stats">
-        <div className="a-stat"><span>Tahap selesai</span><b>{module?.steps.length ?? '–'}</b></div>
+        <div className="a-stat"><span>Tahap dicapai</span><b>{belumTuntas ? `${(state?.reached ?? 0) + 1}/${state?.total}` : module?.steps.length ?? '–'}</b></div>
         <div className="a-stat"><span>Durasi</span><b>{state?.mins ? `±${state.mins} menit` : '–'}</b></div>
         <div className="a-stat"><span>Pertanyaan ke tutor</span><b>{state?.questions ?? 0}</b></div>
       </div>
