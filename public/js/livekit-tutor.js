@@ -26,9 +26,14 @@ export class LiveKitTutor extends EventTarget {
     const { url, token } = await this.api('/api/livekit/token', { sessionId: this.sessionId });
     this.room = new Room({ adaptiveStream: true, dynacast: true });
     const r = this.room;
-    r.on(RoomEvent.TrackSubscribed, (track) => {
-      if (track.kind === Track.Kind.Audio) { const el = track.attach(); el.dataset.bt = 'tutor-audio'; document.body.append(el); }
+    // Hanya suara agen tutor yang diputar, satu elemen saja. Suara peserta lain (mis. tab kedua milik
+    // pengguna sendiri di room yang sama) tidak diputar supaya ucapan pengguna tidak terdengar memantul.
+    r.on(RoomEvent.TrackSubscribed, (track, _pub, participant) => {
+      if (track.kind !== Track.Kind.Audio || !participant?.isAgent) return;
+      document.querySelectorAll('audio[data-bt="tutor-audio"]').forEach((a) => a.remove());
+      const el = track.attach(); el.dataset.bt = 'tutor-audio'; document.body.append(el);
     });
+    r.on(RoomEvent.TrackUnsubscribed, (track) => track.detach().forEach((el) => el.remove()));
     r.on(RoomEvent.DataReceived, (payload, participant, kind, topic) => {
       if (topic !== UI_TOPIC) return;
       try { this.#emit('ui', JSON.parse(new TextDecoder().decode(payload))); } catch {}
