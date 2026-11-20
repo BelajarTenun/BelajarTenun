@@ -7,7 +7,7 @@ import { useModule } from '../lib/useModule';
 // @ts-ignore modul JS bersama
 import { TutorClient } from '@legacy/tutor.js';
 
-type Reply = { intent?: string; speak?: string; display?: string; step?: { index: number; total: number } };
+type Reply = { pattern_row?: { row: number; total: number; complete?: boolean }; intent?: string; speak?: string; display?: string; step?: { index: number; total: number } };
 type Line = { role: 'user' | 'tutor'; text: string };
 
 // Sesi latihan gaya Gemini Live: kamera memenuhi layar, ucapan tutor tampil sebagai subtitle,
@@ -28,6 +28,8 @@ export default function Praktik() {
   const [muted, setMuted] = useState(false);
   const [speaking, setSpeaking] = useState<'tutor' | 'user' | ''>('');
   const [sheet, setSheet] = useState(false);
+  // Grafik pola: baris yang sedang diajarkan tutor (dari get_pattern_row / pattern_row_done).
+  const [patRow, setPatRow] = useState<{ row: number; complete?: boolean } | null>(null);
   // Status agen tutor: menunggu → siap, atau gagal (pesan dari agen / batas waktu). Hanya "siap" berarti tutor benar-benar ada.
   const [tutorState, setTutorState] = useState<{ state: 'menunggu' | 'siap' | 'gagal'; message?: string }>({ state: 'menunggu' });
   const [camLost, setCamLost] = useState(!camera);
@@ -46,7 +48,7 @@ export default function Praktik() {
     const t = new TutorClient({
       moduleId: module.id, source: camera, serverTts: false, startStep, liveOnly: true,
       ui: {
-        show: (r: Reply) => { if (r.step) setStepIdx(r.step.index); },
+        show: (r: Reply) => { if (r.step) setStepIdx((i) => { if (i !== r.step!.index) setPatRow(null); return r.step!.index; }); if (r.pattern_row) setPatRow(r.pattern_row); },
         card: () => {}, demo: () => {},
         status: () => {},
         speaking: (d: { tutor: boolean; user: boolean }) => setSpeaking(d.tutor ? 'tutor' : d.user ? 'user' : ''),
@@ -109,6 +111,8 @@ export default function Praktik() {
       </header>
       <div className="lv-progress"><i style={{ width: `${(stepIdx / total) * 100}%` }} /></div>
 
+      {step.pattern && <PatternCard p={step.pattern} row={patRow?.row ?? 1} complete={!!patRow?.complete} />}
+
       {camLost && (
         <div className="lv-alert">
           <b>Gambar kamera terputus</b>
@@ -159,5 +163,20 @@ export default function Praktik() {
         </div>
       )}
     </div>
+  );
+}
+
+// Grafik pola kecil di pojok: baris 1 di bawah (baris pertama ditenun); baris yang sedang dikerjakan disorot.
+function PatternCard({ p, row, complete }: { p: NonNullable<import('../lib/api').Step['pattern']>; row: number; complete: boolean }) {
+  const w = p.rows[0]?.length ?? 0;
+  return (
+    <aside className="lv-pattern" aria-label={`Grafik pola, baris ${row} dari ${p.rows.length}`}>
+      <div className="h"><b>{complete ? 'Pola selesai' : `Baris ${row}/${p.rows.length}`}</b><span>{p.authentic && p.validated_by ? p.label : 'Pola latihan'}</span></div>
+      <div className="g" style={{ gridTemplateColumns: `repeat(${w}, 1fr)` }}>
+        {p.rows.map((r, y) => ({ r, y })).reverse().flatMap(({ r, y }) => [...r].map((ch, x) => (
+          <i key={`${y}-${x}`} className={y + 1 === row && !complete ? 'now' : y + 1 < row || complete ? 'done' : ''} style={{ background: p.palette[ch]?.color }} />
+        )))}
+      </div>
+    </aside>
   );
 }

@@ -110,6 +110,7 @@ function stepCard(s, i) {
     ${field('Kesalahan umum (format: kesalahan => cara memperbaiki, satu per baris)', 'common_mistakes', mistakes, 3, 'text', s)}
     ${field('Latihan bagian (format: nama | instruksi | jumlah ulangan | ukuran hitungan/ritme/visual; ditawarkan tutor bila murid gagal ≥2 kali)', 'practice', formatPractice(s.practice), 2)}
     ${field('Informasi pendukung (ID entri pengetahuan, pisahkan koma; hanya yang tervalidasi dipakai tutor)', 'supportive', (s.supportive || []).join(', '))}
+    ${patternBox(s)}
     ${s._pairs ? `<p class="hint">Contoh dari kacamata (ego): ${s._pairs.ego} · dari luar (exo): ${s._pairs.exo}</p>` : ''}
     ${field('Video demo (diisi dari halaman Rekam/Anotasi)', 'demo_video', s.demo_video)}
     <div class="grid2">${field('Konfirmasi kamera berturut-turut sebelum "selesai"', 'confirm_frames', s.confirm_frames ?? 2, 0, 'number')}${field('Keyakinan minimum AI (0–1)', 'min_confidence', s.min_confidence ?? 0.6, 0, 'number')}</div>
@@ -118,6 +119,38 @@ function stepCard(s, i) {
     <div class="row"><button data-act="up">Naik</button><button data-act="down">Turun</button><button data-act="del">Hapus</button></div>
     </div>
   </details>`;
+}
+// Grafik pola: kolom = helai lungsi, baris 1 (paling bawah) = baris pertama yang ditenun. Klik/seret sel untuk mewarnai.
+const brushes = new WeakMap(); // kuas aktif per grafik pola (tidak ikut disimpan)
+const TECH = { pakan_tambahan: 'Pakan tambahan', sulam: 'Sulam', ikat: 'Ikat', lainnya: 'Lainnya' };
+function gridHtml(p, brush) {
+  const keys = Object.keys(p.palette);
+  return `<div class="pg-brush">${keys.map((k) => `<button type="button" data-brush="${esc(k)}" class="${k === brush ? 'on' : ''}"><i style="background:${esc(p.palette[k].color)}"></i>${esc(p.palette[k].name)}</button>`).join('')}</div>
+  <div class="pg-grid" style="grid-template-columns:2.2em repeat(${p.rows[0].length},1fr)">${p.rows.map((r, y) => ({ r, y })).reverse().map(({ r, y }) =>
+    `<span class="pg-n">${y + 1}</span>${[...r].map((ch, x) => `<b data-cell="${y},${x}" style="background:${esc(p.palette[ch]?.color || '#fff')}"></b>`).join('')}`).join('')}</div>
+  <p class="hint">Baris 1 (paling bawah) = baris pertama yang ditenun. ${p.rows[0].length} kolom × ${p.rows.length} baris.</p>`;
+}
+function patternBox(s) {
+  const p = s.pattern;
+  if (!p) return `<div class="row"><button type="button" data-pat="new">Tambah grafik pola motif</button><span class="hint">Tutor akan mengajarkan motif baris demi baris.</span></div>`;
+  return `<fieldset class="pattern-box"><legend>Grafik pola motif ${p.authentic && p.validated_by ? '<span class="tag ok-tag">asli, tervalidasi</span>' : '<span class="tag">pola latihan</span>'}</legend>
+    <div class="grid2">${field('Nama pola', 'pat_label', p.label)}<label>Teknik<select data-k="pat_tech">${Object.entries(TECH).map(([k, v]) => `<option value="${k}" ${k === p.technique ? 'selected' : ''}>${v}</option>`).join('')}</select></label></div>
+    <div class="grid2">${field('Satuan kolom (mis. 1 kolom = 2 helai lungsi)', 'pat_unit', p.unit)}${field('Digambar/divalidasi oleh (penenun pemilik motif)', 'pat_by', p.validated_by)}</div>
+    <label class="toggle"><input type="checkbox" data-k="pat_auth" ${p.authentic ? 'checked' : ''}> Ini motif asli dari penenun (bukan pola latihan)</label>
+    ${field('Warna (format: huruf | nama | #kode; baris pertama = warna dasar)', 'pat_palette', Object.entries(p.palette).map(([k, c]) => `${k} | ${c.name} | ${c.color}`).join('\n'), 2)}
+    <div class="row">${field('Kolom', 'pat_w', p.rows[0].length, 0, 'number')}${field('Baris', 'pat_h', p.rows.length, 0, 'number')}<button type="button" data-pat="resize">Ubah ukuran</button><button type="button" data-pat="mirror">Cerminkan kiri→kanan</button><button type="button" data-pat="del">Hapus grafik</button></div>
+    <div class="pg" data-pg>${gridHtml(p, brushes.get(p) ?? Object.keys(p.palette)[1] ?? Object.keys(p.palette)[0])}</div>
+  </fieldset>`;
+}
+function readPattern(card, s) {
+  const v = (k) => card.querySelector(`[data-k="${k}"]`);
+  if (!s.pattern || !v('pat_label')) return;
+  const pal = {};
+  v('pat_palette').value.split('\n').map((l) => l.split('|').map((x) => x.trim())).filter((x) => x[0]).forEach(([k, name = k, color = '#cccccc']) => { pal[[...k][0]] = { name, color }; });
+  const base = Object.keys(pal)[0] ?? '.';
+  Object.assign(s.pattern, { label: v('pat_label').value.trim(), technique: v('pat_tech').value, unit: v('pat_unit').value.trim() || null, validated_by: v('pat_by').value.trim() || null, authentic: v('pat_auth').checked,
+    palette: Object.keys(pal).length ? pal : s.pattern.palette });
+  s.pattern.rows = s.pattern.rows.map((r) => [...r].map((ch) => (s.pattern.palette[ch] ? ch : base)).join(''));
 }
 function kbCard(e, i) {
   const tag = { tervalidasi: '<span class="tag ok-tag">tervalidasi</span>', ditinjau: '<span class="pill">ditinjau</span>' }[e.status] ?? '<span class="tag">draf</span>';
@@ -157,6 +190,7 @@ function collect() {
     s.tips = v('tips').value.split('\n').map((x) => x.trim()).filter(Boolean);
     s.common_mistakes = v('common_mistakes').value.split('\n').filter((l) => l.trim()).map((l) => { const [mistake, fix = ''] = l.split('=>'); return { mistake: mistake.trim(), fix: fix.trim() }; });
     s.practice = parsePractice(v('practice').value);
+    readPattern(card, s);
     s.supportive = v('supportive').value.split(',').map((x) => x.trim()).filter(Boolean);
     s.demo_video = v('demo_video').value.trim() || undefined;
     s.confirm_frames = Math.max(1, Number(v('confirm_frames').value) || 2);
@@ -195,6 +229,23 @@ document.body.addEventListener('click', (e) => {
     }
     return;
   }
+  const pat = e.target.closest('[data-pat]')?.dataset.pat, brush = e.target.closest('[data-brush]')?.dataset.brush;
+  if (pat || brush != null) {
+    collect();
+    const s = mod.steps[Number(e.target.closest('[data-step]').dataset.step)];
+    if (brush != null) brushes.set(s.pattern, brush);
+    if (pat === 'new') s.pattern = { label: 'Pola latihan', authentic: false, technique: 'pakan_tambahan', unit: null, validated_by: null,
+      palette: { '.': { name: 'dasar', color: '#2b2b2b' }, K: { name: 'kuning', color: '#e0b21b' } }, rows: Array.from({ length: 9 }, () => '.'.repeat(9)) };
+    if (pat === 'del' && confirm('Hapus grafik pola tahap ini?')) delete s.pattern;
+    if (pat === 'mirror') s.pattern.rows = s.pattern.rows.map((r) => { const h = Math.ceil(r.length / 2); return r.slice(0, h) + [...r.slice(0, r.length - h)].reverse().join(''); });
+    if (pat === 'resize') {
+      const card = e.target.closest('[data-step]'), w = Math.min(80, Math.max(1, Number(card.querySelector('[data-k="pat_w"]').value) || 9)), h = Math.min(120, Math.max(1, Number(card.querySelector('[data-k="pat_h"]').value) || 9));
+      const base = Object.keys(s.pattern.palette)[0];
+      s.pattern.rows = Array.from({ length: h }, (_, y) => (s.pattern.rows[y] ?? '').padEnd(w, base).slice(0, w));
+    }
+    const open = e.target.closest('[data-step]').dataset.step; render(); const d = document.querySelector(`[data-step="${open}"]`); if (d) d.open = true;
+    return;
+  }
   const act = e.target.dataset?.act; if (!act) return;
   collect();
   const si = Number(e.target.closest('[data-step]')?.dataset.step), ki = Number(e.target.closest('[data-kb]')?.dataset.kb);
@@ -204,6 +255,18 @@ document.body.addEventListener('click', (e) => {
   if (act === 'del-kb' && confirm('Hapus entri ini?')) kb.entries.splice(ki, 1);
   render();
 });
+// Mewarnai sel: klik atau tekan lalu seret. Hanya mengubah DOM sel + data, tanpa render ulang seluruh halaman.
+let painting = false;
+function paint(e) {
+  const c = e.target.closest?.('[data-cell]'); if (!c) return;
+  const s = mod.steps[Number(c.closest('[data-step]').dataset.step)], [y, x] = c.dataset.cell.split(',').map(Number);
+  const k = brushes.get(s.pattern) ?? Object.keys(s.pattern.palette)[1] ?? Object.keys(s.pattern.palette)[0];
+  const r = [...s.pattern.rows[y]]; r[x] = k; s.pattern.rows[y] = r.join('');
+  c.style.background = s.pattern.palette[k].color;
+}
+document.body.addEventListener('pointerdown', (e) => { if (e.target.closest?.('[data-cell]')) { painting = true; e.preventDefault(); paint(e); } });
+document.body.addEventListener('pointerover', (e) => { if (painting) paint(e); });
+window.addEventListener('pointerup', () => { painting = false; });
 $('add-step').onclick = () => { collect(); mod.steps.push({ id: `tahap-${mod.steps.length + 1}`, title: '', instruction: '', tips: [], success_criteria: '', common_mistakes: [], auto_detect: true, validated_by: null }); render(); const d = document.querySelector(`[data-step="${mod.steps.length - 1}"]`); d.open = true; d.scrollIntoView({ block: 'center' }); };
 $('add-kb').onclick = () => { collect(); kb.entries.push({ id: `qa-${Date.now().toString(36)}`, status: 'draft', question: '', answer: '', keywords: [], source: null, validated_by: null }); render(); const d = document.querySelector(`[data-kb="${kb.entries.length - 1}"]`); d.open = true; d.scrollIntoView({ block: 'center' }); };
 // Foto kain: unggah langsung, simpan URL-nya di modul (tersimpan permanen saat "Simpan semua").
