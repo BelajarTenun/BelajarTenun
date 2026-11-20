@@ -35,6 +35,6 @@ jobs:
         with:
           python-version: "3.12"
       - name: Cek sintaks agen
-        run: python -m py_compile agent/main.py
+        run: python -m py_compile agent/main.py scripts/hand_pose.py
       - name: Tes agen (pemilihan model Live)
         run: pip install -q -r agent/requirements.txt pytest && cd agent && python -m pytest -q tests

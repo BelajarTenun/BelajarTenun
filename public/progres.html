@@ -19,6 +19,11 @@
   <label class="picker">Modul <select id="module"></select></label>
   <section class="stats" id="stats"></section>
   <section class="card">
+    <h2>Tahap tersulit (bahan revisi kurikulum)</h2>
+    <p class="hint">Diurutkan dari yang paling sulit. "Benar pertama kali" = selesai tanpa koreksi dan dengan paling banyak 1 petunjuk. "Dikuasai" = peluang penguasaan ≥ 95% (Bayesian Knowledge Tracing). Saran muncul bila ada minimal 5 percobaan.</p>
+    <div id="difficulty"></div>
+  </section>
+  <section class="card">
     <h2>Per tahap</h2>
     <p class="hint">Tahap dengan banyak pertanyaan, petunjuk, atau kesalahan adalah yang paling membingungkan pemula. Prioritaskan untuk diperbaiki instruksi atau video demonya.</p>
     <div id="steps"></div>
@@ -41,7 +46,11 @@ $('module').innerHTML = modules.map((m) => `<option value="${m.id}">${esc(m.titl
 $('module').onchange = render;
 async function render() {
   const id = $('module').value;
-  const [p, mod] = await Promise.all([api(`/api/progress?moduleId=${id}`), api(`/api/module?id=${id}`)]);
+  const [p, mod, la] = await Promise.all([api(`/api/progress?moduleId=${id}`), api(`/api/module?id=${id}`), api(`/api/admin/learning?moduleId=${id}`).catch(() => null)]);
+  $('difficulty').innerHTML = la?.difficulty?.length ? `<table><tr><th>Tahap</th><th>Percobaan</th><th>Selesai</th><th>Benar pertama kali</th><th>Petunjuk/percobaan</th><th>Kesalahan/percobaan</th><th>Dikuasai</th><th>Saran</th></tr>${la.difficulty.map((d) => {
+    const m = la.mastery[d.step];
+    return `<tr><td>${esc(d.title)}</td><td>${d.attempts}${d.lowData ? ' <small>(sedikit)</small>' : ''}</td><td>${pct(d.completion)}</td><td>${pct(d.firstTry)}</td><td>${d.hintsPerAttempt}</td><td>${d.mistakesPerAttempt}</td><td>${m?.learners ? `${m.mastered}/${m.learners} murid` : '-'}</td><td>${d.advice.map(esc).join('<br>') || '-'}</td></tr>`;
+  }).join('')}</table>` : '<p>Belum ada data percobaan.</p>';
   $('scope').textContent = p.scope === 'saya' ? (cfg.user ? 'Progres latihanmu.' : 'Masuk untuk menyimpan progresmu sendiri.') : 'Ringkasan semua sesi (learning validation).';
   const title = (sid) => mod.steps.find((s) => s.id === sid)?.title ?? sid;
   const stat = (v, l) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`;
