@@ -246,3 +246,47 @@ body.ws {
 .ws .cover-preview { aspect-ratio: 4 / 5; border-radius: 8px; border: 1px solid rgba(15,23,42,.12); background-color: #efe9dc; background-size: cover; background-position: center;
   background-image: repeating-linear-gradient(0deg, rgba(15,23,42,.07) 0 3px, transparent 3px 6px), repeating-linear-gradient(90deg, rgba(146,64,14,.10) 0 3px, transparent 3px 6px); }
 @media (max-width: 640px) { .ws .cover-edit { grid-template-columns: 1fr; } .ws .cover-preview { max-width: 200px; } }
+
+/* ---------- Pilihan segmen (select[data-seg]) ---------- */
+.ws .seg { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.ws .seg button { min-height: 36px; padding: 6px 14px; border-radius: 999px; border: 1px solid rgba(15,23,42,.15); background: var(--surface, #fff); color: var(--slate-700, #334155); font: 500 13px var(--font); cursor: pointer;
+  display: inline-flex; flex-direction: column; align-items: flex-start; text-align: left; transition: border-color .15s, background-color .15s, color .15s; }
+.ws .seg button:hover { border-color: rgba(15,23,42,.35); }
+.ws .seg button[aria-checked="true"] { background: var(--slate-900, #0f172a); border-color: var(--slate-900, #0f172a); color: #fff; }
+.ws .seg button small { font-weight: 400; font-size: 12px; opacity: .75; }
+.ws .seg.seg-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.ws .seg.seg-cards button { border-radius: 10px; padding: 10px 12px; min-height: 64px; justify-content: center; }
+@media (prefers-color-scheme: dark) { .ws .seg button { background: #232323; color: #ddd; border-color: rgba(255,255,255,.15); } .ws .seg button[aria-checked="true"] { background: #f5f5f5; color: #191919; } }
+
+/* ---------- Wizard bertahap ---------- */
+.ws .wz-head { display: flex; gap: 6px; list-style: none; margin: 0 0 18px; padding: 0; counter-reset: wz; }
+.ws .wz-head li { flex: 1; display: flex; align-items: center; gap: 8px; padding-top: 8px; border-top: 3px solid rgba(15,23,42,.12); font-size: 13px; color: var(--slate-500, #64748b); cursor: default; }
+.ws .wz-head li span { width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; border: 1px solid currentColor; font-size: 11px; font-variant-numeric: tabular-nums; }
+.ws .wz-head li.now { border-top-color: var(--slate-900, #0f172a); color: var(--slate-900, #0f172a); font-weight: 600; }
+.ws .wz-head li.done { border-top-color: var(--slate-900, #0f172a); color: var(--slate-700, #334155); cursor: pointer; }
+.ws .wz-head li.done span { background: var(--slate-900, #0f172a); border-color: var(--slate-900, #0f172a); color: #fff; }
+.ws .wz-nav { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+.ws .wz-nav .wz-back { margin-right: auto; }
+
+/* ---------- Area seret-lepas berkas ---------- */
+.ws .dz { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 150px; padding: 20px; border: 1.5px dashed rgba(15,23,42,.25); border-radius: 12px;
+  background: var(--surface, #fff); text-align: center; cursor: pointer; transition: border-color .15s, background-color .15s; }
+.ws .dz b { font-size: 15px; color: var(--slate-900, #0f172a); } .ws .dz span { font-size: 13px; color: var(--slate-500, #64748b); }
+.ws .dz em { font-style: normal; font-size: 13px; font-weight: 600; color: var(--slate-900, #0f172a); }
+.ws .dz.over, .ws .dz:hover { border-color: var(--slate-900, #0f172a); }
+.ws .dz.has { border-style: solid; }
+.ws .dz-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+/* ---------- Kartu tahap di Editor (akordeon) ---------- */
+.ws details.step-card > summary { gap: 10px; }
+.ws details.step-card > summary .n { width: 24px; height: 24px; flex: none; display: grid; place-items: center; border-radius: 50%; background: rgba(15,23,42,.06); font-size: 12px; font-variant-numeric: tabular-nums; }
+.ws details.step-card > summary .t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Isi kartu tahap: dua kolom untuk isian pendek, teks panjang & baris aksi selebar penuh. */
+.ws .step-body { display: grid; grid-template-columns: 1fr 1fr; column-gap: 16px; align-items: start; }
+.ws .step-body > * { grid-column: 1 / -1; }
+.ws .step-body > label:not(:has(textarea)):not(.toggle) { grid-column: auto; }
+@media (max-width: 760px) { .ws .step-body { grid-template-columns: 1fr; } }
+/* Kartu pilihan: teks panjang dibungkus, tidak terpotong. */
+.ws .seg.seg-cards { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.ws .seg button b, .ws .seg button small { white-space: normal; overflow-wrap: anywhere; }
+.ws .seg.seg-cards button { width: 100%; }
