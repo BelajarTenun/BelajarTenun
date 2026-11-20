@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { api } from '../lib/api';
 import { Link, useParams } from 'react-router-dom';
 import Shell, { ViewHeader } from '../components/Shell';
 import Icon from '../components/Icon';
@@ -18,6 +19,8 @@ export default function Pengenalan() {
   const { module, error } = useModule(id);
   const { byId, riwayat, mastery, kunci } = useProgres();
   useEffect(() => { if (module) log('intro_open', { module: module.id }); }, [module]);
+  const [cerita, setCerita] = useState<{ id: string; subtitle: string; chapters: unknown[] } | null>(null);
+  useEffect(() => { if (id) api<{ id: string; subtitle: string; chapters: unknown[] }>(`/api/story?module=${encodeURIComponent(id)}`).then(setCerita).catch(() => setCerita(null)); }, [id]);
 
   if (error) return <Shell><ViewHeader title="Modul tidak ditemukan" crumb={{ to: '/modul', label: 'Modul' }} description={error} /></Shell>;
   if (!module) return <Shell><p className="a-muted">Memuat…</p></Shell>;
@@ -43,6 +46,14 @@ export default function Pengenalan() {
           {intro.duration_min && <span className="a-badge">±{intro.duration_min} menit</span>}
         </span>}
         actions={start} />
+
+      {cerita && (
+        <Link to={`/cerita/${cerita.id}`} className="kc-teaser">
+          <span className="band" aria-hidden="true" />
+          <span className="tx"><span className="k">Kain bercerita · {cerita.chapters.length} bab</span><b>{cerita.subtitle}</b><span>Bentangkan kainnya dan baca sejarah motif ini sebelum mulai menenun.</span></span>
+          <Icon name="chevronRight" />
+        </Link>
+      )}
 
       <div className="a-grid2">
         <div>

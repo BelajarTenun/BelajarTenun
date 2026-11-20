@@ -144,6 +144,15 @@ const routes = {
 
   // ----- Kurikulum -----
   'GET /api/modules': async () => ({ modules: await data.listModules() }),
+  // Kain Bercerita (publik, tanpa login): dibuka dari modul atau dari QR di label kain.
+  'GET /api/story': async (b, req, res, url) => {
+    const id = url.searchParams.get('id'), mod = url.searchParams.get('module'), code = url.searchParams.get('code');
+    const all = await Promise.all((await store.list('stories')).filter((f) => f.endsWith('.json')).map((f) => store.readJson(`stories/${f}`, null)));
+    const st = all.find((x) => x && (x.id === id || (mod && x.module === mod) || (code && x.pieces?.some((p) => p.code === code))));
+    if (!st) throw fail(404, 'Cerita tidak ditemukan');
+    if (code) data.logEvent({ type: 'qr_scan', story: st.id, code }).catch(() => {});
+    return { ...st, piece: code ? st.pieces.find((p) => p.code === code) : null, pieces: undefined };
+  },
   'GET /api/module': async (b, req, res, url) => data.getModule(url.searchParams.get('id')),
   'POST /api/module': async (b, req) => { await data.saveModule(b, await auth.requireRole(req, ...PARTNER)); return { ok: true }; },
 
