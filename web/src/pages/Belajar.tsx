@@ -68,25 +68,30 @@ export default function Belajar() {
       )}
 
       <section className="a-section">
-        <h2>Jalur belajar {modules && <small>{tuntasN} dari {modules.length} tuntas</small>}</h2>
+        <h2>Pilih kain yang ingin kamu buat {modules && <small>{tuntasN} dari {modules.length} tuntas</small>}</h2>
         {!modules ? <p className="a-muted">Memuat…</p> : modules.length === 0
           ? <div className="a-empty"><Icon name="book" /><b>Belum ada modul</b><span>Modul muncul di sini setelah diterbitkan oleh penenun mitra.</span></div>
           : (
-            <ol className="a-path">
-              {modules.map((m, i) => {
+            <ul className="kain-grid">
+              {modules.map((m) => {
                 const x = status[m.id];
+                const label = { tuntas: 'Tuntas', berjalan: 'Sedang dipelajari', berikut: 'Berikutnya', nanti: null }[x];
                 return (
-                  <li key={m.id} className={x}>
-                    <span className="node">{x === 'tuntas' ? <Icon name="check" /> : x === 'nanti' ? <Icon name="lock" /> : i + 1}</span>
-                    <Link to={`/belajar/${m.id}`} className="card">
-                      <span className="body"><span className="title">{m.title}</span>{m.description && <span className="desc">{m.description}</span>}</span>
-                      <span className="meta">{x === 'tuntas' ? <span className="a-badge ok">Tuntas</span> : x === 'berjalan' ? <span className="a-badge warn">Sedang dipelajari</span> : x === 'berikut' ? <span className="a-badge dark">Berikutnya</span> : null}<span className="a-badge">{m.steps} tahap</span></span>
-                      <Icon name="chevronRight" className="go" />
+                  <li key={m.id}>
+                    <Link to={`/belajar/${m.id}`} className={`kain-card ${x}`}>
+                      <span className="kain-frame">
+                        <span className={`kain-photo${m.cover ? '' : ' tanpa-foto'}`} style={m.cover ? { backgroundImage: `url("${m.cover}")` } : undefined} role="img" aria-label={m.cover ? `Foto kain ${m.fabricName || m.title}` : 'Foto kain belum tersedia'} />
+                        {label && <span className="kain-status">{x === 'tuntas' && <Icon name="check" />}{label}</span>}
+                      </span>
+                      <span className="kain-meta">
+                        <b>{m.fabricName || m.title}</b>
+                        <span>{[m.weaver || m.tradition, `${m.steps} tahap`].filter(Boolean).join(' · ')}</span>
+                      </span>
                     </Link>
                   </li>
                 );
               })}
-            </ol>
+            </ul>
           )}
       </section>
 
