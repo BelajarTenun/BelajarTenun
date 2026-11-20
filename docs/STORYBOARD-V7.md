@@ -109,6 +109,30 @@ Tanpa rekam ulang pun adegan ini tetap jalan: cukup musik, SFX, dan teks langkah
 | 1:31 | "Untuk menjaga kualitas, setiap tahap diperiksa penenun sebelum diajarkan." | **UI `editor.html` (Editor Kurikulum).**<br>1. Penenun tua 3D duduk memegang tablet, lalu kamera masuk ke layar tablet.<br>2. Tampil daftar tahap. Satu tahap dikoreksi: teks salah tercoret dan teks benar diketik.<br>3. Dropdown **Status** berubah dari "Draf" ke "**Tervalidasi**", lalu cap ✓ emas jatuh dengan bounce.<br>4. Kursor menekan **Simpan semua**.<br>5. Panel "**Riwayat perubahan modul**" bertambah satu baris "Divalidasi oleh penenun mitra". | 3D + U (`editor.html`) | ketik, click, impact cap, ding |
 | 1:38 | (lanjut, tanpa kalimat baru) | Modul tervalidasi **terbang keluar dari tablet ke HP murid**. HP murid ada di kanan, daftar modul di `Belajar.tsx` bertambah satu kartu. Teks kecil: "Modul muncul di sini setelah diterbitkan oleh penenun mitra" (teks asli aplikasi). | U + T | whoosh, pop |
 
+## Babak 3b · MITRA: Puta Dino Kayangan, Tidore (1:42–1:58), adegan baru
+
+Tujuannya kredibilitas. Kerja samanya dua:
+1. Penenun Puta Dino Kayangan **memvalidasi** materi belajar.
+2. Mereka **membagikan data arsip** untuk dijadikan bahan belajar.
+
+Narasi (rekaman tambahan Andrew, sekitar 12 detik):
+
+> "Kami bekerja sama dengan Puta Dino Kayangan di Tidore. Para penenunnya memvalidasi setiap tahap, dan arsip mereka kami olah jadi materi belajar."
+
+| Waktu | Kalimat | Yang terjadi di layar (rinci) | Teknik | SFX |
+|---|---|---|---|---|
+| 1:42 | (transisi) | Modul yang tadi terbang ke HP berbalik arah. Kamera mundur ke peta Indonesia pola titik, lalu terbang cepat ke timur. Pin emas menancap di **Tidore, Maluku Utara**, disertai riak lingkaran. | M | whoosh panjang, impact pin |
+| 1:44 | "Kami bekerja sama dengan Puta Dino Kayangan di Tidore." | Pin membuka menjadi kartu kaca, dan **logo mitra** (`web/public/partner-puta-dino-kayangan.png`) ditenun masuk. Di kanan, logo BelajarTenun meluncur masuk. Sebuah benang emas menyambung kedua logo dan terikat di tengah (simpul kecil dengan bounce). Teks: **"Mitra penenun · UKM Puta Dino Kayangan · Soasio, Tidore"**. | T + G | pop, snap simpul, ding |
+| 1:47 | (lanjut) | Fakta singkat muncul dengan stagger, tanpa kotak, teks putih/krem dengan angka emas:<br>- "Puta dino: kain tenun warisan Kesultanan Tidore"<br>- "Sempat punah ±**100 tahun**", dengan angka yang berhitung naik<br>- "Ditenun kembali sejak **2018**"<br><br>Sumbernya data `knowledge.json`, dari jurnal Jambura 2024. Kredit sumber cukup di proposal. | G | tick |
+| 1:50 | "Para penenunnya memvalidasi setiap tahap," | Close-up UI `editor.html`. Kartu tahap modul **"Tidore dasar"** (`data/modules/tidore-dasar.json`) masuk satu per satu. Di tiap kartu jatuh cap emas **"Divalidasi penenun Puta Dino Kayangan"**, sehingga terdengar 3 cap berurutan. Nama validator di panel "Riwayat perubahan modul" diketik. | U | impact cap ×3, ding |
+| 1:54 | "dan arsip mereka kami olah jadi materi belajar." | **Arsip menjadi pelajaran.**<br>1. Tumpukan arsip (foto kain, catatan motif, video) melayang masuk dari kiri.<br>2. Masing-masing berubah (morph) menjadi elemen pelajaran: foto motif menjadi kartu ornamen **jodati, barakati, marasante** dengan artinya (ketulusan hati, diberkati, keberanian); catatan menjadi tahap; video menjadi klip pengenalan modul.<br>3. Semuanya tersusun rapi di HP murid, di halaman `Pengenalan.tsx` modul Tidore. | T + U | whoosh, pop beruntun |
+| 1:57 | (penutup adegan) | Tagline kecil: **"Divalidasi penenun. Dari arsip mitra."** Lalu whip ke Babak 4. | – | whoosh |
+
+Catatan:
+- **Durasi.** Agar total tetap ≤5 menit, sisipan `admin.html` (2:59) dan alternatif QR (0:58) dipersingkat 2 dtk masing-masing.
+- **Foto asli.** Kalau ada foto/video asli bersama penenun Puta Dino Kayangan (sesi validasi, kain, arsip), itu jauh lebih kuat daripada animasi dan bisa langsung menggantikan latar adegan 1:50–1:57. **Pastikan ada izin** mitra untuk menampilkan logo, nama, dan wajah penenun.
+- **Babak 4.** Momen "kucatat untuk penenun" di demo kini diarahkan ke penenun Puta Dino Kayangan.
+
 ## Babak 4 · Demo nyata (1:42–2:35), footage + HP glass
 
 Sama seperti v6 Babak 3 (footage multicam 7647/7648/7649/7650, tutor T1–T7), ditambah:
