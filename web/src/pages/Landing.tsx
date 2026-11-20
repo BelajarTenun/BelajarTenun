@@ -30,8 +30,6 @@ export default function Landing() {
       <header className="landing-nav">
         <Link to="/" className="landing-brand"><img src="/icon.svg" alt="" />BelajarTenun</Link>
         <nav>
-          <a href="/arsip.html" className="nav-text">Arsip tenun</a>
-          <a href="/masuk.html?untuk=partner" className="nav-text">Untuk penenun</a>
           {user
             ? <Link to={user.role === 'pemula' ? '/belajar' : '/'} className="nav-pill" onClick={(e) => { if (user.role !== 'pemula') { e.preventDefault(); location.href = config!.home!; } }}>
                 {user.name.split(' ')[0]}
@@ -49,10 +47,9 @@ export default function Landing() {
             : <strong>Puta Dino Kayangan</strong>}
         </div>
         {cta}
-        {user && user.role !== 'pemula' && <Link className="landing-sub" to="/belajar">atau mulai belajar</Link>}
       </section>
 
-      <a className="landing-more" href={videoOk ? '#video' : '/arsip.html'}>{videoOk ? 'Lihat cara kerjanya' : 'Lihat arsip tenun'}<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m6 9 6 6 6-6" /></svg></a>
+      {videoOk && <a className="landing-more" href="#video">Lihat cara kerjanya<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="m6 9 6 6 6-6" /></svg></a>}
     </main>
 
       {videoOk && (

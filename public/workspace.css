@@ -51,7 +51,9 @@ body.ws {
 .ws .ws-link:hover .ws-arrow { opacity: 1; transform: translate(2px, -2px) scale(1.1); }
 .ws .ws-link.active { background: rgba(0,0,0,.05); color: var(--slate-900); font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,.05); }
 .ws .ws-link.active svg, .ws .ws-link.active .ws-arrow { color: var(--slate-900); opacity: 1; }
-.ws-account { margin-top: auto; }
+.ws-account { margin-top: auto; width: 100%; border: 0; background: none; font: inherit; text-align: left; cursor: pointer; }
+.ws-nav button.ws-account, .ws-nav button.ws-account:hover { border: 0; box-shadow: none; background: transparent; height: auto; justify-content: flex-start; color: var(--s600, #475569); }
+.ws-nav button.ws-account:hover { background: rgba(0,0,0,.05); }
 .ws-role { margin-left: auto; font-style: normal; padding: 1px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; letter-spacing: .05em;
   text-transform: uppercase; background: var(--slate-100); color: var(--slate-500); }
 .ws-role.is-admin { background: var(--slate-900); color: var(--paper); }

@@ -47,7 +47,7 @@ async function googleRoute(req, res, url) {
 const PARTNER_ROLES = ['partner', 'admin'];
 export const homeFor = (user) => ({ admin: '/admin.html', partner: '/editor.html' }[user?.role] ?? '/belajar');
 const TEAM_PAGES = {
-  'admin.html': ['admin'],
+  'admin.html': ['admin'], 'progres.html': PARTNER_ROLES,
   'editor.html': PARTNER_ROLES, 'rekam.html': PARTNER_ROLES, 'anotasi.html': PARTNER_ROLES, 'sumber.html': PARTNER_ROLES,
 };
 const WEB_DIST = join(ROOT, 'web', 'dist');
@@ -293,19 +293,6 @@ const routes = {
   'GET /api/module/history': async (b, req, res, url) => { await auth.requireRole(req, ...PARTNER); return { history: (await store.readLines(`modules/${url.searchParams.get('id')}.history.jsonl`)).map((l) => JSON.parse(l)).reverse().slice(0, 200) }; },
 
   // ----- Arsip konservasi publik: hanya isi tervalidasi + atribusi; video hanya bila izinnya membolehkan -----
-  'GET /api/arsip': async () => {
-    const mods = [];
-    for (const m of await data.listModules()) {
-      const mod = await data.getModule(m.id);
-      const steps = mod.steps.filter((s) => s.validated_by).map((s) => ({ title: s.title, instruction: s.instruction, success_criteria: s.success_criteria, tips: s.tips, common_mistakes: s.common_mistakes, validated_by: s.validated_by, genericStepId: s.genericStepId ?? null, provenance: s.provenance ?? [] }));
-      if (steps.length) mods.push({ id: mod.id, title: mod.title, tradition: mod.tradition, region: mod.region ?? null, steps });
-    }
-    const knowledge = (await kb.loadKnowledge()).entries.filter((e) => e.status === 'tervalidasi').map(({ id, topic, question, answer, source, validated_by, module }) => ({ id, topic, question, answer, source, validated_by, module }));
-    const srcs = (await sources.listSources()).map((s) => ({ id: s.id, title: s.title, channel: s.channel, url: s.url, tradition: s.tradition, region: s.region, loomType: s.loomType, technique: s.technique, license: s.license.status, video: sources.allows(s, 'arsip_video') && s.files?.includes('video.mp4') ? `sources/${s.id}/video.mp4` : null }));
-    return { generatedAt: new Date().toISOString(), modules: mods, knowledge, sources: srcs };
-  },
-
-  // Suara Google TTS berbayar: hanya untuk pengguna yang sudah masuk.
   'POST /api/tts': async (b, req) => { await auth.requireRole(req); return { audio: await tts(String(b.text || '').slice(0, 1000)) }; },
 
   // ----- Tracer & progres -----
@@ -324,10 +311,6 @@ const routes = {
     return { ...summarizeLogs(lines), scope: mine ? 'saya' : 'semua' };
   },
 
-  // ----- Pendamping jarak jauh (WebRTC signaling) -----
-  'POST /api/rtc/room': async () => ({ code: data.rtcCreateRoom() }),
-  'POST /api/rtc/signal': async (b) => data.rtcPost(b.room, b),
-  'GET /api/rtc/poll': async (b, req, res, url) => data.rtcPoll(url.searchParams.get('room'), url.searchParams.get('peer'), Number(url.searchParams.get('since') || 0)),
 };
 
 // ---------- Upload biner rekaman ----------
@@ -409,7 +392,7 @@ export const server = http.createServer(async (req, res) => {
     if (need) {
       const user = await auth.currentUser(req);
       if (!user || !(need.includes(user.role) || user.role === 'admin')) {
-        const to = `/masuk.html?next=${encodeURIComponent(url.pathname)}${user ? '&role=1' : ''}`;
+        const to = user ? homeFor(user) : `/masuk?lanjut=${encodeURIComponent(url.pathname)}`;
         return res.writeHead(302, { location: to, 'cache-control': 'no-store', ...SECURITY_HEADERS }).end();
       }
       res.setHeader('cache-control', 'no-store');

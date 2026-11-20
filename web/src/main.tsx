@@ -19,6 +19,8 @@ function Perlu({ children }: { children: JSX.Element }) {
   const loc = useLocation();
   if (!config) return <main className="page"><p className="muted">Memuat…</p></main>;
   if (!config.user) return <Navigate to={`/masuk?lanjut=${encodeURIComponent(loc.pathname)}`} replace />;
+  // Aplikasi murid khusus pemula; admin & partner langsung ke dashboard masing-masing.
+  if (config.user.role !== 'pemula') { location.replace(config.home || '/'); return null; }
   return children;
 }
 

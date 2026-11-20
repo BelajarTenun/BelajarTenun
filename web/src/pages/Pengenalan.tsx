@@ -31,13 +31,13 @@ export default function Pengenalan() {
 
       <div className="a-grid2">
         <div>
-          <section className="a-section">
-            <h2>Video pengenalan</h2>
-            {intro.video
-              ? <><div className="a-media"><video src={intro.video} controls playsInline preload="metadata" /></div>
-                  {intro.video_attribution && <p className="a-small a-muted" style={{ marginTop: 8 }}>{intro.video_attribution}</p>}</>
-              : <div className="a-empty"><Icon name="video" /><b>Video pengenalan belum tersedia</b><span>Penenun mitra sedang menyiapkannya. Ringkasan tahap di bawah sudah bisa dipelajari.</span></div>}
-          </section>
+          {intro.video && (
+            <section className="a-section">
+              <h2>Video pengenalan</h2>
+              <div className="a-media"><video src={intro.video} controls playsInline preload="metadata" /></div>
+              {intro.video_attribution && <p className="a-small a-muted" style={{ marginTop: 8 }}>{intro.video_attribution}</p>}
+            </section>
+          )}
           <section className="a-section">
             <h2>Tahap latihan</h2>
             <ol className="a-steps">{module.steps.map((s) => <li key={s.id}><div><div className="t">{s.title}</div><div className="d">{s.instruction}</div></div></li>)}</ol>
@@ -52,9 +52,6 @@ export default function Pengenalan() {
               <ul className="a-list">{intro.tools.map((t) => <li key={t} className="a-check"><Icon name="check" className="a-small" />{t}</li>)}</ul>
             </section>
           )}
-          <section className="a-section"><h2>Cara tutor membimbing</h2>
-            <p className="a-text">Tutor melihat lungsi dan tanganmu lewat kamera, menjelaskan tiap tahap lewat suara, dan memberi tahu bila ada yang perlu dibetulkan. Kamu bisa bertanya kapan saja.</p>
-          </section>
         </aside>
       </div>
     </Shell>
