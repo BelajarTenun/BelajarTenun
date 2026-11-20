@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sesi Validasi · BelajarTenun</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="workspace.css">
+  <link rel="icon" href="icon.svg">
+  <script type="module" src="js/shell.js"></script>
+</head>
+<body class="page">
+  <header class="brand">
+    <div class="account" id="account"></div>
+    <a class="wordmark" href="./">BelajarTenun</a>
+    <h1>Sesi validasi</h1>
+    <p>Dipakai bersama penenun: satu kartu satu keputusan. Tiap keputusan langsung tersimpan; bila internet putus, disimpan dulu di perangkat ini lalu dikirim otomatis.</p>
+  </header>
+
+  <section class="card va-setup">
+    <div class="grid2">
+      <label>Nama penenun yang memeriksa <input id="who" list="who-list" placeholder="mis. Ibu …" autocomplete="off"><datalist id="who-list"></datalist></label>
+      <label>Yang diperiksa <select id="scope"></select></label>
+    </div>
+    <label class="toggle"><input type="checkbox" id="all"> Tampilkan juga yang sudah divalidasi (untuk penenun kedua)</label>
+    <p class="va-sync" id="sync" aria-live="polite"></p>
+  </section>
+
+  <div class="va-progress" aria-hidden="true"><i id="bar"></i></div>
+  <p class="hint" id="count"></p>
+
+  <main id="card" class="va-card card" aria-live="polite"></main>
+
+  <section class="card" id="summary" hidden></section>
+
+<script type="module">
+import { api, $, esc, requireLogin, accountBadge } from './js/api.js';
+
+const cfg = await requireLogin(['partner']);
+accountBadge($('account'), cfg.user);
+
+const PENDING = 'bt-validasi-pending', NAMES = 'bt-validasi-names';
+const ls = { get: (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } }, set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+
+// ---------- Data ----------
+const { modules: list } = await api('/api/modules');
+const modules = await Promise.all(list.map((m) => api(`/api/module?id=${m.id}`)));
+let kb = await api('/api/knowledge');
+// Keputusan yang belum terkirim dari kunjungan sebelumnya menimpa salinan server (versi perangkat ini lebih baru).
+const pend = ls.get(PENDING, { modules: {}, kb: null });
+for (const [id, m] of Object.entries(pend.modules)) { const i = modules.findIndex((x) => x.id === id); if (i >= 0) modules[i] = m; }
+if (pend.kb) kb = pend.kb;
+
+$('scope').innerHTML = `<option value="*">Semua (${modules.length} modul + makna & pengetahuan)</option>`
+  + modules.map((m) => `<option value="m:${m.id}">${esc(m.title)}</option>`).join('') + '<option value="kb">Makna & pengetahuan</option>';
+$('who-list').innerHTML = ls.get(NAMES, []).map((n) => `<option value="${esc(n)}">`).join('');
+$('who').value = ls.get(NAMES, [])[0] ?? '';
+
+function items() {
+  const sc = $('scope').value, all = $('all').checked, out = [];
+  for (const m of modules) {
+    if (sc !== '*' && sc !== `m:${m.id}`) continue;
+    m.steps.forEach((s, i) => { if (all || !s.validated_by) out.push({ kind: 'step', mod: m, step: s, i }); });
+  }
+  if (sc === '*' || sc === 'kb') kb.entries.forEach((e) => { if (all || e.status !== 'tervalidasi') out.push({ kind: 'kb', entry: e }); });
+  return out;
+}
+const key = (it) => (it.kind === 'step' ? `s:${it.mod.id}:${it.step.id}` : `k:${it.entry.id}`);
+const target = (it) => (it.kind === 'step' ? it.step : it.entry);
+
+// ---------- Simpan (dengan antrean offline) ----------
+const dirty = { modules: new Set(), kb: false };
+let saving = false;
+async function flush() {
+  if (saving) return; saving = true;
+  try {
+    for (const id of [...dirty.modules]) { await api('/api/module', modules.find((m) => m.id === id)); dirty.modules.delete(id); }
+    if (dirty.kb) { await api('/api/knowledge', kb); dirty.kb = false; }
+    ls.set(PENDING, { modules: {}, kb: null });
+    sync('Semua keputusan tersimpan.', 'ok');
+  } catch (e) {
+    const offline = !navigator.onLine || e instanceof TypeError || !e.status;
+    ls.set(PENDING, { modules: Object.fromEntries([...dirty.modules].map((id) => [id, modules.find((m) => m.id === id)])), kb: dirty.kb ? kb : null });
+    sync(offline ? 'Tidak ada internet: keputusan disimpan di perangkat ini dan dikirim otomatis nanti.' : `Gagal menyimpan: ${e.message}`, offline ? 'warn' : 'err');
+  } finally { saving = false; }
+}
+// Antrean dari kunjungan sebelumnya ikut dikirim.
+for (const id of Object.keys(pend.modules)) dirty.modules.add(id);
+if (pend.kb) dirty.kb = true;
+const sync = (t, k) => { $('sync').textContent = t; $('sync').className = `va-sync ${k}`; };
+window.addEventListener('online', flush);
+setInterval(() => { if (dirty.modules.size || dirty.kb) flush(); }, 15000);
+if (dirty.modules.size || dirty.kb) flush();
+
+// ---------- Keputusan ----------
+function decide(it, verdict, note, edits) {
+  const who = $('who').value.trim();
+  const t = target(it), at = new Date().toISOString();
+  if (edits) Object.assign(t, edits);
+  (t.validations ??= []).push({ by: who, verdict, note: note || null, at });
+  const names = (v) => [...new Set(String(v || '').split(',').map((x) => x.trim()).filter(Boolean))];
+  if (it.kind === 'step') {
+    if (verdict === 'tidak_tepat') { t.validated_by = null; }
+    else {
+      t.validated_by = [...names(t.validated_by), who].filter((x, i, a) => a.indexOf(x) === i).join(', ');
+      if (t.fieldStatus) for (const k of Object.keys(t.fieldStatus)) t.fieldStatus[k] = 'tervalidasi';
+    }
+    dirty.modules.add(it.mod.id);
+  } else {
+    if (verdict === 'tidak_tepat') { t.status = 'ditinjau'; t.validated_by = null; }
+    else { t.status = 'tervalidasi'; t.validated_by = [...names(t.validated_by), who].filter((x, i, a) => a.indexOf(x) === i).join(', '); }
+    dirty.kb = true;
+  }
+  done.set(key(it), verdict);
+  flush();
+}
+
+// ---------- Tampilan ----------
+let queue = [], pos = 0, editing = false;
+const done = new Map();
+const lines = (a) => (a || []).map((x) => `<li>${esc(x)}</li>`).join('');
+const others = (t) => (t.validations || []).filter((v) => v.by !== $('who').value.trim());
+function patternMini(p) {
+  return `<div class="va-pattern" style="grid-template-columns:repeat(${p.rows[0].length},1fr)">${p.rows.slice().reverse().map((r) => [...r].map((c) => `<i style="background:${esc(p.palette[c]?.color)}"></i>`).join('')).join('')}</div>
+    <p class="hint">${p.authentic && p.validated_by ? `Grafik asli, divalidasi ${esc(p.validated_by)}` : 'Masih pola latihan. Minta penenun menggambar pola aslinya di kertas petak, lalu salin di Editor.'}</p>`;
+}
+function view(it) {
+  const t = target(it);
+  const prev = others(t).map((v) => `<li><b>${esc(v.by || 'Tanpa nama')}</b>: ${{ benar: 'benar', diubah: 'mengubah', tidak_tepat: 'tidak tepat' }[v.verdict]}${v.note ? ` — “${esc(v.note)}”` : ''}</li>`).join('');
+  const ctx = it.kind === 'step' ? `${esc(it.mod.title)} · Tahap ${it.i + 1} dari ${it.mod.steps.length}` : `Makna & pengetahuan${t.topic ? ` · ${esc(t.topic)}` : ''}`;
+  const f = (k, label, v, rows = 2) => editing ? `<label>${label}<textarea data-e="${k}" rows="${rows}">${esc(v)}</textarea></label>` : `<h4>${label}</h4><p>${esc(v) || '<span class="hint">(kosong)</span>'}</p>`;
+  const body = it.kind === 'step' ? `
+      ${editing ? f('title', 'Judul', t.title, 1) : `<h2>${esc(t.title)}</h2>`}
+      ${f('instruction', 'Yang diucapkan tutor ke murid', t.instruction, 4)}
+      ${f('success_criteria', 'Tanda berhasil (yang dilihat kamera)', t.success_criteria)}
+      ${editing ? `<label>Kesalahan umum (format: kesalahan => cara memperbaiki, satu per baris)<textarea data-e="common_mistakes" rows="3">${esc((t.common_mistakes || []).map((m) => `${m.mistake} => ${m.fix}`).join('\n'))}</textarea></label>`
+        : (t.common_mistakes || []).length ? `<h4>Kesalahan umum pemula</h4><ul>${(t.common_mistakes).map((m) => `<li>${esc(m.mistake)} → <i>${esc(m.fix)}</i></li>`).join('')}</ul>` : ''}
+      ${!editing && (t.tips || []).length ? `<h4>Tips</h4><ul>${lines(t.tips)}</ul>` : ''}
+      ${t.pattern ? `<h4>Grafik pola</h4>${patternMini(t.pattern)}` : ''}`
+    : `${f('question', 'Pertanyaan', t.question, 2)}${f('answer', 'Jawaban tutor', t.answer, 5)}${t.source ? `<p class="hint">Sumber: ${esc(t.source)}</p>` : ''}`;
+  return `<p class="va-ctx">${ctx} ${t.validated_by ? `<span class="tag ok-tag">sudah: ${esc(t.validated_by)}</span>` : ''}</p>
+    ${body}
+    ${prev ? `<div class="va-prev"><b>Pendapat sebelumnya</b><ul>${prev}</ul></div>` : ''}
+    <label>Catatan penenun <span class="hint">(wajib bila "tidak tepat")</span><textarea id="note" rows="2" placeholder="mis. di Tidore benangnya dililit dua kali dulu"></textarea></label>
+    <div class="va-actions">
+      ${editing ? `<button class="primary" data-v="simpan">Simpan perubahan</button><button data-v="batal">Batal</button>`
+        : `<button class="primary va-ok" data-v="benar">Benar</button><button data-v="ubah">Perlu diubah</button><button class="va-no" data-v="tidak_tepat">Tidak tepat</button>`}
+    </div>
+    <div class="va-nav"><button data-nav="-1" ${pos === 0 ? 'disabled' : ''}>Sebelumnya</button><button data-nav="1">Lewati</button></div>`;
+}
+function render() {
+  const n = queue.length, checked = queue.filter((it) => done.has(key(it))).length;
+  $('bar').style.width = `${n ? (checked / n) * 100 : 0}%`;
+  $('count').textContent = `${checked} dari ${n} sudah diperiksa di sesi ini`;
+  $('summary').hidden = true;
+  if (!n) { $('card').innerHTML = '<h2>Tidak ada yang perlu diperiksa</h2><p class="hint">Semua sudah divalidasi. Centang "Tampilkan juga yang sudah divalidasi" untuk penenun kedua.</p>'; return; }
+  if (pos >= n) return summary();
+  $('card').innerHTML = view(queue[pos]);
+}
+function summary() {
+  $('card').innerHTML = '<h2>Selesai untuk bagian ini</h2><p>Terima kasih. Ringkasan keputusan ada di bawah.</p><button data-nav="restart">Periksa ulang dari awal</button>';
+  const rows = queue.map((it) => ({ it, t: target(it) }));
+  const differ = rows.filter(({ t }) => new Set((t.validations || []).map((v) => v.verdict === 'diubah' ? 'benar' : v.verdict)).size > 1);
+  const c = (v) => [...done.values()].filter((x) => x === v).length;
+  $('summary').hidden = false;
+  $('summary').innerHTML = `<h3>Ringkasan</h3>
+    <p>${c('benar')} benar · ${c('diubah')} diubah · ${c('tidak_tepat')} tidak tepat · ${queue.length - done.size} dilewati</p>
+    ${differ.length ? `<h4>Penenun berbeda pendapat (bahas bersama, jangan dirata-rata)</h4><ul>${differ.map(({ it, t }) => `<li>${esc(it.kind === 'step' ? `${it.mod.title}: ${t.title}` : t.question)}<ul>${t.validations.map((v) => `<li>${esc(v.by)}: ${v.verdict}${v.note ? ` — “${esc(v.note)}”` : ''}</li>`).join('')}</ul></li>`).join('')}</ul>` : ''}
+    <button id="export">Unduh catatan validasi (JSON)</button>`;
+  $('export').onclick = () => {
+    const out = rows.filter(({ t }) => t.validations?.length).map(({ it, t }) => ({ jenis: it.kind === 'step' ? 'tahap' : 'pengetahuan', modul: it.mod?.id ?? null, id: t.id, judul: t.title ?? t.question, validasi: t.validations }));
+    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' })), download: `validasi-${new Date().toISOString().slice(0, 10)}.json` });
+    a.click();
+  };
+}
+function reload() { queue = items(); pos = 0; editing = false; render(); }
+
+$('card').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  const nav = b.dataset.nav, v = b.dataset.v;
+  if (nav === 'restart') { pos = 0; return render(); }
+  if (nav) { pos = Math.max(0, pos + Number(nav)); editing = false; return render(); }
+  const it = queue[pos], note = $('note')?.value.trim();
+  if (v === 'ubah') { editing = true; return render(); }
+  if (v === 'batal') { editing = false; return render(); }
+  if (!$('who').value.trim()) { $('who').focus(); return sync('Isi dulu nama penenun yang memeriksa.', 'err'); }
+  const names = ls.get(NAMES, []); ls.set(NAMES, [$('who').value.trim(), ...names.filter((n) => n !== $('who').value.trim())].slice(0, 6));
+  if (v === 'tidak_tepat' && !note) { $('note').focus(); return sync('Tulis alasannya di catatan penenun.', 'err'); }
+  if (v === 'simpan') {
+    const ed = {};
+    $('card').querySelectorAll('[data-e]').forEach((x) => { ed[x.dataset.e] = x.value.trim(); });
+    if (ed.common_mistakes != null) ed.common_mistakes = ed.common_mistakes.split('\n').filter((l) => l.trim()).map((l) => { const [mistake, fix = ''] = l.split('=>'); return { mistake: mistake.trim(), fix: fix.trim() }; });
+    decide(it, 'diubah', note, ed);
+  } else decide(it, v, note);
+  editing = false; pos++; render();
+});
+$('scope').onchange = reload; $('all').onchange = reload;
+reload();
+</script>
+</body>
+</html>
