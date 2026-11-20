@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#f5efe2;overflow:hidden}</style>
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:transparent;overflow:hidden}</style>
 <script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script></head><body>
 <script type="module">
 import * as THREE from 'three';
@@ -7,9 +7,11 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 
 const P = new URLSearchParams(location.search);
-const view = P.get('view') || 'hero';
+const view = P.get('view') || 'hero'; const shot = P.get('shot'); const T = +(P.get('t') || 0);
+const ease = (x) => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x); const eo = (x) => x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.pow(1 - x, 3); const seg = (t, a, b) => ease((t - a) / (b - a)); const lerp = (a, b, k) => a + (b - a) * k;
+const REF = { lenses: [], temples: [] };
 const W = 1920, H = 1080;
-const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true, alpha: !!shot });
 renderer.setSize(W, H); renderer.setPixelRatio(1);
 renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = 1.0;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -17,7 +19,7 @@ renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.VSMShadowMap;
 document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#f5efe2');
+if (!shot) scene.background = new THREE.Color('#f5efe2'); else { renderer.setClearColor(0, 0); document.body.style.background = 'transparent'; }
 const pm = new THREE.PMREMGenerator(renderer);
 scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture;
 scene.environmentIntensity = 0.75;
@@ -42,7 +44,8 @@ const lensBlack = new THREE.MeshPhysicalMaterial({ color: '#05070d', roughness: 
 const ledM = new THREE.MeshStandardMaterial({ color: '#ff3b2f', emissive: '#ff3b2f', emissiveIntensity: 2.5 });
 
 // Semua dibangun dalam koordinat SCAD (mm, z ke atas, y ke belakang), lalu diputar ke ruang three.
-const root = new THREE.Group(); root.rotation.x = -Math.PI / 2; scene.add(root);
+const pivot = new THREE.Group(); scene.add(pivot);
+const root = new THREE.Group(); root.rotation.x = -Math.PI / 2; pivot.add(root);
 const add = (m, parent = root) => { m.castShadow = true; m.receiveShadow = true; parent.add(m); return m; };
 
 // Bentuk lensa: sedikit trapesium (atas lebih lebar), sudut membulat
@@ -67,7 +70,7 @@ for (const sx of [-1, 1]) {
   // lensa kaca
   const lg = new THREE.ExtrudeGeometry(lensShape(52, 42, 10, 1.8), { depth: 1.2, bevelEnabled: true, bevelThickness: 0.5, bevelSize: 0.4, bevelSegments: 4, curveSegments: 48 });
   const l = add(new THREE.Mesh(lg, glassM), frame); l.castShadow = false;
-  l.rotation.x = Math.PI / 2; l.position.set(sx * 31, -1.3, 2); l.scale.x = sx;
+  l.rotation.x = Math.PI / 2; l.position.set(sx * 31, -1.3, 2); l.scale.x = sx; REF.lenses.push(l);
   // engsel logam
   const hinge = add(new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, 9, 24), steel), frame);
   hinge.position.set(sx * 58.6, 1.5, 8.5); hinge.rotation.x = Math.PI / 2; hinge.rotation.z = 0; hinge.rotation.set(0, 0, 0); hinge.rotation.x = 0;
@@ -97,7 +100,7 @@ for (const sx of [-1, 1]) {
   t.rotation.set(0, Math.PI / 2, 0); // ekstrusi ke +x... sesuaikan:
   t.geometry.applyMatrix4(new THREE.Matrix4().set(0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1));
   t.rotation.set(0, 0, 0);
-  t.position.set(sx * 59.5 - 1.7, 0, 0);
+  t.position.set(sx * 59.5 - 1.7, 0, 0); REF.temples.push(t);
   // inti logam gagang (terlihat lewat asetat? cukup aksen emas tipis di sisi luar)
   const acc = add(new THREE.Mesh(new THREE.BoxGeometry(0.4, 18, 1.2), goldM)); acc.position.set(sx * 59.5 + sx * 2.5, 10, 9.6);
 }
@@ -110,7 +113,7 @@ const [body, cam] = await Promise.all([load('body-v2-speaker.stl'), load('camera
   var mir = new THREE.Group(); mir.scale.x = -1; root.add(mir);
   const g1 = new THREE.Group(); mir.add(g1);
   g1.position.set(-64, 13.9, 14); g1.rotation.z = Math.PI;
-  const inner = new THREE.Group(); inner.position.set(1.6, -12.1, -32.5); g1.add(inner);
+  const inner = new THREE.Group(); inner.position.set(1.6, -12.1, -32.5); g1.add(inner); REF.g1 = g1; REF.inner = inner;
   const b = add(new THREE.Mesh(body, casingM), inner);
   // logo emas kecil di sisi luar casing
   const logo = add(new THREE.Mesh(new THREE.BoxGeometry(0.3, 7, 7), new THREE.MeshPhysicalMaterial({ color: NAVY, roughness: 0.4 })), inner);
@@ -121,19 +124,19 @@ const [body, cam] = await Promise.all([load('body-v2-speaker.stl'), load('camera
 }
 {
   const g2 = new THREE.Group(); mir.add(g2);
-  g2.position.set(-59.6, -4, 8); g2.rotation.z = Math.PI;
+  g2.position.set(-59.6, -4, 8); g2.rotation.z = Math.PI; REF.g2 = g2;
   add(new THREE.Mesh(cam, casingM), g2);
   // lensa kamera: cincin emas + kaca hitam, menunduk 25°
   const lg = new THREE.Group(); g2.add(lg); lg.position.set(1.6, 4.9, 7.4); lg.rotation.x = -Math.PI / 2 + 0.0;
   const ring = add(new THREE.Mesh(new THREE.TorusGeometry(2.9, 0.55, 20, 48), goldM), lg);
   const le = add(new THREE.Mesh(new THREE.CylinderGeometry(2.5, 2.5, 1.2, 48), lensBlack), lg); le.rotation.x = Math.PI / 2;
-  const glint = add(new THREE.Mesh(new THREE.CircleGeometry(0.6, 24), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.8 })), lg); glint.position.set(-0.9, 0.9, 0.62);
-  window.camLens = lg;
+  const glint = add(new THREE.Mesh(new THREE.CircleGeometry(0.6, 24), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.8 })), lg); glint.position.set(-0.9, 0.9, 0.62); glint.visible = !(shot === 'glass' && T > 4.3);
+  window.camLens = lg; REF.lens = lg;
 }
 
 // Lantai krem dengan bayangan lembut
 const floor = new THREE.Mesh(new THREE.PlaneGeometry(2000, 2000), new THREE.ShadowMaterial({ color: '#141c3a', opacity: 0.22 }));
-floor.rotation.x = -Math.PI / 2; floor.position.y = -10.5; floor.receiveShadow = true; scene.add(floor);
+floor.rotation.x = -Math.PI / 2; floor.position.y = -10.5; floor.receiveShadow = true; if (!shot) scene.add(floor);
 
 // Cahaya studio: key hangat, rim emas, fill lembut
 const key = new THREE.DirectionalLight('#fff6e6', 2.4); key.position.set(-120, 260, 180); key.castShadow = true;
@@ -155,6 +158,38 @@ let v = views[view];
 if (view === 'orbit') { const t = +P.get('t'); const a = -2.2 + t * Math.PI * 2 * 0.62; const e = (1 - Math.cos(t * Math.PI)) / 2; const r = 400 - 90 * Math.sin(t * Math.PI);
   v = { pos: [Math.sin(a) * r, 110 - 50 * e, Math.cos(a) * r - 40], at: [-10, 0, -40] }; }
 camera.position.set(...v.pos); camera.lookAt(...v.at);
+const anchors = {};
+if (shot) {
+  // pivot di tengah kacamata (koordinat three: x kanan, y atas, z depan)
+  root.position.set(0, -2, 40);
+  const e = shot === 'glass' ? seg(T, 2.2, 3.1) : 0;
+  REF.g1.position.x = -64 - 34 * e; REF.g1.position.z = 14 + 10 * e;
+  REF.g2.position.y = -4 - 26 * e; REF.g2.position.x = -59.6 - 8 * e;
+  REF.temples.forEach((t) => { t.position.y = 30 * e; });
+  REF.lenses.forEach((l) => { l.position.y = -1.3 - 16 * e; });
+  if (shot === 'glass') {
+    pivot.position.y = lerp(-170, 0, eo(T / 1.3));
+    pivot.rotation.y = 0.55 - (1 - eo(T / 2.4)) * Math.PI * 2.25 + 0.12 * Math.sin(T * 0.8);
+    pivot.rotation.x = 0.12 * (1 - eo(T / 2.4));
+  } else { pivot.rotation.y = 0.35 + T * 0.18; }
+  camera.fov = 26; camera.position.set(0, 60, 340); camera.lookAt(0, 0, 0);
+  if (shot === 'glass' && T > 4.5) {
+    scene.updateMatrixWorld(true);
+    const lp = REF.lens.getWorldPosition(new THREE.Vector3());
+    const dir = new THREE.Vector3(0, 0, 1).applyQuaternion(REF.lens.getWorldQuaternion(new THREE.Quaternion())).normalize();
+    const k = Math.pow(seg(T, 4.5, 5.9), 1.6);
+    const end = lp.clone().add(dir.multiplyScalar(11));
+    camera.position.lerpVectors(new THREE.Vector3(0, 60, 340), end, k);
+    const look = new THREE.Vector3(0, 0, 0).lerp(lp, Math.min(1, k * 1.8));
+    camera.lookAt(look);
+  }
+  camera.updateProjectionMatrix(); camera.updateMatrixWorld(true); scene.updateMatrixWorld(true);
+  const pr = (o, l = new THREE.Vector3()) => { const p = o.localToWorld(l.clone()).project(camera); return [Math.round((p.x + 1) / 2 * W), Math.round((1 - p.y) / 2 * H)]; };
+  anchors.kamera = pr(REF.lens); anchors.mikrofon = pr(REF.inner, new THREE.Vector3(11, 0, 30)); anchors.speaker = pr(REF.inner, new THREE.Vector3(11, 13, 1));
+  anchors.baterai = pr(REF.inner, new THREE.Vector3(11, 20, 18)); anchors.bluetooth = pr(REF.inner, new THREE.Vector3(11, 8, 43));
+}
+window.__anchors = anchors;
+if (shot) { renderer.render(scene, camera); document.title = 'done'; throw 0; }
 const { EffectComposer } = await import('three/addons/postprocessing/EffectComposer.js');
 const { RenderPass } = await import('three/addons/postprocessing/RenderPass.js');
 const { BokehPass } = await import('three/addons/postprocessing/BokehPass.js');

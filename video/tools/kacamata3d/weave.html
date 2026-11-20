@@ -1,0 +1,283 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:transparent;overflow:hidden}</style>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script></head><body>
+<script type="module">
+// Adegan penenun 3D (gaya "clay" bersih, warna merek). ?shot=hand|fade|walkmap|unravel&t=<detik>
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+const P = new URLSearchParams(location.search);
+const shot = P.get('shot') || 'hand', T = +(P.get('t') || 0);
+const alpha = shot === 'hand';
+const W = 1920, H = 1080;
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha, preserveDrawingBuffer: true });
+renderer.setSize(W, H); renderer.setPixelRatio(1);
+renderer.toneMapping = THREE.NeutralToneMapping; renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.VSMShadowMap;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+if (!alpha) scene.background = new THREE.Color('#f5efe2'); else renderer.setClearColor(0x000000, 0);
+const pm = new THREE.PMREMGenerator(renderer);
+scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.6;
+
+const NAVY = '#141c3a', CREAM = '#f5efe2', GOLD = '#d4b866';
+const clay = (c, r = 0.62) => new THREE.MeshPhysicalMaterial({ color: c, roughness: r, sheen: 0.4, sheenColor: new THREE.Color('#ffffff'), sheenRoughness: 0.6, transparent: true });
+const M = { skin: clay('#e9dcc4', 0.5), navy: clay(NAVY, 0.55), cream: clay('#efe6d3'), gold: new THREE.MeshPhysicalMaterial({ color: GOLD, roughness: 0.35, metalness: 0.55, transparent: true }), hair: clay('#1b1f2e', 0.45), white: clay('#fbf8f2') };
+const ease = (x) => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+const eo = (x) => x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.pow(1 - x, 3);
+const seg = (t, a, b) => ease((t - a) / (b - a));
+const lerp = (a, b, k) => a + (b - a) * k;
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+const shadowy = (o) => { o.traverse((m) => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } }); return o; };
+
+// ── Figur: sendi sederhana, lengan & kaki dengan IK 2-tulang ─────────────────
+const DOWN = V(0, -1, 0);
+function person({ top = M.navy, bottom = M.navy, hair = 'short', s = 1, scarf = null } = {}) {
+  const root = new THREE.Group();
+  const body = new THREE.Group(); root.add(body);
+  const parts = [];
+  const mk = (geo, mat, parent, pos) => { const m = new THREE.Mesh(geo, mat); if (pos) m.position.copy(pos); parent.add(m); parts.push(m); return m; };
+  const torso = new THREE.Group(); torso.position.y = 0.92; body.add(torso);
+  mk(new THREE.CapsuleGeometry(0.15, 0.32, 8, 24), top, torso, V(0, 0.2, 0)).scale.set(1.05, 1, 0.72);
+  mk(new THREE.CapsuleGeometry(0.135, 0.1, 8, 24), bottom, torso, V(0, -0.02, 0)).scale.set(1.12, 1, 0.8);
+  if (scarf) { const sc = mk(new THREE.TorusGeometry(0.12, 0.035, 12, 32), scarf, torso, V(0, 0.47, 0.0)); sc.rotation.x = Math.PI / 2; sc.scale.set(1.1, 0.85, 1); }
+  const neck = new THREE.Group(); neck.position.y = 0.5; torso.add(neck);
+  mk(new THREE.CylinderGeometry(0.045, 0.05, 0.08, 16), M.skin, neck, V(0, 0.03, 0));
+  const head = new THREE.Group(); head.position.y = 0.17; neck.add(head);
+  mk(new THREE.SphereGeometry(0.105, 32, 24), M.skin, head).scale.set(0.92, 1.08, 1);
+  if (hair === 'bun') { mk(new THREE.SphereGeometry(0.108, 32, 24, 0, Math.PI * 2, 0, Math.PI * 0.55), M.hair, head, V(0, 0.012, -0.008)).scale.set(0.95, 1.08, 1.03); mk(new THREE.SphereGeometry(0.055, 24, 16), M.hair, head, V(0, 0.06, -0.11)); }
+  else if (hair === 'short') { mk(new THREE.SphereGeometry(0.11, 32, 24, 0, Math.PI * 2, 0, Math.PI * 0.5), M.hair, head, V(0, 0.018, -0.006)).scale.set(0.96, 1.05, 1.06); }
+  // lengan
+  const arm = (sx) => {
+    const up = new THREE.Group(); up.position.set(sx * 0.2, 0.43, 0); torso.add(up);
+    mk(new THREE.CapsuleGeometry(0.045, 0.2, 6, 16), top, up, V(0, -0.13, 0));
+    const fo = new THREE.Group(); fo.position.y = -0.27; up.add(fo);
+    mk(new THREE.CapsuleGeometry(0.038, 0.2, 6, 16), M.skin, fo, V(0, -0.12, 0));
+    mk(new THREE.SphereGeometry(0.045, 16, 12), M.skin, fo, V(0, -0.26, 0)).scale.set(0.8, 1.1, 0.6);
+    return { up, fo, L1: 0.27, L2: 0.26, sx };
+  };
+  const leg = (sx) => {
+    const th = new THREE.Group(); th.position.set(sx * 0.085, 0.92, 0); body.add(th);
+    mk(new THREE.CapsuleGeometry(0.068, 0.32, 6, 16), bottom, th, V(0, -0.21, 0));
+    const sh = new THREE.Group(); sh.position.y = -0.43; th.add(sh);
+    mk(new THREE.CapsuleGeometry(0.055, 0.32, 6, 16), bottom, sh, V(0, -0.2, 0));
+    mk(new THREE.CapsuleGeometry(0.045, 0.1, 6, 12), M.hair, sh, V(0, -0.43, 0.05)).rotation.x = Math.PI / 2;
+    return { th, sh, L1: 0.43, L2: 0.43 };
+  };
+  const A = { root, body, torso, neck, head, parts, la: arm(1), ra: arm(-1), ll: leg(1), rl: leg(-1) };
+  root.scale.setScalar(s);
+  shadowy(root);
+  return A;
+}
+// IK: target dalam koordinat dunia, pole = arah siku (dunia)
+const _q = new THREE.Quaternion(), _qi = new THREE.Quaternion();
+function ik(limb, parent, targetW, poleW, a = 'up', b = 'fo') {
+  const p = limb[a].parent; p.updateMatrixWorld(true);
+  const inv = p.matrixWorld.clone().invert();
+  const S = limb[a].position.clone();
+  const sc = new THREE.Vector3(); p.matrixWorld.decompose(new THREE.Vector3(), new THREE.Quaternion(), sc);
+  const Tl = targetW.clone().applyMatrix4(inv);
+  const pole = poleW.clone().transformDirection(inv).normalize();
+  const d = Tl.clone().sub(S); const L1 = limb.L1, L2 = limb.L2;
+  const D = Math.min(d.length(), L1 + L2 - 1e-3); const dh = d.clone().normalize();
+  const al = Math.acos(THREE.MathUtils.clamp((L1 * L1 + D * D - L2 * L2) / (2 * L1 * D), -1, 1));
+  const n = pole.clone().sub(dh.clone().multiplyScalar(pole.dot(dh))).normalize();
+  const E = S.clone().add(dh.clone().multiplyScalar(L1 * Math.cos(al))).add(n.multiplyScalar(L1 * Math.sin(al)));
+  const T2 = S.clone().add(dh.clone().multiplyScalar(D));
+  const u = E.clone().sub(S).normalize(), v = T2.clone().sub(E).normalize();
+  limb[a].quaternion.setFromUnitVectors(DOWN, u);
+  _q.setFromUnitVectors(DOWN, v); _qi.copy(limb[a].quaternion).invert();
+  limb[b].quaternion.copy(_qi.multiply(_q));
+}
+const setOpacity = (P, o) => P.parts.forEach((m) => { m.material = m.material.clone(); m.material.opacity = o; m.castShadow = o > 0.5; });
+
+// Duduk bersila di tikar (alat tenun gedogan): pinggul rendah, kaki ke depan
+function seat(P) {
+  P.body.position.y = -0.8;
+  for (const [l, sx] of [[P.ll, 1], [P.rl, -1]]) { l.th.rotation.x = -Math.PI / 2 + 0.12; l.th.rotation.z = sx * 0.28; l.sh.rotation.x = 0.0; l.sh.rotation.z = -sx * 0.1; }
+}
+// Alat tenun gedogan: pinggang → tiang. Kain bermotif di dekat badan.
+function motifTex(rows = 48, cols = 64, seed = 3) {
+  const c = document.createElement('canvas'); c.width = cols * 8; c.height = rows * 8; const x = c.getContext('2d');
+  for (let r = 0; r < rows; r++) for (let k = 0; k < cols; k++) {
+    const dx = Math.abs(((k % 16) - 7.5)), dy = Math.abs(((r % 16) - 7.5));
+    const d = dx + dy; const band = Math.floor(r / 16) % 2;
+    x.fillStyle = d < 3 ? GOLD : d < 5 ? CREAM : d < 6.2 ? GOLD : band ? NAVY : '#26305a';
+    x.fillRect(k * 8, r * 8, 8, 8);
+    x.fillStyle = 'rgba(0,0,0,0.12)'; x.fillRect(k * 8, r * 8 + 6, 8, 2);
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+}
+const MOTIF = motifTex();
+function loom(len = 1.15, woven = 0.32) {
+  const g = new THREE.Group();
+  const wood = clay('#c9a96a', 0.5);
+  const bar = (z) => { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.56, 16), wood); m.rotation.z = Math.PI / 2; m.position.set(0, 0, z); g.add(m); return m; };
+  bar(0); bar(len);
+  const warpM = new THREE.MeshStandardMaterial({ color: '#f3ead6', roughness: 0.8, transparent: true });
+  for (let i = 0; i < 34; i++) { const x = -0.25 + i * (0.5 / 33); const m = new THREE.Mesh(new THREE.CylinderGeometry(0.0022, 0.0022, len - woven, 4), warpM); m.rotation.x = Math.PI / 2; m.position.set(x, (i % 2 ? 0.004 : -0.004), woven + (len - woven) / 2); g.add(m); }
+  const cloth = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.006, woven), new THREE.MeshPhysicalMaterial({ map: MOTIF, roughness: 0.75, sheen: 0.5, transparent: true }));
+  MOTIF.wrapS = MOTIF.wrapT = THREE.RepeatWrapping; cloth.position.z = woven / 2; g.add(cloth);
+  const beater = new THREE.Mesh(new RoundedBoxGeometry(0.6, 0.012, 0.05, 2, 0.005), wood); beater.position.set(0, 0.02, woven + 0.04); g.add(beater);
+  const shuttle = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.34, 10), M.gold); shuttle.rotation.z = Math.PI / 2; shuttle.position.set(0, 0.03, woven + 0.1); g.add(shuttle);
+  const post = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.035, 0.9, 16), wood); post.position.set(0, -0.15, len + 0.03); g.add(post);
+  shadowy(g);
+  return { g, beater, shuttle, woven, len, cloth };
+}
+// Satu penenun lengkap + animasi menenun pada waktu t (siklus 1.3 dtk)
+function weaver(opts = {}) {
+  const P = person({ hair: 'bun', top: M.navy, bottom: M.navy, scarf: M.gold, ...opts }); seat(P);
+  const L = loom(); L.g.position.set(0, 0.17, 0.2); L.g.rotation.x = -0.18; P.root.add(L.g);
+  const strap = new THREE.Mesh(new THREE.TorusGeometry(0.16, 0.012, 8, 32), clay('#c9a96a')); strap.rotation.x = Math.PI / 2; strap.scale.set(1.05, 0.75, 1); strap.position.y = 0.14; P.root.add(strap);
+  P.loom = L;
+  P.weave = (t, k = 1) => {
+    const c = (t % 1.3) / 1.3; const dir = Math.floor(t / 1.3) % 2 ? -1 : 1;
+    // 0–0.55: lempar torak (pakan) kiri↔kanan; 0.6–0.9: rapatkan belida
+    const pass = ease(c / 0.55), beat = Math.sin(Math.PI * THREE.MathUtils.clamp((c - 0.6) / 0.3, 0, 1));
+    const sx = lerp(-0.2, 0.2, pass) * dir;
+    L.shuttle.position.x = sx; L.shuttle.position.z = L.woven + 0.1 - beat * 0.01;
+    L.beater.position.z = L.woven + 0.06 - beat * 0.05;
+    P.root.updateMatrixWorld(true);
+    const wp = (x, z) => L.g.localToWorld(V(x, 0.05, z));
+    const hR = c < 0.6 ? wp(sx, L.woven + 0.1) : wp(-0.22, L.beater.position.z);
+    const hL = c < 0.6 ? wp(dir > 0 ? 0.24 : -0.24, L.woven + 0.12).lerp(wp(sx, L.woven + 0.1), 0.25) : wp(0.22, L.beater.position.z);
+    const out = (sx_) => P.root.localToWorld(V(sx_ * 0.5, -0.3, -0.1)).sub(P.root.localToWorld(V(0, 0, 0)));
+    ik(P.ra, null, hR, out(-1)); ik(P.la, null, hL, out(1));
+    P.torso.rotation.x = 0.12 + beat * 0.05 * k; P.head.rotation.x = 0.28; P.neck.rotation.y = sx * 0.4;
+  };
+  return P;
+}
+
+// ── Lampu & lantai ───────────────────────────────────────────────────────────
+const key = new THREE.DirectionalLight('#fff4e2', 2.2); key.position.set(-3, 6, 4); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 14; key.shadow.blurSamples = 20; key.shadow.bias = -0.0005;
+Object.assign(key.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 0.5, far: 30 }); scene.add(key);
+const rim = new THREE.DirectionalLight('#ffe0a0', 1.6); rim.position.set(4, 3, -5); scene.add(rim);
+scene.add(new THREE.HemisphereLight('#ffffff', '#e6dccb', 0.6));
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), alpha ? new THREE.ShadowMaterial({ color: NAVY, opacity: 0.22 }) : new THREE.MeshStandardMaterial({ color: CREAM, roughness: 1 }));
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const camera = new THREE.PerspectiveCamera(30, W / H, 0.05, 200);
+const anchors = {};
+const anchor = (name, obj, local = V(0, 0, 0)) => { anchors[name] = () => obj.localToWorld(local.clone()); };
+
+// ── SHOT: serah-terima kain (latar transparan, di atas footage Andrew) ───────
+if (shot === 'hand') {
+  const E = weaver(); E.root.position.set(0.05, 0, 0); E.root.rotation.y = -0.55; scene.add(E.root);
+  const Y = person({ hair: 'short', top: M.white, bottom: M.navy, s: 0.97 }); Y.root.position.set(1.05, 0, 0.55); Y.root.rotation.y = -Math.PI / 2 - 0.35; scene.add(Y.root);
+  const roll = new THREE.Mesh(new RoundedBoxGeometry(0.42, 0.05, 0.22, 3, 0.02), new THREE.MeshPhysicalMaterial({ map: MOTIF, roughness: 0.7, sheen: 0.5 })); shadowy(roll); scene.add(roll);
+  // 0–0.7 menenun; 0.7–1.4 angkat kain & ulurkan; 1.4–2.0 diterima, didekap
+  E.weave(Math.min(T, 0.7) + 0.2);
+  scene.updateMatrixWorld(true);
+  const lap = E.root.localToWorld(V(0, 0.22, 0.42));
+  const meet = V(0.62, 0.92, 0.42);
+  const chest = Y.root.localToWorld(V(0, 1.05, 0.22));
+  const a = seg(T, 0.7, 1.35), b = seg(T, 1.45, 1.95);
+  const rp = lap.clone().lerp(meet, a).lerp(chest, b); rp.y += Math.sin(a * Math.PI) * 0.12;
+  roll.position.copy(rp); roll.rotation.y = lerp(-0.55, -Math.PI / 2 - 0.35, a);
+  E.loom.cloth.scale.z = 1 - a * 0.6;
+  if (T > 0.7) {
+    const lift = eo((T - 0.7) / 0.5);
+    E.torso.rotation.x = lerp(0.12, -0.08, lift); E.neck.rotation.y = lerp(0, 0.6, lift); E.head.rotation.x = lerp(0.28, 0.05, lift);
+    if (b < 0.35) { ik(E.ra, null, rp.clone().add(V(-0.1, 0, 0.05)), V(0, -1, 0.3)); ik(E.la, null, rp.clone().add(V(0.12, 0, -0.04)), V(0, -1, -0.3)); }
+    else { const back = 1 - eo((T - 1.6) / 0.4); ik(E.ra, null, rp.clone().add(V(-0.1, 0, 0.05)).lerp(lap, 1 - back), V(0, -1, 0.3)); ik(E.la, null, rp.clone().add(V(0.12, 0, -0.04)).lerp(lap, 1 - back), V(0, -1, -0.3)); }
+  }
+  // anak muda: tangan menjulur menerima
+  const reach = seg(T, 0.95, 1.4);
+  const yr = Y.root.localToWorld(V(-0.17, 0.95, 0.3)), yl = Y.root.localToWorld(V(0.17, 0.95, 0.3));
+  const target = (side) => (side < 0 ? yr : yl).clone().lerp(rp.clone().add(V(0, 0.0, side * 0.12)), reach);
+  ik(Y.ra, null, target(-1), V(0.3, -1, 0)); ik(Y.la, null, target(1), V(0.3, -1, 0));
+  Y.head.rotation.x = 0.25 * reach; Y.torso.rotation.x = 0.1 * reach;
+  for (const l of [Y.ll, Y.rl]) { l.th.rotation.x = 0; }
+  camera.position.set(lerp(-0.55, -0.35, ease(T / 2)), 1.45, 4.6); camera.lookAt(-0.35, 0.75, 0.1);
+  anchor('roll', roll);
+}
+
+// ── SHOT: lima penenun, satu per satu memudar jadi benang yang jatuh ─────────
+if (shot === 'fade') {
+  const order = [0, 4, 1, 3];
+  const xs = [-2.0, -1.0, 0, 1.0, 2.0];
+  xs.forEach((x, i) => {
+    const P = weaver({ s: 1 }); P.root.position.set(x, 0, -Math.abs(x) * 0.25); P.root.rotation.y = -0.85; scene.add(P.root); P.weave(T + i * 0.37);
+    const k = order.indexOf(i), t0 = 0.35 + k * 0.42;
+    if (k >= 0 && T > t0) {
+      const d = eo((T - t0) / 0.5);
+      P.root.traverse((m) => { if (m.isMesh) { m.material = m.material.clone(); m.material.transparent = true; m.material.opacity = 1 - d; } });
+      P.body.position.y -= d * 0.05;
+      // benang jatuh
+      const n = 26; let seed = i * 97 + 1; const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      for (let j = 0; j < n; j++) {
+        const tt = T - t0 - r() * 0.3; if (tt < 0) continue;
+        const m = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.05 + r() * 0.08, 5), r() > 0.5 ? M.gold : M.cream);
+        m.position.set(x + (r() - 0.5) * 0.6, Math.max(0.01, 0.5 + r() * 0.6 - 4.9 * tt * tt), (r() - 0.2) * 0.7);
+        m.rotation.set(r() * 6 + tt * 4, r() * 6, r() * 6 + tt * 3); m.castShadow = true; scene.add(m);
+      }
+    }
+    if (i === 2) { const glow = new THREE.SpotLight('#ffe2a0', 25 * seg(T, 1.9, 2.4), 8, 0.35, 0.8); glow.position.set(0, 4, 1.5); glow.target = P.root; scene.add(glow); }
+  });
+  const push = ease(T / 2.5);
+  camera.position.set(0, lerp(3.3, 2.9, push), lerp(9.0, 7.8, push)); camera.lookAt(0, 0.35, 0.2);
+}
+
+// ── SHOT: anak muda berjalan masuk → kamera naik: kota vs desa ───────────────
+if (shot === 'walkmap') {
+  const Y = person({ hair: 'short', top: M.white, bottom: M.navy }); scene.add(Y.root);
+  const phone = new THREE.Mesh(new RoundedBoxGeometry(0.075, 0.15, 0.01, 3, 0.008), M.navy); shadowy(phone); scene.add(phone);
+  const wk = Math.min(T, 1.0) / 1.0; const x = lerp(2.0, 0.55, eo(wk));
+  Y.root.position.set(x, 0, 0); Y.root.rotation.y = -Math.PI / 2 + 0.5 * seg(T, 0.9, 1.3);
+  const ph = T * 2 * Math.PI * 1.6, amp = 1 - seg(T, 0.8, 1.1);
+  Y.ll.th.rotation.x = Math.sin(ph) * 0.45 * amp; Y.rl.th.rotation.x = -Math.sin(ph) * 0.45 * amp;
+  Y.ll.sh.rotation.x = Math.max(0, -Math.cos(ph)) * 0.7 * amp; Y.rl.sh.rotation.x = Math.max(0, Math.cos(ph)) * 0.7 * amp;
+  Y.body.position.y = Math.abs(Math.sin(ph)) * 0.025 * amp;
+  scene.updateMatrixWorld(true);
+  const lift = seg(T, 1.0, 1.35);
+  const swing = (side) => Y.root.localToWorld(V(side * 0.24, 0.62, Math.sin(ph) * side * 0.12 * amp));
+  const holdR = Y.root.localToWorld(V(-0.08, 1.12, 0.3)), holdL = Y.root.localToWorld(V(0.06, 1.05, 0.28));
+  const hR = swing(-1).lerp(holdR, lift), hL = swing(1).lerp(holdL, lift * 0.8);
+  ik(Y.ra, null, hR, V(0, -1, -0.4)); ik(Y.la, null, hL, V(0, -1, -0.4));
+  phone.position.copy(hR.clone().add(V(0, 0.06, 0))); phone.rotation.copy(Y.root.rotation); phone.rotateX(-0.6);
+  Y.head.rotation.x = 0.35 * lift;
+  // kota (kanan) & desa (kiri jauh)
+  let seed = 11; const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 14; i++) { const h = 0.6 + r() * 2.2; const b = new THREE.Mesh(new RoundedBoxGeometry(0.55, h, 0.55, 2, 0.03), r() > 0.5 ? M.navy : M.cream); b.position.set(1.4 + (i % 4) * 0.75 + r() * 0.1, h / 2, -1.6 - Math.floor(i / 4) * 0.8); shadowy(b); scene.add(b); }
+  const V0 = V(-6.0, 0, -0.5);
+  for (let i = 0; i < 5; i++) { const g = new THREE.Group(); const hb = new THREE.Mesh(new RoundedBoxGeometry(0.6, 0.4, 0.5, 2, 0.03), M.cream); hb.position.y = 0.2; g.add(hb);
+    const roof = new THREE.Mesh(new THREE.ConeGeometry(0.5, 0.45, 4), M.gold); roof.position.y = 0.62; roof.rotation.y = Math.PI / 4; roof.scale.z = 0.8; g.add(roof);
+    g.position.set(V0.x + (i % 3) * 1.0 - 0.6, 0, V0.z - 1.2 - Math.floor(i / 3) * 1.0 + (i % 2) * 0.3); shadowy(g); scene.add(g); }
+  const E = weaver(); E.root.position.copy(V0).add(V(0.2, 0, 0.6)); E.root.rotation.y = 0.5; scene.add(E.root); E.weave(T);
+  for (let i = 0; i < 8; i++) { const tr = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.7, 12), clay('#c9b68a')); tr.position.set(-9.5 + r() * 4, 0.35, -3 + r() * 1.5); shadowy(tr); scene.add(tr); }
+  // kamera: dekat (jalan) → naik & mundur (peta)
+  const up = eo((T - 1.35) / 1.4);
+  camera.position.set(lerp(0.9, -3.0, up), lerp(1.2, 9.5, up), lerp(4.2, 10.5, up)); camera.lookAt(lerp(0.8, -3.2, up), lerp(0.85, 0.2, up), lerp(0, -0.6, up));
+  anchor('phone', phone); anchor('elder', E.head); anchor('youth', Y.head);
+}
+
+// ── SHOT: kain bermotif terurai benang demi benang ───────────────────────────
+if (shot === 'unravel') {
+  const rows = 40, wv = 1.6, hv = 1.0;
+  const rowH = hv / rows;
+  for (let r = 0; r < rows; r++) {
+    const t0 = 0.15 + (rows - 1 - r) * 0.045; const tt = Math.max(0, T - t0);
+    const tex = MOTIF.clone(); tex.needsUpdate = true; tex.repeat.set(1, 1 / rows); tex.offset.set(0, r / rows);
+    const m = new THREE.Mesh(new RoundedBoxGeometry(wv, rowH * 0.92, 0.012, 2, 0.004), new THREE.MeshPhysicalMaterial({ map: tex, roughness: 0.7, sheen: 0.6, transparent: true }));
+    const fall = tt * tt * 3.2, k = Math.min(1, tt * 1.6);
+    m.position.set(Math.sin(r * 1.7) * fall * 0.25, 0.25 + r * rowH - fall, k * Math.sin(r * 0.9) * 0.3);
+    m.rotation.set(k * (0.3 + Math.sin(r) * 0.2), 0, k * Math.sin(r * 2.3) * 0.25);
+    m.material.opacity = 1 - THREE.MathUtils.clamp((tt - 0.5) / 0.5, 0, 1);
+    m.castShadow = true; if (m.material.opacity > 0) scene.add(m);
+  }
+  // lungsi tegak tetap sebentar, lalu ikut jatuh
+  for (let i = 0; i < 30; i++) {
+    const tt = Math.max(0, T - 2.0 - (i % 7) * 0.03);
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, hv + 0.15, 5), M.cream);
+    m.position.set(-wv / 2 + 0.03 + i * (wv - 0.06) / 29, 0.25 + hv / 2 - tt * tt * 6, -0.01); m.rotation.z = tt * Math.sin(i) * 1.2; m.material = m.material.clone(); m.material.opacity = 1 - Math.min(1, tt * 2); scene.add(m);
+  }
+  camera.position.set(0, 0.85, lerp(2.9, 3.2, T / 2.6)); camera.lookAt(0, 0.7, 0);
+  floor.position.y = -0.4;
+}
+
+renderer.render(scene, camera);
+const out = {};
+for (const [k, f] of Object.entries(anchors)) { const p = f().project(camera); out[k] = [Math.round((p.x + 1) / 2 * W), Math.round((1 - p.y) / 2 * H)]; }
+window.__anchors = out;
+document.title = 'done';
+</script></body></html>
