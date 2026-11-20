@@ -169,3 +169,43 @@ test('modul satu tradisi tidak memakai judul/sumber dari tradisi lain', async ()
   assert.deepEqual(sikka.steps.map((s) => s.title), FAKE['Tenun ikat Sikka'].map((s) => s.title));
   assert.ok(sikka.steps.every((s) => s.provenance.every((p) => p.sourceId === 's0')));
 });
+
+test('konsensus 3 kali analisis: batas median, tahap minoritas ditandai ragu', async () => {
+  const { consensusSteps } = await import('../lib/video-analysis.js');
+  const runA = [{ title: 'membuka mulut lungsi', start: 0, end: 10 }, { title: 'memasukkan pakan', start: 10, end: 20 }];
+  const runB = [{ title: 'membuka mulut lungsi', start: 0, end: 12 }, { title: 'memasukkan pakan', start: 12, end: 21 }];
+  const runC = [{ title: 'membuka mulut lungsi', start: 1, end: 11 }, { title: 'memasukkan pakan', start: 11, end: 19 }, { title: 'menari', start: 30, end: 40 }];
+  const s = consensusSteps([runA, runB, runC]);
+  assert.equal(s.length, 2, 'jangkar = run dengan jumlah tahap median (2)');
+  assert.equal(s[0].end, 11, 'batas = median 10/12/11');
+  assert.equal(s[0].support, 3);
+  assert.equal(s[0].ragu, false);
+  const lone = consensusSteps([runC, runA, runB.slice(0, 1)]);
+  assert.ok(lone.every((x) => x.title !== 'menari' || x.ragu));
+});
+
+test('verifikasi batas menggeser akhir tahap ke titik pertama yang terlihat selesai', async () => {
+  const { verifyBoundaries } = await import('../lib/video-analysis.js');
+  const askAt = async (step, t) => ({ done: t >= 9, confidence: 0.9 });
+  const [s] = await verifyBoundaries([{ title: 'x', start: 0, end: 11 }], askAt);
+  assert.equal(s.end, 9);
+  assert.equal(s.endOriginal, 11);
+  assert.equal(s.boundaryVerified, true);
+  const [r] = await verifyBoundaries([{ title: 'y', start: 0, end: 5, ragu: true }], askAt);
+  assert.equal(r.boundaryVerified, undefined, 'tahap ragu tidak diverifikasi (hemat panggilan)');
+});
+
+test('ASR Chirp: batchRecognize → segmen bercap waktu kata', async () => {
+  const { transcribeSource, wordsToSegments } = await import('../lib/asr.js');
+  const words = [['angkat', '0.5s', '0.9s'], ['belida', '1.0s', '1.6s'], ['lalu', '4.0s', '4.3s'], ['masukkan', '4.4s', '5s']].map(([word, startOffset, endOffset]) => ({ word, startOffset, endOffset }));
+  assert.deepEqual(wordsToSegments([{ alternatives: [{ words }] }]), [{ start: 0.5, end: 1.6, text: 'angkat belida' }, { start: 4, end: 5, text: 'lalu masukkan' }]);
+  const calls = [];
+  const fakeFetch = async (url, opt = {}) => {
+    calls.push(url);
+    if (url.endsWith(':batchRecognize')) return { ok: true, json: async () => ({ name: 'projects/p/locations/us/operations/1', done: false }) };
+    return { ok: true, json: async () => ({ done: true, response: { results: { 'gs://b/a.wav': { transcript: { results: [{ alternatives: [{ words }] }] } } } } }) };
+  };
+  const segs = await transcribeSource({ id: 's1' }, { fetch: fakeFetch, token: async () => 't', upload: async () => ({ uri: 'gs://b/a.wav' }), readAudio: async () => Buffer.from(''), sleep: async () => {} });
+  assert.equal(segs.length, 2);
+  assert.match(calls[0], /speech\.googleapis\.com\/v2\/projects\/.*\/recognizers\/_:batchRecognize$/);
+});
