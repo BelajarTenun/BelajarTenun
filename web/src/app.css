@@ -387,7 +387,7 @@ html, body { background: var(--paper); color: var(--s800); font: 14px/1.5 var(--
   repeating-linear-gradient(90deg, rgba(146,64,14,.16) 0 4px, transparent 4px 8px); }
 .kain-photo.tanpa-foto::after { content: "Foto kain menyusul"; position: absolute; left: 12px; bottom: calc(8% + 10px); font-size: 11px; color: var(--s500); }
 .kain-status { position: absolute; left: 12px; top: 12px; display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
-  background: rgba(255,255,255,.92); color: var(--s900); backdrop-filter: blur(6px); }
+  background: rgba(255,255,255,.92); color: #0f172a; backdrop-filter: blur(6px); }
 .kain-status svg { width: 13px; height: 13px; }
 .kain-card.tuntas .kain-status { background: var(--ok-bg); color: var(--ok); }
 .kain-meta { display: flex; flex-direction: column; gap: 2px; padding: 14px 16px 16px; }
@@ -410,3 +410,6 @@ html, body { background: var(--paper); color: var(--s800); font: 14px/1.5 var(--
 .lv-pattern .g i { aspect-ratio: 1; opacity: .35; }
 .lv-pattern .g i.done { opacity: .8; }
 .lv-pattern .g i.now { opacity: 1; outline: 1px solid #fff; }
+.kain-photo.motif { background-size: 54px auto; background-repeat: repeat; background-position: center; }
+.kain-photo.motif::after { content: "Ilustrasi pola"; position: absolute; right: 10px; bottom: calc(8% + 8px); font-size: 11px; padding: 2px 8px; border-radius: 99px; background: rgba(15,23,42,.7); color: #fff; }
+.kain-photo.tanpa-foto::after { background: rgba(255,255,255,.85); color: #475569; padding: 2px 8px; border-radius: 99px; }
