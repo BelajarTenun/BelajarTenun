@@ -79,10 +79,10 @@ const S01: React.FC = () => {
         <Sequence from={F(2.6)}>
           <AbsoluteFill style={{ clipPath: `inset(0 0 0 ${(1 - io(t, 2.55, 2.85)) * 100}%)`, background: CREAM }}>
             <OffthreadVideo src={staticFile('3d/hand.mp4')} muted />
-            <div style={{ position: 'absolute', right: 120, top: 120, fontFamily: FONT, color: NAVY, textAlign: 'right', opacity: ez(t, 2.8, 3.05) }}>
+            <div style={{ position: 'absolute', left: 120, top: 110, fontFamily: FONT, color: NAVY, textAlign: 'left', opacity: ez(t, 2.8, 3.05) }}>
               <div style={{ fontSize: 20, letterSpacing: 4, opacity: 0.6, fontWeight: 700 }}>DARI TANGAN KE TANGAN</div>
               <div style={{ fontSize: 110, fontWeight: 800, letterSpacing: -3, fontVariantNumeric: 'tabular-nums', transform: `translateY(${(1 - yrP) * 24}px)`, opacity: 0.4 + 0.6 * yrP }}>{yr}</div>
-              <div style={{ height: 3, width: 280, marginLeft: 'auto', background: `linear-gradient(90deg, rgba(212,184,102,0), ${GOLD})`, transform: `scaleX(${io(t, 2.8, 4.6)})`, transformOrigin: 'right' }} />
+              <div style={{ height: 3, width: 280, background: `linear-gradient(90deg, ${GOLD}, rgba(212,184,102,0))`, transform: `scaleX(${io(t, 2.8, 4.6)})`, transformOrigin: 'left' }} />
             </div>
           </AbsoluteFill>
         </Sequence>
@@ -126,7 +126,7 @@ const S02: React.FC = () => {
       )}
       {/* kartu HP: cari guru → 0 guru ditemukan */}
       {phoneO > 0 && (
-        <div style={{ position: 'absolute', left: 1240, top: 230, width: 460, padding: 28, borderRadius: 34, background: 'linear-gradient(160deg, rgba(255,255,255,0.86), rgba(255,255,255,0.62))', border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 30px 80px rgba(20,28,58,0.18)', fontFamily: FONT, color: NAVY, opacity: phoneO, transform: `translateY(${(1 - phoneO) * 30}px)` }}>
+        <div style={{ position: 'absolute', left: 1180, top: 200, width: 560, padding: 28, borderRadius: 34, background: 'linear-gradient(160deg, rgba(255,255,255,0.86), rgba(255,255,255,0.62))', border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 30px 80px rgba(20,28,58,0.18)', fontFamily: FONT, color: NAVY, opacity: phoneO, transform: `translateY(${(1 - phoneO) * 30}px)` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', borderRadius: 18, background: '#fff', fontSize: 22 }}>
             <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7" stroke={NAVY} strokeWidth="2.5" fill="none" /><path d="M15 15l6 6" stroke={NAVY} strokeWidth="2.5" strokeLinecap="round" /></svg>
             <span>{'guru tenun di dekatku'.slice(0, Math.max(0, Math.floor((t - 3.9) * 22)))}</span>
@@ -136,7 +136,7 @@ const S02: React.FC = () => {
               <div style={{ position: 'absolute', left: '50%', top: 20, width: 40, height: 40, marginLeft: -20, borderRadius: 99, border: `4px solid rgba(20,28,58,0.15)`, borderTopColor: GOLD, transform: `rotate(${t * 540}deg)`, opacity: ez(t, 4.8, 5.0) }} />
             ) : (
               <div style={{ textAlign: 'center', transform: `scale(${0.8 + 0.2 * zero})`, opacity: zero }}>
-                <div style={{ fontSize: 52, fontWeight: 900, letterSpacing: -1.5 }}><span style={{ color: '#b08f3a' }}>0</span> guru ditemukan</div>
+                <div style={{ fontSize: 46, fontWeight: 900, letterSpacing: -1.5, whiteSpace: 'nowrap' }}><span style={{ color: '#b08f3a' }}>0</span> guru ditemukan</div>
               </div>
             )}
           </div>
@@ -188,7 +188,7 @@ const S04: React.FC = () => {
   const dolly = io(t, G0 + 4.5, G0 + 5.9);
   const slide = io(t, 0.8, 1.6) * (1 - dolly);
   // lapisan kacamata: di kanan (skala 0.72), lalu ke tengah penuh saat masuk lensa
-  const ls = 0.72 + 0.28 * dolly, lx = 400 * (1 - dolly), ly = 30 * (1 - dolly);
+  const ls = 0.58 + 0.42 * dolly, lx = 330 * (1 - dolly), ly = 40 * (1 - dolly);
   const toScreen = ([x, y]: [number, number]) => [(x - 960) * ls + 960 + lx, (y - 540) * ls + 540 + ly];
   const a = GA[gi] || {};
   const labelOut = 1 - ez(t, G0 + 4.3, G0 + 4.6);
@@ -202,7 +202,7 @@ const S04: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: '#000' }}>
       {/* Andrew (7634a) bergeser ke kiri, kabur saat kamera masuk lensa */}
-      <div style={{ position: 'absolute', inset: 0, transformOrigin: '50% 40%', transform: `translateX(${-360 * slide - 360 * dolly}px) scale(${1.02 + 0.2 * slide + 0.2 * dolly})`, filter: `blur(${dolly * 14}px)`, opacity: 1 - dolly * 0.6 }}>
+      <div style={{ position: 'absolute', inset: 0, transformOrigin: '50% 40%', transform: `translateX(${-330 * slide - 330 * dolly}px) scale(${1.02 + 0.4 * slide + 0.4 * dolly})`, filter: `blur(${dolly * 14}px)`, opacity: 1 - dolly * 0.6 }}>
         <OffthreadVideo src={staticFile('footage/7634a-full.mp4')} startFrom={F(o4)} muted style={{ width: '100%', height: '100%' }} />
         <Vignette />
       </div>
@@ -240,7 +240,7 @@ const S04: React.FC = () => {
         <Sequence from={F(G0 + 5.85)}>
           <AbsoluteFill style={{ background: '#000' }}>
             <div style={{ position: 'absolute', inset: 0, clipPath: `circle(${iris * 1150 + 40}px at 960px 540px)`, transform: `scale(${1.25 - 0.25 * iris})` }}>
-              <OffthreadVideo src={staticFile('footage/7653-full.mp4')} startFrom={F(20.5)} muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <OffthreadVideo src={staticFile('footage/7653-full.mp4')} startFrom={F(22.5)} muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
           </AbsoluteFill>
         </Sequence>
