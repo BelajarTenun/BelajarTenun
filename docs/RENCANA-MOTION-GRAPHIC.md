@@ -56,3 +56,36 @@ Kepadatan: **sedang** (±5 klip per menit), dengan jeda wajah minimal ±2 detik 
 2. Tulis satu file per klip, cek gambar diam di setiap kata kunci, perbaiki.
 3. Render klip dengan motion blur (4 subframe), gabungkan ke timeline, pasang efek suara dan musik.
 4. Kirim per babak untuk dicek.
+
+## Rencana suara (skill `sound-effects`)
+
+Aturan skill yang dipakai:
+- **Tidak ada bunyi sintetis dari kode.** Bunyi pop, earcon dan whoosh buatan sendiri di versi sebelumnya diganti rekaman asli dari library skill (CC0: Freesound, Kenney; Mixkit diunduh saat dipakai, tidak di-commit).
+- **Satu suara per kejadian**, variasi take dalam satu kategori supaya tidak terdengar berulang seperti robot.
+- **Prioritas: suara Andrew & tutor > efek suara > musik.** Musik ±12 dB di bawah efek suara dan turun 8–12 dB saat ada yang bicara.
+- **Level akhir diukur di MP4 hasil ekspor:** ±-16 LUFS, puncak di bawah -4 dBFS (aman di speaker HP), dicek juga dalam mono.
+- **Momen besar jatuh di ketukan musik** (117 BPM). Grid ketukan dicek terhadap kick drum; selisih tiap cut dilaporkan dalam milidetik.
+- Hasilnya disertai `report.html`: daftar setiap efek suara dengan tombol putar dan alternatifnya, jadi kamu bisa memilih ganti suara tanpa menulis apa-apa.
+
+### Peta efek suara
+
+| Kejadian di layar | Kategori | Timing | Volume | Contoh di video |
+|---|---|---|---|---|
+| Transisi antar-babak, bentuk membesar jadi adegan baru | whoosh | mulai 2 frame sebelum gerak, panjang sesuai gerak | sedang | 01→02, 03→04, 07→08, 13→15, 23→24 |
+| Kamera bergeser/zoom (reframe Andrew, punch-in) | whoosh pendek & lembut | 2 frame sebelum | pelan | awal adegan 05, 15, 19, 22; punch-in 03 |
+| Kartu, chip, label, pin peta muncul | pop | tepat di frame | pelan, divariasikan | grid video 05, chip istilah 06, baris tabel 19, pin peta 23 |
+| Kursor klik tombol / toggle / tab | click | tepat di frame | sedang | tombol Mulai 04, toggle Tervalidasi 07, tab bahasa 10 |
+| Kursor mengetik di kolom | typing (pendek) | sepanjang ketikan | pelan | pencarian "guru menenun" 02, edit teks 07 |
+| Indikator/garis kecil bergerak, angka berhitung | tick | per langkah, sangat pelan | sangat pelan | garis waktu tahap 06, angka 87% berhitung 20 |
+| Menuju momen besar | riser | **berakhir** tepat di momen | sedang, naik pelan | sebelum logo 04, sebelum peta dunia 23, sebelum kartu penutup 26 |
+| Momen besar (logo, angka utama, visi) | impact lembut | tepat di ketukan | paling keras di antara SFX | logo ditenun 04, angka 87% mendarat 20, peta dunia 23, logo penutup 26 |
+| Berhasil / tervalidasi / koreksi selesai | ding | tepat di frame | sedang | centang validasi 07, "Nah, sudah rapi" 11, catatan selesai 16 |
+| Tutor mulai bicara | ui-blip lembut (pengganti earcon) | 0,2 dtk sebelum suara tutor | pelan | sebelum T1–T7 |
+| Kesalahan terdeteksi | glitch sangat halus | tepat di frame | pelan | cincin koreksi 11, "kesalahan" 06 |
+| Benang putus | impact kecil / snap | tepat di frame | sedang | adegan 02 "hilang" |
+| Pertanyaan masuk ke kotak penenun | whoosh kecil + pop | saat terbang & mendarat | pelan | adegan 13 |
+
+### Yang kamu terima untuk dicek
+- `report.html`: setiap efek suara bisa diputar dan diganti.
+- 5 detik yang paling berisiko untuk didengar pakai headphone (riser, ketikan, momen besar, cut dengan selisih ketukan terbesar).
+- Angka LUFS dan puncak (stereo & mono).
