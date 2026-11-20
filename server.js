@@ -11,6 +11,7 @@ import * as kb from './lib/knowledge.js';
 import * as data from './lib/data.js';
 import { buildStepCheckPrompt, interpretStepCheck, summarizeLogs, STEP_CHECK_SCHEMA } from './lib/core.js';
 import { createSession } from './lib/session.js';
+import { myMastery, sessionDetail } from './lib/learner.js';
 import { liveSetup, liveInstructions, LIVE_TOOLS } from './lib/live.js';
 import * as sources from './lib/sources.js';
 import * as pipeline from './lib/pipeline.js';
@@ -344,6 +345,20 @@ const routes = {
     const mine = !user || !PARTNER.includes(user.role) || url.searchParams.get('mine') === '1';
     lines = lines.filter((l) => { try { const e = JSON.parse(l); return (!moduleId || e.module === moduleId) && (!mine || (user && e.userId === user.id)); } catch { return false; } });
     return { ...summarizeLogs(lines), scope: mine ? 'saya' : 'semua' };
+  },
+  // Dashboard murid: penguasaan tahap (3 status) dan detail sesi milik sendiri.
+  'GET /api/me/mastery': async (b, req) => {
+    const user = await auth.requireRole(req);
+    const events = (await data.readEvents()).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter((e) => e?.userId === user.id);
+    const modules = (await Promise.all((await data.listModules()).map((m) => data.getModule(m.id).catch(() => null)))).filter(Boolean);
+    return { mastery: myMastery(events, user.id, modules) };
+  },
+  'GET /api/me/session': async (b, req, res, url) => {
+    const user = await auth.requireRole(req);
+    const id = url.searchParams.get('id');
+    const events = (await data.readEvents()).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter((e) => e?.sessionId === id && e.userId === user.id);
+    if (!events.length) throw fail(404, 'Sesi tidak ditemukan');
+    return sessionDetail(events, await data.getModule(events[0].module).catch(() => null));
   },
   // Analitik belajar untuk revisi kurikulum: tahap tersulit + penguasaan (BKT) per murid. Khusus tim.
   'GET /api/admin/learning': async (b, req, res, url) => {
