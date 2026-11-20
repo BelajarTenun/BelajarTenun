@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AppProvider, useApp } from './lib/session';
 import Landing from './pages/Landing';
+import Kamera from './pages/Kamera';
 import Masuk from './pages/Masuk';
 import Belajar from './pages/Belajar';
 import Pengenalan from './pages/Pengenalan';
@@ -29,6 +30,7 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/masuk" element={<Masuk />} />
+          <Route path="/kamera" element={<Kamera />} />
           <Route path="/belajar" element={<Perlu><Belajar /></Perlu>} />
           <Route path="/belajar/:id" element={<Perlu><Pengenalan /></Perlu>} />
           <Route path="/belajar/:id/siapkan" element={<Perlu><Siapkan /></Perlu>} />

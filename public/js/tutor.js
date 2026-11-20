@@ -59,7 +59,8 @@ export class TutorClient {
   }
 
   async #tick() {
-    if (this.live || !this.sessionId) return;
+    // liveOnly: Gemini Live satu-satunya tutor; mesin foto berkala + suara browser tidak berjalan.
+    if (this.live || this.liveOnly || !this.sessionId) return;
     const now = Date.now();
     const f = this.grab();
     // Kirim foto bila kualitas baik dan (ada gerakan atau sudah 6 dtk); paling cepat tiap 3 dtk.
@@ -79,14 +80,14 @@ export class TutorClient {
     if (!r) return;
     const prevIndex = this.stepIndex;
     this.stepIndex = r.step?.index;
-    if (r.finished && !this.finished) { this.finished = true; earcon('success'); this.ui.show?.(r); this.speak(r); this.ui.finish?.(r); return; }
+    if (r.finished && !this.finished) { this.finished = true; earcon('success'); this.ui.show?.(r); if (!this.liveOnly) this.speak(r); this.ui.finish?.(r); return; }
     if (prevIndex !== undefined && r.step && r.step.index > prevIndex) earcon('success');
     if (r.intent === 'koreksi') earcon('warning');
     if (r.card) this.ui.card?.(r.card);
     if (r.demo_video !== undefined && (r.intent === 'instruksi' || !r.speak)) this.ui.demo?.(r.demo_video, r.intent);
     if (r.skipped && !r.speak) return;
     this.ui.show?.(r);
-    if (!this.live) this.speak(r);
+    if (!this.live && !this.liveOnly) this.speak(r);
   }
 
   speak(r) {
