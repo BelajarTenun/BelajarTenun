@@ -133,7 +133,35 @@
       "practice": [],
       "supportive": [
         "motif-jodati"
-      ]
+      ],
+      "pattern": {
+        "label": "Pola latihan belah ketupat (bukan motif Jodati asli)",
+        "authentic": false,
+        "technique": "pakan_tambahan",
+        "unit": "1 kolom = 2 helai lungsi",
+        "palette": {
+          ".": {
+            "name": "hitam (dasar)",
+            "color": "#232323"
+          },
+          "K": {
+            "name": "kuning",
+            "color": "#e0b21b"
+          }
+        },
+        "rows": [
+          "....K....",
+          "...KKK...",
+          "..KKKKK..",
+          ".KKKKKKK.",
+          "KKKKKKKKK",
+          ".KKKKKKK.",
+          "..KKKKK..",
+          "...KKK...",
+          "....K...."
+        ],
+        "validated_by": null
+      }
     },
     {
       "id": "ulangi-motif",

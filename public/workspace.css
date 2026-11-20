@@ -290,3 +290,14 @@ body.ws {
 .ws .seg.seg-cards { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
 .ws .seg button b, .ws .seg button small { white-space: normal; overflow-wrap: anywhere; }
 .ws .seg.seg-cards button { width: 100%; }
+
+/* Grafik pola motif (Editor) */
+.pattern-box { border: 1px solid var(--line, #d9d6cf); border-radius: 12px; padding: 12px 14px; display: grid; gap: 10px; }
+.pattern-box legend { font-weight: 600; padding: 0 6px; }
+.pg-brush { display: flex; flex-wrap: wrap; gap: 6px; }
+.pg-brush button { display: inline-flex; align-items: center; gap: 6px; }
+.pg-brush button.on { outline: 2px solid currentColor; outline-offset: 1px; }
+.pg-brush i { width: 14px; height: 14px; border-radius: 3px; border: 1px solid rgba(0,0,0,.2); }
+.pg-grid { display: grid; gap: 1px; background: rgba(0,0,0,.12); padding: 1px; max-width: 640px; user-select: none; touch-action: none; }
+.pg-grid b { aspect-ratio: 1; cursor: crosshair; }
+.pg-n { font-size: 11px; color: var(--muted, #6b6b6b); background: var(--paper, #faf9f6); display: grid; place-items: center; }

@@ -1,7 +1,8 @@
 export type User = { id: string; name: string; email: string; role: 'pemula' | 'partner' | 'admin'; status: string };
 export type Config = { ai: boolean; tts: boolean; live: boolean; livekit: boolean; googleLogin?: boolean; home?: string; user: User | null; authDisabled: boolean };
 export type ModuleSummary = { id: string; title: string; tradition?: string; description?: string; steps: number; cover?: string | null; fabricName?: string | null; weaver?: string | null };
-export type Step = { id: string; title: string; instruction: string; tips?: string[]; demo_video?: string; demo_start?: number; demo_attribution?: string; auto_detect?: boolean };
+export type Pattern = { label: string; authentic?: boolean; technique: string; unit?: string | null; palette: Record<string, { name: string; color: string }>; rows: string[]; validated_by?: string | null };
+export type Step = { pattern?: Pattern | null; id: string; title: string; instruction: string; tips?: string[]; demo_video?: string; demo_start?: number; demo_attribution?: string; auto_detect?: boolean };
 export type Module = {
   id: string; title: string; tradition?: string; description?: string; steps: Step[];
   intro?: { video?: string | null; video_attribution?: string | null; summary?: string | null; tools?: string[]; points?: string[]; duration_min?: number | null };

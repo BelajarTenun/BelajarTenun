@@ -400,3 +400,13 @@ html, body { background: var(--paper); color: var(--s800); font: 14px/1.5 var(--
 .a-preview-note { margin-top: 12px; padding: 10px; border-radius: 8px; background: var(--warn-bg); display: flex; flex-direction: column; gap: 4px; }
 .a-preview-note > span { font-size: 11px; font-weight: 600; color: var(--warn); padding: 0 10px; }
 @media (max-width: 860px) { .a-preview-note { margin: 0; padding: 4px 8px; flex-direction: row; align-items: center; } .a-preview-note > span { display: none; } }
+
+/* Grafik pola di layar Live */
+.lv-pattern { position: absolute; z-index: 3; right: 12px; top: 76px; width: min(38vw, 180px); padding: 8px; border-radius: 14px;
+  background: rgba(20, 20, 20, .55); backdrop-filter: blur(12px); color: #fff; }
+.lv-pattern .h { display: flex; justify-content: space-between; gap: 6px; font-size: 12px; margin-bottom: 6px; }
+.lv-pattern .h span { opacity: .7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lv-pattern .g { display: grid; gap: 1px; }
+.lv-pattern .g i { aspect-ratio: 1; opacity: .35; }
+.lv-pattern .g i.done { opacity: .8; }
+.lv-pattern .g i.now { opacity: 1; outline: 1px solid #fff; }
