@@ -24,6 +24,10 @@
     <label>Tradisi <input id="m-trad"></label>
     <label>Deskripsi <textarea id="m-desc" rows="2"></textarea></label>
     <label>Status <input id="m-status"></label>
+    <div class="grid2">
+      <label>Kelas tugas (1 = paling sederhana; urutan modul di jalur belajar) <input id="m-taskclass" type="number" min="1" step="1"></label>
+      <label>Tugas utuh (hasil akhir yang dikerjakan murid, mis. "5 baris tenun polos yang rapat") <input id="m-wholetask"></label>
+    </div>
     <label class="toggle"><input type="checkbox" id="m-pub"> Tampilkan ke pemula</label>
   </section>
 
@@ -64,6 +68,7 @@
 
 <script type="module">
 import { api, $, esc, requireLogin, accountBadge } from './js/api.js';
+import { parsePractice, formatPractice } from './js/curriculum.js';
 const cfg = await requireLogin(['partner']);
 accountBadge($('account'), cfg.user);
 let mod, kb, modules;
@@ -85,6 +90,8 @@ function stepCard(s, i) {
     ${field('Tips / petunjuk (satu per baris; dipakai tutor saat murid terlihat kesulitan)', 'tips', (s.tips || []).join('\n'), 2, 'text', s)}
     ${field('Seperti apa kalau BERHASIL (yang terlihat kamera)', 'success_criteria', s.success_criteria, 2, 'text', s)}
     ${field('Kesalahan umum (format: kesalahan => cara memperbaiki, satu per baris)', 'common_mistakes', mistakes, 3, 'text', s)}
+    ${field('Latihan bagian (format: nama | instruksi | jumlah ulangan | ukuran hitungan/ritme/visual; ditawarkan tutor bila murid gagal ≥2 kali)', 'practice', formatPractice(s.practice), 2)}
+    ${field('Informasi pendukung (ID entri pengetahuan, pisahkan koma; hanya yang tervalidasi dipakai tutor)', 'supportive', (s.supportive || []).join(', '))}
     ${s._pairs ? `<p class="hint">Contoh dari kacamata (ego): ${s._pairs.ego} · dari luar (exo): ${s._pairs.exo}</p>` : ''}
     ${field('Video demo (diisi dari halaman Rekam/Anotasi)', 'demo_video', s.demo_video)}
     <div class="grid2">${field('Konfirmasi kamera berturut-turut sebelum "selesai"', 'confirm_frames', s.confirm_frames ?? 2, 0, 'number')}${field('Keyakinan minimum AI (0–1)', 'min_confidence', s.min_confidence ?? 0.6, 0, 'number')}</div>
@@ -107,19 +114,23 @@ function render() {
   $('i-video').value = intro.video || ''; $('i-summary').value = intro.summary || ''; $('i-tools').value = (intro.tools || []).join('\n');
   $('i-points').value = (intro.points || []).join('\n'); $('i-duration').value = intro.duration_min || '';
   $('m-id').value = mod.id; $('m-title').value = mod.title; $('m-trad').value = mod.tradition || ''; $('m-desc').value = mod.description || ''; $('m-status').value = mod.status || ''; $('m-pub').checked = mod.published !== false;
+  $('m-taskclass').value = mod.taskClass ?? ''; $('m-wholetask').value = mod.wholeTask ?? '';
   $('steps').innerHTML = mod.steps.map(stepCard).join('');
   $('kb').innerHTML = kb.entries.map(kbCard).join('');
 }
 function collect() {
   const lines = (id) => $(id).value.split('\n').map((x) => x.trim()).filter(Boolean);
   mod.intro = { ...(mod.intro || {}), video: $('i-video').value.trim() || null, summary: $('i-summary').value.trim() || null, tools: lines('i-tools'), points: lines('i-points'), duration_min: Number($('i-duration').value) || null };
-  Object.assign(mod, { id: $('m-id').value.trim(), title: $('m-title').value, tradition: $('m-trad').value, description: $('m-desc').value, status: $('m-status').value, published: $('m-pub').checked });
+  Object.assign(mod, { id: $('m-id').value.trim(), title: $('m-title').value, tradition: $('m-trad').value, description: $('m-desc').value, status: $('m-status').value, published: $('m-pub').checked,
+    taskClass: Number.parseInt($('m-taskclass').value, 10) || undefined, wholeTask: $('m-wholetask').value.trim() || undefined });
   document.querySelectorAll('[data-step]').forEach((card) => {
     const s = mod.steps[card.dataset.step], v = (k) => card.querySelector(`[data-k="${k}"]`);
     const prev = { title: s.title, instruction: s.instruction, success_criteria: s.success_criteria, tips: JSON.stringify(s.tips || []), common_mistakes: JSON.stringify(s.common_mistakes || []) };
     for (const k of ['id', 'title', 'instruction', 'success_criteria']) s[k] = v(k).value.trim();
     s.tips = v('tips').value.split('\n').map((x) => x.trim()).filter(Boolean);
     s.common_mistakes = v('common_mistakes').value.split('\n').filter((l) => l.trim()).map((l) => { const [mistake, fix = ''] = l.split('=>'); return { mistake: mistake.trim(), fix: fix.trim() }; });
+    s.practice = parsePractice(v('practice').value);
+    s.supportive = v('supportive').value.split(',').map((x) => x.trim()).filter(Boolean);
     s.demo_video = v('demo_video').value.trim() || undefined;
     s.confirm_frames = Math.max(1, Number(v('confirm_frames').value) || 2);
     s.min_confidence = Math.min(1, Math.max(0, Number(v('min_confidence').value) || 0.6));

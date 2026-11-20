@@ -18,6 +18,7 @@ import { getAnalysis } from './lib/video-analysis.js';
 import { generateDialogs, evaluateDialog, listDialogs } from './lib/dialog-gen.js';
 import { pairsForModule } from './lib/exo-ego.js';
 import { runDiagnostics } from './lib/diagnostics.js';
+import { stepDifficulty, masteryByLearner } from './lib/learning-analytics.js';
 import { googleLoginEnabled, authUrl, profileFromCode } from './lib/google-login.js';
 import { createAccessToken, livekitEnabled, roomForSession, toJsonSchema } from './lib/livekit.js';
 const pairs = new Map(); // kode pasangan HP-kamera → { userId, exp }
@@ -72,7 +73,10 @@ const sessions = new Map();
 const SESSION_TTL_MS = 3 * 3600000;
 async function startSession(body, user) {
   const module = await data.getModule(body.moduleId);
+  // Informasi pendukung (4C/ID): hanya entri pengetahuan yang boleh dipakai (tervalidasi, kecuali KB_SERVE_DRAFT).
+  const kbOk = new Map(kb.servable((await kb.loadKnowledge()).entries, module.id).map((e) => [e.id, e]));
   const session = createSession(module, {
+    supportive: (ids) => ids.map((id) => kbOk.get(id)).filter(Boolean).map((e) => ({ topik: e.question, isi: e.answer, sumber: e.source ?? null })),
     checkStep: (step, frames, opts) => checkStep(module, step, frames, opts),
     ask: (q, step) => kb.answer(q, { step, moduleId: module.id, userId: user?.id }),
     log: (ev) => data.logEvent(ev).catch(() => {}),
@@ -340,6 +344,18 @@ const routes = {
     const mine = !user || !PARTNER.includes(user.role) || url.searchParams.get('mine') === '1';
     lines = lines.filter((l) => { try { const e = JSON.parse(l); return (!moduleId || e.module === moduleId) && (!mine || (user && e.userId === user.id)); } catch { return false; } });
     return { ...summarizeLogs(lines), scope: mine ? 'saya' : 'semua' };
+  },
+  // Analitik belajar untuk revisi kurikulum: tahap tersulit + penguasaan (BKT) per murid. Khusus tim.
+  'GET /api/admin/learning': async (b, req, res, url) => {
+    await auth.requireRole(req, ...PARTNER);
+    const module = await data.getModule(url.searchParams.get('moduleId'));
+    const events = (await data.readEvents()).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter((e) => e?.module === module.id);
+    const mastery = masteryByLearner(events);
+    const perStep = Object.fromEntries(module.steps.map((s) => {
+      const rows = mastery.filter((m) => m.step === s.id);
+      return [s.id, { learners: rows.length, mastered: rows.filter((m) => m.mastered).length, meanMastery: rows.length ? +(rows.reduce((t, m) => t + m.mastery, 0) / rows.length).toFixed(2) : null }];
+    }));
+    return { module: module.id, difficulty: stepDifficulty(events, module), mastery: perStep };
   },
 
 };
