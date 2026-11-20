@@ -13,6 +13,7 @@ import { Intro, INTRO_SECONDS } from './intro';
 import { StickTest } from './sticktest';
 import { FullVideo3, FULL3_SECONDS } from './full3';
 import { Babak1V5, B1V5_SECONDS } from './b1v5';
+import { PeepsTest } from './peepstest';
 
 // Semua 1920×1080, 30 fps. Nama dengan akhiran "-overlay" dirender transparan untuk ditumpuk di atas footage.
 const S = (sec: number) => Math.round(sec * 30);
@@ -89,6 +90,7 @@ list.push(['BABAK1-intro', Intro, INTRO_SECONDS]);
 list.push(['STICK-test', StickTest, 4]);
 list.push(['FULL-v3', FullVideo3, FULL3_SECONDS]);
 list.push(['B1-v5', Babak1V5, B1V5_SECONDS]);
+list.push(['PEEPS-test', PeepsTest, 2]);
 
 const cache = new Map<any, any>();
 const withLight = (Comp: React.FC<any>) => {
