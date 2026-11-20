@@ -251,3 +251,17 @@ test('RAG Engine: hasil dipetakan ke entri lokal; ambang & id tak dikenal disari
     assert.deepEqual(r, [{ id: 'lungsi-pakan', score: 0.8 }]);
   } finally { [config.ragCorpus, config.vertexProject] = prev; }
 });
+
+test('seed: modul & entri pengetahuan baru dari rilis ikut masuk tanpa menimpa suntingan penenun', async () => {
+  const { seedDataDir, store } = await import('../lib/store.js');
+  const m = await store.readJson('modules/tidore-dasar.json');
+  await store.writeJson('modules/tidore-dasar.json', { ...m, title: 'Disunting penenun' });
+  await store.remove('modules/puta-dino-jodati.json');
+  const kb = await store.readJson('knowledge.json');
+  await store.writeJson('knowledge.json', { ...kb, entries: kb.entries.filter((e) => e.id !== 'motif-tobaru') });
+  await seedDataDir();
+  assert.equal((await store.readJson('modules/tidore-dasar.json')).title, 'Disunting penenun', 'tidak menimpa');
+  assert.ok(await store.exists('modules/puta-dino-jodati.json'), 'modul baru masuk');
+  assert.ok((await store.readJson('knowledge.json')).entries.some((e) => e.id === 'motif-tobaru'), 'entri baru masuk');
+  await store.writeJson('modules/tidore-dasar.json', m);
+});
