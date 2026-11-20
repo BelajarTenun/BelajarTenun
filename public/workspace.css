@@ -301,3 +301,26 @@ body.ws {
 .pg-grid { display: grid; gap: 1px; background: rgba(0,0,0,.12); padding: 1px; max-width: 640px; user-select: none; touch-action: none; }
 .pg-grid b { aspect-ratio: 1; cursor: crosshair; }
 .pg-n { font-size: 11px; color: var(--muted, #6b6b6b); background: var(--paper, #faf9f6); display: grid; place-items: center; }
+
+/* Sesi validasi bersama penenun: teks besar, tombol besar, nyaman di tablet/HP */
+.va-progress { height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; margin: 8px 0 4px; }
+.va-progress i { display: block; height: 100%; background: var(--brand); transition: width .3s; }
+.va-card { font-size: 1.12rem; line-height: 1.6; display: grid; gap: 10px; }
+.va-card h2 { font-size: 1.5rem; margin: 0; }
+.va-card h4 { margin: 6px 0 0; font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted, #64748b); }
+.va-card p, .va-card ul { margin: 0; }
+.va-ctx { font-size: .9rem; color: var(--muted, #64748b); }
+.va-prev { border-left: 3px solid var(--line-strong); padding: 6px 12px; font-size: .95rem; }
+.va-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-top: 6px; }
+.va-actions button { min-height: 56px; font-size: 1.05rem; font-weight: 600; }
+.va-no { color: #9f1239; }
+.va-nav { display: flex; justify-content: space-between; }
+.va-sync { margin: 6px 0 0; font-size: .9rem; }
+.va-sync.ok { color: #166534; } .va-sync.warn { color: #92400e; } .va-sync.err { color: #9f1239; }
+.va-pattern { display: grid; gap: 1px; max-width: 220px; background: var(--line); padding: 1px; }
+.va-pattern i { aspect-ratio: 1; }
+.ws main.va-card.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; }
+.ws main.va-card.card h2 { font-size: 1.6rem; font-weight: 700; border: 0; padding: 0; text-transform: none; letter-spacing: -.01em; color: var(--brand); }
+.ws main.va-card.card p, .ws main.va-card.card li { font-size: 1.12rem; color: var(--brand); }
+.ws main.va-card.card .va-ctx, .ws main.va-card.card .hint { font-size: .9rem; color: var(--muted, #64748b); }
+.ws main.va-card.card ul { padding-left: 1.2em; }

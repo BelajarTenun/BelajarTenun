@@ -1,7 +1,7 @@
 // Kerangka "Ruang tim": sidebar navigasi + kepala halaman yang seragam untuk semua halaman partner/admin.
 // Dipasang di <head> setiap halaman tim: <script type="module" src="js/shell.js"></script>
 const NAV = [
-  ['Kurikulum', [['editor.html', 'Editor modul', 'M4 5h16M4 12h16M4 19h10'], ['sumber.html', 'Sumber video', 'M4 6h12v12H4zM16 10l4-2v8l-4-2']]],
+  ['Kurikulum', [['editor.html', 'Editor modul', 'M4 5h16M4 12h16M4 19h10'], ['sumber.html', 'Sumber video', 'M4 6h12v12H4zM16 10l4-2v8l-4-2'], ['validasi.html', 'Sesi validasi', 'M5 12l4 4L19 6']]],
   ['Data', [['rekam.html', 'Rekam', 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z'], ['anotasi.html', 'Anotasi', 'M4 18h16M7 14l3-8 3 8M8 11h4']]],
   ['Pemantauan', [['progres.html', 'Progres belajar', 'M4 19V9M10 19V5M16 19v-7M22 19H2'], ['admin.html', 'Admin', 'M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z']]],
   ['Pratinjau', [['/belajar', 'Lihat sebagai murid', 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z']]],

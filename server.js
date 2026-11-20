@@ -49,7 +49,7 @@ const PARTNER_ROLES = ['partner', 'admin'];
 export const homeFor = (user) => ({ admin: '/admin.html', partner: '/editor.html' }[user?.role] ?? '/belajar');
 const TEAM_PAGES = {
   'admin.html': ['admin'], 'progres.html': PARTNER_ROLES,
-  'editor.html': PARTNER_ROLES, 'rekam.html': PARTNER_ROLES, 'anotasi.html': PARTNER_ROLES, 'sumber.html': PARTNER_ROLES,
+  'editor.html': PARTNER_ROLES, 'validasi.html': PARTNER_ROLES, 'rekam.html': PARTNER_ROLES, 'anotasi.html': PARTNER_ROLES, 'sumber.html': PARTNER_ROLES,
 };
 const WEB_DIST = join(ROOT, 'web', 'dist');
 const fail = (code, message) => Object.assign(new Error(message), { code });
