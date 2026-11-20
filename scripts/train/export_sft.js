@@ -14,6 +14,7 @@ import * as data from '../../lib/data.js';
 import { store } from '../../lib/store.js';
 import { buildStepCheckPrompt } from '../../lib/core.js';
 import { personOf, splitOf } from '../../lib/splits.js';
+import { blurFaces } from '../../lib/face-blur.js';
 
 const arg = (n, d) => { const i = process.argv.indexOf(`--${n}`); return i < 0 ? d : process.argv[i + 1]; };
 const module = await data.getModule(arg('module'));
@@ -25,6 +26,7 @@ await mkdir(join(out, 'images'), { recursive: true });
 const steps = new Map(module.steps.map((s) => [s.id, s]));
 const lines = { train: [], validation: [], test: [] };
 const counts = {}, people = {}, files = [];
+let facesBlurred = 0;
 const recs = (await data.listRecordings()).filter((r) => r.module === module.id && r.consent?.scopes?.includes('pengembangan_ai'));
 for (const r of recs) {
   const person = personOf(r), split = splitOf(person);
@@ -32,7 +34,9 @@ for (const r of recs) {
   for (const f of data.labeledFrames(r)) {
     const step = steps.get(f.stepId);
     if (!step) continue;
-    const buf = await store.readFile(`recordings/${r.id}/${f.file}`);
+    // Wajah diblur sebelum gambar meninggalkan server (bisa dimatikan dengan --no-blur untuk rekaman tangan saja).
+    let buf = await store.readFile(`recordings/${r.id}/${f.file}`);
+    if (!process.argv.includes('--no-blur')) { const b = await blurFaces(buf); buf = b.jpeg; facesBlurred += b.faces; }
     const name = `${r.id}-${f.file}`;
     await writeFile(join(out, 'images', name), buf);
     files.push({ name, sha256: createHash('sha256').update(buf).digest('hex') });
@@ -54,7 +58,7 @@ for (const r of recs) {
 for (const [split, ls] of Object.entries(lines)) await writeFile(join(out, `${split}.jsonl`), ls.join('\n') + (ls.length ? '\n' : ''));
 const manifest = {
   module: module.id, exportedAt: new Date().toISOString(), gcs, splitVersion: 'bt-split-v1',
-  people: Object.fromEntries(Object.entries(people).map(([k, v]) => [k, v.size])), counts, files,
+  people: Object.fromEntries(Object.entries(people).map(([k, v]) => [k, v.size])), counts, files, facesBlurred, blur: !process.argv.includes('--no-blur'),
 };
 await writeFile(join(out, 'manifest.json'), JSON.stringify(manifest, null, 2));
 console.table(counts);

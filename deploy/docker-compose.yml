@@ -38,6 +38,19 @@ services:
       - ./secrets:/secrets:ro
     depends_on: [app, livekit]
 
+  # Backup DATA_DIR ke Cloud Storage tiap 24 jam (butuh BACKUP_GCS_BUCKET di .env; tanpa itu layanan ini hanya mencatat galat).
+  backup:
+    image: ${APP_IMAGE:-ghcr.io/belajartenun/belajartenun-app:latest}
+    restart: unless-stopped
+    command: ["node", "scripts/backup_gcs.js", "--loop"]
+    env_file: ../.env
+    environment:
+      DATA_DIR: /data
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/vertex-sa.json
+    volumes:
+      - data:/data:ro
+      - ./secrets:/secrets:ro
+
   # Uji model Live sungguhan tiap 6 jam dan lapor ke server (dibaca Dashboard admin > Cek koneksi & tes asap harian).
   agent-health:
     image: ${AGENT_IMAGE:-ghcr.io/belajartenun/belajartenun-agent:latest}
