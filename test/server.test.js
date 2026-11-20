@@ -137,15 +137,17 @@ test('halaman Ruang tim dikunci di server, bukan hanya di browser', async () => 
   const get = (path, who) => fetch(base + path, { redirect: 'manual', headers: who && jar[who] ? { cookie: jar[who] } : {} });
   const guest = await get('/admin.html');
   assert.equal(guest.status, 302);
-  assert.match(guest.headers.get('location'), /^\/masuk\.html\?next=%2Fadmin\.html$/);
+  assert.match(guest.headers.get('location'), /^\/masuk\?lanjut=%2Fadmin\.html$/);
   await call('/api/auth/register', { name: 'Murid', email: 'murid@x.id', password: 'rahasia123' }, 'murid');
   const pemula = await get('/editor.html', 'murid');
   assert.equal(pemula.status, 302, 'pemula tidak boleh menerima halaman editor');
-  assert.match(pemula.headers.get('location'), /role=1/);
+  assert.equal(pemula.headers.get('location'), '/belajar', 'pemula dikembalikan ke aplikasi murid');
+  assert.equal((await get('/progres.html', 'murid')).status, 302, 'progres belajar khusus tim');
   assert.equal((await get('/admin.html', 'partner')).status, 302, 'partner tidak boleh membuka admin');
   assert.equal((await get('/editor.html', 'partner')).status, 200);
   assert.equal((await get('/admin.html', 'admin')).status, 200);
-  assert.equal((await get('/arsip.html')).status, 200, 'arsip tetap publik');
+  assert.equal((await get('/arsip.html')).status, 404, 'arsip publik sudah dihapus');
+  assert.equal((await get('/kacamata.html')).status, 404, 'simulator lama sudah dihapus');
 });
 
 test('tujuan setelah masuk berbeda per peran', async () => {

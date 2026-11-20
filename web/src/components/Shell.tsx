@@ -4,27 +4,19 @@ import Icon from './Icon';
 import { api } from '../lib/api';
 import { useApp } from '../lib/session';
 
-// Kerangka aplikasi pemula: sidebar seperti dashboard Ilmora (dan Ruang tim).
+// Kerangka aplikasi murid. Terpisah dari Ruang tim (admin/partner punya dashboard sendiri di public/*.html).
 export default function Shell({ children }: { children: ReactNode }) {
   const { config, refresh } = useApp();
   const nav = useNavigate();
   const user = config?.user;
   const keluar = async () => { await api('/api/auth/logout', {}); await refresh(); nav('/'); };
-  const item = (to: string, label: string, icon: string, external = false) => external
-    ? <a className="a-link" href={to}><Icon name={icon} /><span>{label}</span><Icon name="arrowUpRight" className="arr" /></a>
-    : <NavLink className={({ isActive }) => `a-link${isActive ? ' active' : ''}`} to={to} end={to === '/belajar'}><Icon name={icon} /><span>{label}</span><Icon name="arrowUpRight" className="arr" /></NavLink>;
+  const item = (to: string, label: string, icon: string) =>
+    <NavLink className={({ isActive }) => `a-link${isActive ? ' active' : ''}`} to={to} end={to === '/belajar'}><Icon name={icon} /><span>{label}</span><Icon name="arrowUpRight" className="arr" /></NavLink>;
   return (
     <div className="a-shell">
       <aside className="a-side">
         <Link to="/" className="a-brand"><img src="/icon.svg" alt="" /><span>BelajarTenun</span></Link>
-        <p className="a-group">Belajar</p>
         {item('/belajar', 'Modul', 'book')}
-        {item('/progres.html', 'Progres', 'chart', true)}
-        {item('/arsip.html', 'Arsip tenun', 'archive', true)}
-        {user && user.role !== 'pemula' && <>
-          <p className="a-group">Tim</p>
-          {item(config!.home || '/editor.html', user.role === 'admin' ? 'Dashboard admin' : 'Ruang partner', 'shield', true)}
-        </>}
         {user && (
           <div className="a-user">
             <span className="name">{user.name}</span>
