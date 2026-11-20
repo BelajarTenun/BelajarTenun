@@ -192,6 +192,21 @@ server = AgentServer()
 
 @server.rtc_session()
 async def entrypoint(ctx: JobContext) -> None:
+    # Kegagalan apa pun (model Live tidak tersedia, kredensial, konfigurasi sesi) dikirim ke layar murid,
+    # supaya murid tidak melihat status "Live" padahal tutor tidak pernah bicara.
+    try:
+        await run_session(ctx)
+    except Exception as e:  # noqa: BLE001
+        logger.exception("sesi tutor gagal")
+        try:
+            msg = json.dumps({"type": "tutor_error", "message": f"{type(e).__name__}: {str(e)[:300]}"})
+            await ctx.room.local_participant.publish_data(msg, topic=UI_TOPIC, reliable=True)
+        except Exception:  # noqa: BLE001
+            pass
+        raise
+
+
+async def run_session(ctx: JobContext) -> None:
     await ctx.connect()
     participant = await ctx.wait_for_participant()
     meta = json.loads(participant.metadata or "{}")
@@ -285,6 +300,7 @@ async def entrypoint(ctx: JobContext) -> None:
     ctx.add_shutdown_callback(tracer.flush)
 
     await session.start(room=ctx.room, agent=agent, room_input_options=RoomInputOptions(video_enabled=True))
+    await publish_ui({"type": "tutor_ready", "model": model})
     tracer.emit("live_start", engine="livekit+gemini")
     await session.generate_reply(instructions=("Lihat dulu gambar kamera murid. Sapa singkat, sebutkan dalam satu kalimat apa yang kamu lihat "
         "(kalau alat tenun belum terlihat, minta murid mengarahkan kamera ke lungsi dan tangannya). "

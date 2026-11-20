@@ -28,9 +28,11 @@ export default function Praktik() {
   const [muted, setMuted] = useState(false);
   const [speaking, setSpeaking] = useState<'tutor' | 'user' | ''>('');
   const [sheet, setSheet] = useState(false);
+  // Status agen tutor: menunggu → siap, atau gagal (pesan dari agen / batas waktu). Hanya "siap" berarti tutor benar-benar ada.
+  const [tutorState, setTutorState] = useState<{ state: 'menunggu' | 'siap' | 'gagal'; message?: string }>({ state: 'menunggu' });
   const [camLost, setCamLost] = useState(!camera);
   const tutor = useRef<any>(null);
-  const video = useRef<HTMLVideoElement>(null), img = useRef<HTMLImageElement>(null);
+  const video = useRef<HTMLVideoElement>(null), img = useRef<HTMLImageElement>(null), backdrop = useRef<HTMLVideoElement>(null);
   const stats = useRef({ questions: 0, startedAt: Date.now() });
   const pakaiVideo = !!camera?.stream;
 
@@ -39,7 +41,7 @@ export default function Praktik() {
 
   useEffect(() => {
     if (!module || !config || !camera) return;
-    if (pakaiVideo && video.current) { video.current.srcObject = camera.stream; video.current.play().catch(() => {}); camera.element = video.current; }
+    if (pakaiVideo && video.current) { video.current.srcObject = camera.stream; video.current.play().catch(() => {}); camera.element = video.current; if (backdrop.current) { backdrop.current.srcObject = camera.stream; backdrop.current.play().catch(() => {}); } }
     else if (img.current) camera.element = img.current;
     const t = new TutorClient({
       moduleId: module.id, source: camera, serverTts: false, startStep, liveOnly: true,
@@ -53,6 +55,7 @@ export default function Praktik() {
           if (role === 'tutor') { setTutorLine(text); setUserLine(''); } else { setUserLine(text); stats.current.questions++; }
         },
         finish: () => akhiri(true),
+        tutorState: (d: { state: 'siap' | 'gagal'; message?: string }) => setTutorState(d),
       },
     });
     tutor.current = t;
@@ -85,12 +88,14 @@ export default function Praktik() {
   const total = module.steps.length;
   const step = module.steps[Math.min(stepIdx, total - 1)];
   const toggleMic = () => { const m = !muted; setMuted(m); tutor.current?.setMuted(m); };
-  const status = live === 'menyambung' ? 'Menyambungkan tutor…' : live === 'gagal' ? 'Tutor belum tersambung'
+  const status = live === 'menyambung' ? 'Menyambungkan…' : live === 'gagal' || tutorState.state === 'gagal' ? 'Tutor tidak tersambung' : tutorState.state === 'menunggu' ? 'Menunggu tutor…'
     : muted ? 'Mikrofon dibisukan' : speaking === 'tutor' ? 'Tutor berbicara' : speaking === 'user' ? 'Mendengarkanmu…' : 'Tutor memperhatikan';
 
   return (
     <div className="lv">
-      <video ref={video} className="lv-cam" autoPlay playsInline muted hidden={!pakaiVideo} />
+      {/* Latar buram dari video yang sama: video tegak di layar lebar tidak diapit area hitam. */}
+      <video ref={backdrop} className="lv-backdrop" autoPlay playsInline muted aria-hidden="true" hidden={!pakaiVideo} />
+      <div className="lv-stage"><video ref={video} className="lv-cam" autoPlay playsInline muted hidden={!pakaiVideo} aria-label="Gambar kamera yang dilihat tutor" /></div>
       <img ref={img} className="lv-cam" alt="" hidden={pakaiVideo} />
 
       <header className="lv-top">
@@ -99,7 +104,8 @@ export default function Praktik() {
           <span className="t">{step.title}</span>
           <Icon name="chevronRight" />
         </button>
-        <span className={`lv-live ${live}`}><i />{live === 'aktif' ? 'Live' : live === 'menyambung' ? 'Menyambung' : 'Terputus'}</span>
+        {(() => { const st = live === 'gagal' || tutorState.state === 'gagal' ? 'gagal' : live === 'aktif' && tutorState.state === 'siap' ? 'aktif' : 'menyambung';
+          return <span className={`lv-live ${st}`}><i />{st === 'aktif' ? 'Live' : st === 'menyambung' ? 'Menunggu tutor' : 'Tutor tidak tersambung'}</span>; })()}
       </header>
       <div className="lv-progress"><i style={{ width: `${(stepIdx / total) * 100}%` }} /></div>
 
@@ -113,11 +119,17 @@ export default function Praktik() {
 
       <div className="lv-bottom">
         <div className="lv-caption" aria-live="polite">
-          {live === 'gagal'
-            ? <><p className="tutor">{liveError || 'Tutor belum tersambung.'}</p><button className="lv-pill" onClick={() => tutor.current && mulaiLive(tutor.current)}>Coba lagi</button></>
+          {live === 'gagal' || tutorState.state === 'gagal'
+            ? <div className="lv-error" role="alert">
+                <b>Tutor belum bisa membimbing</b>
+                <span>{tutorState.message || liveError || 'Koneksi ke tutor gagal.'}</span>
+                <button className="lv-pill" onClick={() => { setTutorState({ state: 'menunggu' }); tutor.current?.stopLive?.(); tutor.current && mulaiLive(tutor.current); }}>Coba lagi</button>
+              </div>
             : <>
-                {userLine && <p className="user">{userLine}</p>}
-                <p className="tutor">{tutorLine || (live === 'menyambung' ? 'Tutor sedang bergabung…' : step.instruction)}</p>
+                {userLine && <p className="user">“{userLine}”</p>}
+                {/* Hanya ucapan tutor sungguhan yang tampil sebagai ucapan tutor; selain itu status yang jujur. */}
+                {tutorLine ? <p className="tutor">{tutorLine}</p>
+                  : <p className="wait">{tutorState.state === 'siap' ? 'Tutor siap. Arahkan kamera ke alat tenun dan mulai bicara.' : 'Menunggu tutor bergabung…'}</p>}
               </>}
         </div>
         <div className="lv-status"><span className={`lv-orb ${live === 'aktif' && !muted ? speaking || 'idle' : 'off'}`} />{status}</div>

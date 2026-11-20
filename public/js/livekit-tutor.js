@@ -36,7 +36,11 @@ export class LiveKitTutor extends EventTarget {
     r.on(RoomEvent.TrackUnsubscribed, (track) => track.detach().forEach((el) => el.remove()));
     r.on(RoomEvent.DataReceived, (payload, participant, kind, topic) => {
       if (topic !== UI_TOPIC) return;
-      try { this.#emit('ui', JSON.parse(new TextDecoder().decode(payload))); } catch {}
+      let msg; try { msg = JSON.parse(new TextDecoder().decode(payload)); } catch { return; }
+      // Status agen (agent/main.py): siap / gagal. Bukan instruksi tahap.
+      if (msg?.type === 'tutor_ready') { clearTimeout(this.waitAgent); this.#emit('tutor_state', { state: 'siap', model: msg.model }); return; }
+      if (msg?.type === 'tutor_error') { clearTimeout(this.waitAgent); this.#emit('tutor_state', { state: 'gagal', message: msg.message }); return; }
+      this.#emit('ui', msg);
     });
     r.on(RoomEvent.TranscriptionReceived, (segments, participant) => {
       for (const s of segments) if (s.final) this.#emit(participant?.identity === r.localParticipant.identity ? 'user' : 'tutor', { text: s.text });
@@ -47,6 +51,10 @@ export class LiveKitTutor extends EventTarget {
     r.on(RoomEvent.Disconnected, (reason) => this.#emit('close', { code: reason }));
 
     await r.connect(url, token);
+    // Agen yang sudah ada di ruang sebelum murid tidak memicu ParticipantConnected: periksa juga.
+    if ([...r.remoteParticipants.values()].some((p) => p.isAgent)) this.#emit('agent', {});
+    // Tanpa sinyal "tutor_ready" dalam 25 dtk, anggap agen tidak berjalan (worker mati, model gagal, kuota).
+    this.waitAgent = setTimeout(() => this.#emit('tutor_state', { state: 'gagal', message: 'Tutor tidak bergabung dalam 25 detik. Agen di server mungkin tidak berjalan.' }), 25000);
     // Siapa yang sedang bicara: dipakai indikator "Tutor berbicara / mendengarkan" di layar sesi.
     r.on(RoomEvent.ActiveSpeakersChanged, (speakers) => this.#emit('speaking', {
       tutor: speakers.some((p) => p !== r.localParticipant), user: speakers.includes(r.localParticipant),
@@ -72,6 +80,7 @@ export class LiveKitTutor extends EventTarget {
   async sendText(text) { await this.room?.localParticipant.sendText(text, { topic: 'lk.chat' }); }
 
   stop() {
+    clearTimeout(this.waitAgent);
     this.room?.disconnect();
     document.querySelectorAll('audio[data-bt="tutor-audio"]').forEach((a) => a.remove());
     this.room = null;

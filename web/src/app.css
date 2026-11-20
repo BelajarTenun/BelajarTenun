@@ -325,7 +325,13 @@ html, body { background: var(--paper); color: var(--s800); font: 14px/1.5 var(--
 .lv-sheet li.now { color: #fff; } .lv-sheet li.now i { border: 2px solid #fff; }
 .lv-sheet li b { font-weight: 600; } .lv-sheet li p { margin: 4px 0 0; font-size: 14px; line-height: 1.5; color: rgba(255,255,255,.75); }
 .lv-sheet .hint { margin: 14px 0 0; font-size: 13px; color: rgba(255,255,255,.5); }
-@media (min-width: 900px) { .lv-cam { object-fit: contain; } }
+/* Panggung kamera: penuh di HP; di layar lebar video utuh (contain) bersudut bulat di atas latar buram. */
+.lv-backdrop { position: absolute; inset: -40px; width: calc(100% + 80px); height: calc(100% + 80px); object-fit: cover; filter: blur(36px) brightness(.45) saturate(1.2); transform: scale(1.05); }
+.lv-stage { position: absolute; inset: 0; }
+@media (min-width: 900px) {
+  .lv-stage { inset: 72px 24px 210px; display: grid; place-items: center; }
+  .lv-stage .lv-cam { position: static; width: auto; height: auto; max-width: 100%; max-height: calc(100vh - 282px); object-fit: contain; border-radius: 18px; box-shadow: 0 20px 60px rgba(0,0,0,.45); }
+}
 @media (prefers-reduced-motion: reduce) { .lv-orb.tutor, .lv-sheet { animation: none; } }
 
 /* ---------- Pasangan HP ↔ laptop (QR) ---------- */
@@ -388,3 +394,9 @@ html, body { background: var(--paper); color: var(--s800); font: 14px/1.5 var(--
 .kain-meta b { font-size: 16px; font-weight: 600; letter-spacing: -.01em; color: var(--s900); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .kain-meta span { font-size: 13px; color: var(--s500); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { .kain-card, .kain-photo { transition: none; } .kain-card:hover, .kain-card:hover .kain-photo { transform: none; } }
+.lv-caption .wait { font-size: 15px; color: rgba(255,255,255,.7); }
+.lv-error { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 20px; border-radius: 16px; background: rgba(127,29,29,.55); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); text-align: center; }
+.lv-error span { font-size: 14px; color: rgba(255,255,255,.85); max-width: 46ch; }
+.a-preview-note { margin-top: 12px; padding: 10px; border-radius: 8px; background: var(--warn-bg); display: flex; flex-direction: column; gap: 4px; }
+.a-preview-note > span { font-size: 11px; font-weight: 600; color: var(--warn); padding: 0 10px; }
+@media (max-width: 860px) { .a-preview-note { margin: 0; padding: 4px 8px; flex-direction: row; align-items: center; } .a-preview-note > span { display: none; } }
