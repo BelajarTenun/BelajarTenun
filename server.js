@@ -259,13 +259,25 @@ const routes = {
     });
     return { url: config.livekitPublicUrl, token, room };
   },
+  // Heartbeat agen: model Live yang benar-benar bisa tersambung (agent/main.py heartbeat_loop).
+  'GET /api/agent/live-models': async (b, req) => {
+    const user = await auth.requireRole(req, 'admin');
+    if (user.id !== 'agent' && !config.authDisabled) throw fail(403, 'Khusus agen');
+    return { models: config.liveModels };
+  },
+  'POST /api/agent/heartbeat': async (b, req) => {
+    const user = await auth.requireRole(req, 'admin');
+    if (user.id !== 'agent' && !config.authDisabled) throw fail(403, 'Khusus agen');
+    await store.writeJson('agent-heartbeat.json', { ok: Boolean(b.ok), model: b.model ?? null, candidates: b.candidates ?? [], error: b.error ?? null, at: new Date().toISOString() });
+    return { ok: true };
+  },
   // Dipanggil agen Python saat bergabung ke ruang: instruksi + tools sesuai modul & mode sesi.
   'GET /api/agent/session-config': async (b, req, res, url) => {
     const user = await auth.requireRole(req, 'admin');
     if (user.id !== 'agent' && !config.authDisabled) throw fail(403, 'Khusus agen');
     const session = getSession(url.searchParams.get('sessionId'), user);
     return {
-      sessionId: session.state.id, model: config.liveModel, voice: config.liveVoice,
+      sessionId: session.state.id, model: config.liveModel, models: config.liveModels, voice: config.liveVoice,
       instructions: liveInstructions(session.state.module, { audioOnly: session.state.audioOnly }),
       tools: LIVE_TOOLS.map((t) => ({ name: t.name, description: t.description, parameters: toJsonSchema(t.parameters) })),
     };

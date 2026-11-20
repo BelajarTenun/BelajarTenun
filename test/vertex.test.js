@@ -8,7 +8,7 @@ const { config } = await import('../lib/config.js');
 const ai = await import('../lib/ai.js');
 
 test('Vertex AI: alamat endpoint regional, model Live Vertex, token Live browser ditolak', async () => {
-  assert.equal(config.liveModel, 'gemini-live-2.5-flash-native-audio');
+  assert.deepEqual(config.liveModels, ['gemini-3.8-live', 'gemini-live-2.5-flash-native-audio'], 'model GA terbaru dulu, model lama sebagai cadangan');
   assert.ok(ai.aiEnabled());
   // Token dipalsukan supaya tes tidak butuh kredensial Google.
   const fetchOrig = globalThis.fetch;
