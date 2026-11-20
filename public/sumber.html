@@ -51,26 +51,32 @@
 
   <dialog class="ws-dialog" id="add-dialog" aria-labelledby="add-title">
     <header><h2 id="add-title">Tambah video</h2><button type="button" id="close-add" aria-label="Tutup">Tutup</button></header>
-    <div class="body">
-    <div class="grid2">
-      <label>Tradisi tenun* <input id="f-tradition" placeholder="mis. Tenun ikat Sikka" list="traditions" required></label>
-      <label>Daerah <input id="f-region" placeholder="mis. Sikka, NTT"></label>
-      <label>Jenis alat <input id="f-loom" placeholder="gedogan / ATBM / …"></label>
-      <label>Teknik <input id="f-tech" placeholder="ikat lungsi / songket / polos …"></label>
-      <label>Judul video <input id="f-title"></label>
-      <label>Kanal / pembuat <input id="f-channel"></label>
-      <label>URL asli <input id="f-url" placeholder="https://…"></label>
-      <label>Sudut kamera <select id="f-view"><option value="exo">Dari luar (direkam orang lain)</option><option value="ego">Dari kepala penenun (POV/kacamata)</option><option value="campuran">Campuran</option></select></label>
-      <label>Jenis sumber <select id="f-kind"><option value="internet">Internet</option><option value="partner">Partner penenun</option><option value="kacamata">Kacamata BelajarTenun</option></select></label>
-      <label>Status izin* <select id="f-license"></select></label>
+    <div class="body" id="add-wizard">
+      <section data-wstep="Video">
+        <input id="f-file" type="file" accept="video/*">
+        <label>atau tautan video (bila tidak mengunggah berkas) <input id="f-url" type="url" placeholder="https://…"></label>
+      </section>
+      <section data-wstep="Tentang video" hidden>
+        <label>Tradisi tenun <input id="f-tradition" placeholder="mis. Tenun ikat Sikka…" list="traditions" required></label>
+        <label>Status izin <select id="f-license" data-seg="cards"></select></label>
+        <label>Sudut kamera <select id="f-view" data-seg><option value="exo">Dari luar</option><option value="ego">Dari kepala penenun</option><option value="campuran">Campuran</option></select></label>
+        <label>Asal video <select id="f-kind" data-seg><option value="internet">Internet</option><option value="partner">Partner penenun</option><option value="kacamata">Kacamata BelajarTenun</option></select></label>
+      </section>
+      <section data-wstep="Detail (opsional)" hidden>
+        <div class="grid2">
+          <label>Judul video <input id="f-title"></label>
+          <label>Kanal / pembuat <input id="f-channel"></label>
+          <label>Daerah <input id="f-region" placeholder="mis. Sikka, NTT…"></label>
+          <label>Jenis alat <input id="f-loom" placeholder="gedogan / ATBM…"></label>
+          <label>Teknik <input id="f-tech" placeholder="ikat lungsi / songket / polos…"></label>
+          <label>Bukti izin / catatan lisensi <input id="f-proof" placeholder="mis. CC BY 4.0…"></label>
+        </div>
+        <label class="toggle"><input type="checkbox" id="f-auto" checked> Langsung analisis dengan AI setelah diunggah</label>
+      </section>
+      <datalist id="traditions"></datalist>
+      <p id="add-status" class="feedback" aria-live="polite"></p>
     </div>
-    <label>Bukti izin / catatan lisensi <input id="f-proof" placeholder="mis. CC BY 4.0, atau 'izin lewat email 12 Nov'"></label>
-    <label>Berkas video <input id="f-file" type="file" accept="video/*"></label>
-    <label class="toggle"><input type="checkbox" id="f-auto" checked> Langsung proses (pra-proses + analisis AI) setelah diunggah</label>
-    <datalist id="traditions"></datalist>
-    <p id="add-status" class="feedback" aria-live="polite"></p>
-    </div>
-    <footer><button type="button" id="cancel-add">Batal</button><button id="add" class="primary">Tambah video</button></footer>
+    <footer data-wnav><button type="button" id="cancel-add">Batal</button><button id="add" class="primary" data-wsubmit>Tambah video</button></footer>
   </dialog>
 
 <script type="module">
@@ -79,7 +85,11 @@ const cfg = await requireLogin(['partner']);
 accountBadge($('account'), cfg.user);
 const IZIN = { cc_by: 'Lisensi terbuka', riset_internal: 'Hanya analisis', izin_tertulis: 'Izin tertulis', milik_sendiri: 'Milik sendiri' };
 const addDialog = $('add-dialog');
-$('open-add').onclick = () => { addDialog.showModal(); $('f-tradition').focus(); };
+const { segmented, wizard, dropzone } = await import('./js/ui-kit.js');
+dropzone($('f-file'));
+segmented(addDialog);
+const addWizard = wizard(addDialog);
+$('open-add').onclick = () => { addWizard.show(0); addDialog.showModal(); };
 $('close-add').onclick = $('cancel-add').onclick = () => addDialog.close();
 let overview, current;
 const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
@@ -127,6 +137,7 @@ $('add').onclick = async () => {
     status('add-status', '', 'ok');
     $('f-file').value = '';
     addDialog.close();
+    addWizard.show(0);
     refresh();
   } catch (e) { status('add-status', e.message, 'warn'); }
 };

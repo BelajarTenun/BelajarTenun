@@ -95,8 +95,11 @@ const field = (label, key, val, rows, type = 'text', s = null) => rows
 
 function stepCard(s, i) {
   const mistakes = (s.common_mistakes || []).map((m) => `${m.mistake} => ${m.fix}`).join('\n');
-  return `<section class="card" data-step="${i}">
-    <h3>Tahap ${i + 1} ${s.validated_by ? '<span class="tag ok-tag">tervalidasi</span>' : '<span class="tag">belum divalidasi</span>'}</h3>
+  // Akordeon: satu baris ringkas per tahap; dibuka saat disunting (tahap belum tervalidasi pertama terbuka).
+  const open = i === mod.steps.findIndex((x) => !x.validated_by) ? ' open' : '';
+  return `<details class="card step-card" data-step="${i}"${open}>
+    <summary><span class="n">${i + 1}</span><span class="t">${esc(s.title || 'Tahap tanpa judul')}</span>${s.validated_by ? '<span class="tag ok-tag">tervalidasi</span>' : '<span class="tag">belum divalidasi</span>'}${s.fieldStatus && Object.values(s.fieldStatus).includes('usulan_ai') ? ' <span class="pill">usulan AI</span>' : ''}</summary>
+    <div class="step-body">
     ${field('ID (huruf kecil-tanda-hubung)', 'id', s.id)}
     ${(s.provenance || []).length ? `<p class="hint">Bukti dari video: ${s.provenance.map((p, j) => `<button type="button" data-ev="${j}">Putar ${esc(p.sourceId)} ${Math.floor(p.start)}–${Math.ceil(p.end)} dtk</button>`).join(' ')}${s.genericStepId ? ` · tahap umum: <span class="pill">${esc(s.genericStepId)}</span>` : ''}</p>` : ''}
     ${s.fieldStatus ? '<button type="button" data-accept="*">Terima semua kolom tahap ini</button>' : ''}
@@ -113,16 +116,21 @@ function stepCard(s, i) {
     <label class="toggle"><input type="checkbox" data-k="auto_detect" ${s.auto_detect ? 'checked' : ''}> Deteksi otomatis dengan kamera</label>
     ${field('Divalidasi oleh (nama penenun; kosongkan jika belum)', 'validated_by', s.validated_by)}
     <div class="row"><button data-act="up">Naik</button><button data-act="down">Turun</button><button data-act="del">Hapus</button></div>
-  </section>`;
+    </div>
+  </details>`;
 }
 function kbCard(e, i) {
-  return `<section class="card" data-kb="${i}">
+  const tag = { tervalidasi: '<span class="tag ok-tag">tervalidasi</span>', ditinjau: '<span class="pill">ditinjau</span>' }[e.status] ?? '<span class="tag">draf</span>';
+  return `<details class="card step-card" data-kb="${i}">
+    <summary><span class="t">${esc(e.question || e.id || 'Entri baru')}</span>${tag}</summary>
+    <div class="step-body">
     <div class="grid2">${field('ID', 'id', e.id)}<label>Status<select data-k="status">${['draft', 'ditinjau', 'tervalidasi'].map((s) => `<option ${s === e.status ? 'selected' : ''}>${s}</option>`).join('')}</select></label></div>
     ${field('Pertanyaan', 'question', e.question)} ${field('Jawaban', 'answer', e.answer, 3)}
     ${field('Kata kunci (pisahkan koma)', 'keywords', (e.keywords || []).join(', '))}
     <div class="grid2">${field('Topik', 'topic', e.topic)}<label>Khusus modul<select data-k="module"><option value="">(semua modul)</option>${modules.map((m) => `<option value="${m.id}" ${m.id === e.module ? 'selected' : ''}>${esc(m.title)}</option>`).join('')}</select></label></div>
     <div class="grid2">${field('Sumber (nama penenun / rekaman / literatur)', 'source', e.source)}${field('Divalidasi oleh', 'validated_by', e.validated_by)}</div>
-    <button data-act="del-kb">Hapus</button></section>`;
+    <div class="row"><button data-act="del-kb">Hapus</button></div>
+    </div></details>`;
 }
 function render() {
   const intro = mod.intro || {};
@@ -196,8 +204,8 @@ document.body.addEventListener('click', (e) => {
   if (act === 'del-kb' && confirm('Hapus entri ini?')) kb.entries.splice(ki, 1);
   render();
 });
-$('add-step').onclick = () => { collect(); mod.steps.push({ id: `tahap-${mod.steps.length + 1}`, title: '', instruction: '', tips: [], success_criteria: '', common_mistakes: [], auto_detect: true, validated_by: null }); render(); };
-$('add-kb').onclick = () => { collect(); kb.entries.push({ id: `qa-${Date.now().toString(36)}`, status: 'draft', question: '', answer: '', keywords: [], source: null, validated_by: null }); render(); };
+$('add-step').onclick = () => { collect(); mod.steps.push({ id: `tahap-${mod.steps.length + 1}`, title: '', instruction: '', tips: [], success_criteria: '', common_mistakes: [], auto_detect: true, validated_by: null }); render(); const d = document.querySelector(`[data-step="${mod.steps.length - 1}"]`); d.open = true; d.scrollIntoView({ block: 'center' }); };
+$('add-kb').onclick = () => { collect(); kb.entries.push({ id: `qa-${Date.now().toString(36)}`, status: 'draft', question: '', answer: '', keywords: [], source: null, validated_by: null }); render(); const d = document.querySelector(`[data-kb="${kb.entries.length - 1}"]`); d.open = true; d.scrollIntoView({ block: 'center' }); };
 // Foto kain: unggah langsung, simpan URL-nya di modul (tersimpan permanen saat "Simpan semua").
 $('m-cover-file').onchange = async (e) => {
   const f = e.target.files[0];

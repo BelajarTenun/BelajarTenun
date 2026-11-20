@@ -17,25 +17,25 @@
     <p>Rekam penenun dari sudut pandang mata (POV). Rekaman menjadi video demo, bahan uji akurasi kamera, dan data latih model. Rekam <b>per tahap</b> (langsung berlabel) atau <b>satu sesi penuh</b> (lalu ditandai di halaman <a href="anotasi.html">Anotasi</a>).</p>
   </header>
 
-  <section class="card">
-    <h2>1. Info rekaman</h2>
+  <section class="card" data-wstep="Info rekaman">
+    
     <label>Modul <select id="module"></select></label>
     <label>Tahap <select id="step"></select></label>
     <label id="label-wrap">Apa yang direkam?
-      <select id="label">
+      <select id="label" data-seg>
         <option value="done">Contoh BENAR (tahap dikerjakan sampai selesai)</option>
         <option value="mistake">Contoh KESALAHAN umum (sengaja)</option>
         <option value="not_yet">Tahap BELUM selesai / sedang dikerjakan</option>
       </select>
     </label>
     <label id="mistake-wrap" hidden>Kesalahan yang dicontohkan <select id="mistake"></select></label>
-    <label>Perangkat <select id="device"><option value="phone">HP di head strap</option><option value="openglass">OpenGlass</option><option value="frame">Brilliant Frame</option><option value="mentra">Mentra Live</option><option value="lain">Lainnya</option></select></label>
+    <label>Perangkat <select id="device" data-seg><option value="phone">HP di head strap</option><option value="openglass">OpenGlass</option><option value="frame">Brilliant Frame</option><option value="mentra">Mentra Live</option><option value="lain">Lainnya</option></select></label>
     <label>Komunitas / sentra tenun <input id="community" placeholder="mis. Sentra tenun Tidore …"></label>
     <label>Catatan <textarea id="notes" rows="2" placeholder="cahaya, jenis alat, istilah lokal…"></textarea></label>
   </section>
 
-  <section class="card">
-    <h2>2. Persetujuan penenun</h2>
+  <section class="card" data-wstep="Persetujuan penenun">
+    
     <p class="hint">Bacakan cakupan ini ke penenun. Pengetahuan dan rekaman tetap milik penenun & komunitasnya; persetujuan bisa dicabut kapan saja dan semua file akan dihapus.</p>
     <label>Nama penenun <input id="c-name" required></label>
     <div id="scopes"></div>
@@ -43,8 +43,8 @@
     <label class="toggle"><input type="checkbox" id="c-given"> Penenun sudah mendengar penjelasan di atas dan setuju</label>
   </section>
 
-  <section class="card">
-    <h2>3. Rekam</h2>
+  <section class="card" data-wstep="Rekam">
+    
     <video id="preview" autoplay playsinline muted></video>
     <p class="hint">Pasang HP di dahi/head strap, lungsi terlihat penuh, cahaya terang. Per tahap: 10–60 detik. Sesi penuh: maks ±5 menit agar bisa dianotasi otomatis.</p>
     <div class="row">
@@ -55,7 +55,7 @@
   </section>
 
   <section class="card">
-    <h2>4. Dataset</h2>
+    <h2>Dataset rekaman</h2>
     <div id="coverage"></div>
     <ul id="list" class="rec-list"></ul>
   </section>
@@ -65,6 +65,9 @@ import { api, $, esc, requireLogin, accountBadge } from './js/api.js';
 import { assessFrame } from './js/quality.js';
 const cfg = await requireLogin(['partner']);
 accountBadge($('account'), cfg.user);
+const { segmented, wizard } = await import('./js/ui-kit.js');
+segmented();
+wizard(document.querySelector('.ws-content') || document.body);
 const FRAME_EVERY_MS = 2000;
 let mod, stream, recorder, chunks = [], frames = [], frameTimer, startedAt;
 
