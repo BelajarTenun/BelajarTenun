@@ -20,3 +20,9 @@ test('Vertex AI: alamat endpoint regional, model Live Vertex, token Live browser
   } finally { globalThis.fetch = fetchOrig; }
   await assert.rejects(ai.createLiveToken(), /LiveKit/);
 });
+
+test('Vertex: model hasil tuning dipanggil lewat endpoint-nya sendiri', async () => {
+  const { endpoint } = await import('../lib/ai.js');
+  const { url } = await endpoint('models/projects/p1/locations/us-central1/endpoints/123:generateContent', 'v1');
+  assert.match(url, /aiplatform\.googleapis\.com\/v1\/projects\/p1\/locations\/us-central1\/endpoints\/123:generateContent$/);
+});

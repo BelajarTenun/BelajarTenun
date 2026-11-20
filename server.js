@@ -55,7 +55,7 @@ const fail = (code, message) => Object.assign(new Error(message), { code });
 const b64 = (img) => String(img || '').replace(/^data:image\/\w+;base64,/, '');
 
 // ---------- AI: deteksi tahap (F3: multi-frame + contoh few-shot + output terstruktur) ----------
-export async function checkStep(module, step, frames, { history = [], useExamples = true, excludeRecording = null, allowExample = null } = {}) {
+export async function checkStep(module, step, frames, { history = [], useExamples = !config.stepCheckModel, excludeRecording = null, allowExample = null, model = config.stepCheckModel || config.geminiModel } = {}) {
   if (!aiEnabled() || !step.auto_detect) return { status: 'uncertain', confidence: 0, observation: 'Konfirmasi manual.' };
   const imgs = frames.map(b64).filter(Boolean);
   if (!imgs.length) return { status: 'uncertain', confidence: 0, observation: 'Tidak ada gambar.' };
@@ -63,7 +63,7 @@ export async function checkStep(module, step, frames, { history = [], useExample
   const parts = [{ text: buildStepCheckPrompt(step, { frames: imgs.length, examples: examples.length, history }) }];
   for (const e of examples) parts.push({ inline_data: { mime_type: 'image/jpeg', data: e } });
   for (const f of imgs) parts.push({ inline_data: { mime_type: 'image/jpeg', data: f } });
-  const raw = await generate(parts, { json: true, schema: STEP_CHECK_SCHEMA, kind: 'check_step' });
+  const raw = await generate(parts, { json: true, schema: STEP_CHECK_SCHEMA, kind: 'check_step', model });
   return interpretStepCheck(raw, step);
 }
 
@@ -270,6 +270,25 @@ const routes = {
     if (user.id !== 'agent' && !config.authDisabled) throw fail(403, 'Khusus agen');
     await store.writeJson('agent-heartbeat.json', { ok: Boolean(b.ok), model: b.model ?? null, candidates: b.candidates ?? [], error: b.error ?? null, at: new Date().toISOString() });
     return { ok: true };
+  },
+  // ----- Simulasi sesi (scripts/simulate_session.js, rencana 7.2): khusus token agen -----
+  // Akun murid khusus simulasi (email *.local, tidak bisa login Google) supaya harness bisa jalan di CI tanpa akun manusia.
+  'POST /api/admin/sim-login': async (b, req, res) => {
+    const user = await auth.requireRole(req, 'admin');
+    if (user.id !== 'agent' && !config.authDisabled) throw fail(403, 'Khusus agen');
+    let sim = await auth.loginWithGoogle({ sub: 'simulasi-belajartenun', email: 'simulasi@belajartenun.local', name: 'Murid Simulasi' });
+    // Selalu pemula: di database kosong pengguna pertama otomatis admin, dan simulasi tidak boleh menjadi admin.
+    if (sim.role !== 'pemula') sim = await auth.updateUser(sim.id, { role: 'pemula' });
+    res.setHeader('set-cookie', auth.sessionCookie(sim.id));
+    return { user: sim };
+  },
+  'GET /api/admin/session-events': async (b, req, res, url) => {
+    const user = await auth.requireRole(req, 'admin');
+    if (user.id !== 'agent' && user.role !== 'admin') throw fail(403, 'Khusus admin');
+    const id = url.searchParams.get('sessionId');
+    if (!id) throw fail(400, 'sessionId wajib');
+    const events = (await data.readEvents()).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter((e) => e?.sessionId === id);
+    return { events };
   },
   // Dipanggil agen Python saat bergabung ke ruang: instruksi + tools sesuai modul & mode sesi.
   'GET /api/agent/session-config': async (b, req, res, url) => {

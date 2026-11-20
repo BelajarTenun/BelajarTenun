@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -r
 WORKDIR /app
 COPY package.json server.js ./
 COPY lib ./lib
+COPY scripts ./scripts
 COPY public ./public
 COPY --from=web /src/web/dist ./web/dist
 COPY data/modules ./data/modules

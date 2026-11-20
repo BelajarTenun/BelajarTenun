@@ -5,57 +5,272 @@
       "id": "lungsi-pakan",
       "topic": "teknik",
       "question": "Apa beda benang lungsi dan benang pakan?",
-      "keywords": ["lungsi", "pakan", "beda", "benang"],
+      "keywords": [
+        "lungsi",
+        "pakan",
+        "beda",
+        "benang"
+      ],
       "answer": "Benang lungsi adalah benang yang dipasang memanjang dan tegang di alat tenun. Benang pakan adalah benang yang dimasukkan melintang di antara benang lungsi. Kain terbentuk dari silangan keduanya.",
-      "source": null, "validated_by": null
+      "source": null,
+      "validated_by": null
     },
     {
       "id": "kenapa-celah",
       "topic": "teknik",
       "question": "Kenapa benang pakan harus dimasukkan lewat celah?",
-      "keywords": ["kenapa", "celah", "mulut", "masuk", "dari sini"],
+      "keywords": [
+        "kenapa",
+        "celah",
+        "mulut",
+        "masuk",
+        "dari sini"
+      ],
       "answer": "Celah membagi lungsi menjadi lapisan atas dan bawah. Saat pakan lewat di antaranya lalu celah ditukar, pakan terkunci naik-turun di antara lungsi. Itulah yang membuat anyaman kain menjadi kuat.",
-      "source": null, "validated_by": null
+      "source": null,
+      "validated_by": null
     },
     {
       "id": "tidak-rata",
       "topic": "perbaikan",
       "question": "Bagaimana memperbaiki tenunan yang tidak rata?",
-      "keywords": ["tidak rata", "miring", "perbaiki", "jelek", "renggang", "rata"],
+      "keywords": [
+        "tidak rata",
+        "miring",
+        "perbaiki",
+        "jelek",
+        "renggang",
+        "rata"
+      ],
       "answer": "Biasanya karena hentakan tidak sama kuat atau pakan ditarik terlalu kencang. Rapatkan setiap baris dengan kekuatan yang sama dan biarkan pakan sedikit melengkung sebelum dirapatkan. Baris yang terlanjur miring bisa dibuka lalu diulang.",
-      "source": null, "validated_by": null
+      "source": null,
+      "validated_by": null
     },
     {
       "id": "tepi-menyempit",
       "topic": "perbaikan",
       "question": "Kenapa tepi kainku makin menyempit?",
-      "keywords": ["tepi", "menyempit", "sempit", "pinggir", "mengecil"],
+      "keywords": [
+        "tepi",
+        "menyempit",
+        "sempit",
+        "pinggir",
+        "mengecil"
+      ],
       "answer": "Tepi menyempit karena benang pakan ditarik terlalu kencang di ujung. Letakkan pakan membentuk busur kecil sebelum dirapatkan, supaya ada kelonggaran.",
-      "source": null, "validated_by": null
+      "source": null,
+      "validated_by": null
     },
     {
       "id": "fungsi-pedang",
       "topic": "alat",
       "question": "Apa fungsi pedang atau belida?",
-      "keywords": ["pedang", "belida", "fungsi", "alat"],
+      "keywords": [
+        "pedang",
+        "belida",
+        "fungsi",
+        "alat"
+      ],
       "answer": "Pedang (belida) dipakai untuk membuka celah lungsi dan untuk merapatkan benang pakan setelah dimasukkan.",
-      "source": null, "validated_by": null
+      "source": null,
+      "validated_by": null
     },
     {
       "id": "fungsi-sekoci",
       "topic": "alat",
       "question": "Apa fungsi sekoci?",
-      "keywords": ["sekoci", "teropong", "fungsi", "gulungan"],
+      "keywords": [
+        "sekoci",
+        "teropong",
+        "fungsi",
+        "gulungan"
+      ],
       "answer": "Sekoci adalah wadah gulungan benang pakan, supaya pakan mudah dilewatkan di antara celah lungsi.",
-      "source": null, "validated_by": null
+      "source": null,
+      "validated_by": null
     },
     {
       "id": "filosofi-tidore",
       "topic": "budaya",
       "question": "Apa makna motif tenun Tidore?",
-      "keywords": ["motif", "makna", "filosofi", "arti", "tidore", "sejarah"],
+      "keywords": [
+        "motif",
+        "makna",
+        "filosofi",
+        "arti",
+        "tidore",
+        "sejarah"
+      ],
       "answer": "[PERLU DIISI OLEH PARTNER] Makna motif dan pakem Tenun Tidore harus diisi langsung dari penenun dan pemangku budaya, bukan dikarang oleh AI.",
-      "source": null, "validated_by": null
+      "source": null,
+      "validated_by": null
+    },
+    {
+      "id": "puta-dino-nama",
+      "module": null,
+      "topic": "budaya",
+      "question": "Apa arti nama Puta Dino Kayangan?",
+      "keywords": [
+        "puta dino",
+        "kayangan",
+        "arti nama",
+        "nama"
+      ],
+      "answer": "\"Puta\" berarti kain dan \"Dino\" berarti tenun atau jahit/susun. \"Kayangan\" dimaknai \"tinggi\", sehingga Puta Dino Kayangan dimaknai sebagai susunan kain yang manfaatnya tinggi.",
+      "source": "ANTARA News Mataram, \"Sosok perempuan inspiratif dibalik pelestarian tenun Tidore\" – https://mataram.antaranews.com/berita/237890/sosok-perempuan-inspiratif-dibalik-pelestarian-tenun-tidore | Kalesang.id (27 Agu 2026), \"Dari Warisan ke Penghidupan: Perempuan Tidore Merajut Kembali Tenun yang Nyaris Hilang\" – https://kalesang.id/2026/08/27/dari-warisan-ke-penghidupan-perempuan-tidore-merajut-kembali-tenun-yang-nyaris-hilang/ | Kompasiana (Sulasmi Kisman), \"Perempuan Heroik di Balik Tenun Tidore\" – https://www.kompasiana.com/sulasmikisman/5fb94580d541df10ba105d93/perempuan-heroik-dibalik-tenun-tidore",
+      "status": "draft",
+      "validated_by": null,
+      "review_note": "Sumber berbeda soal \"Kayangan\": ANTARA (mengutip Anita Gathmir) = tinggi; Kalesang = tinggi atau indah; Kompasiana menyebut nama tambahan dari Jou Sultan Tidore (belum didukung sumber lain). Mohon konfirmasi penenun.",
+      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+    },
+    {
+      "id": "puta-dino-sejarah",
+      "module": null,
+      "topic": "budaya",
+      "question": "Bagaimana sejarah tenun Tidore dihidupkan kembali?",
+      "keywords": [
+        "sejarah",
+        "punah",
+        "dihidupkan",
+        "revitalisasi",
+        "leiden",
+        "foto lama"
+      ],
+      "answer": "Tradisi menenun di Tidore sempat hampir punah. Upaya menghidupkannya kembali dimulai oleh Anita Gathmir bersama Rumah Tenun Puta Dino Kayangan; motif-motifnya direkonstruksi dari foto-foto kain lama, antara lain dari koleksi museum di Leiden, Belanda.",
+      "source": "Annie Nugraha, \"Puta Dino Kayangan. Membidani Lahirnya Kembali Kain Tenun Tidore yang Sempat Punah\" – https://annienugraha.com/puta-dino-kayangan-membidani-lahirnya-kembali-kain-tenun-tidore-yang-sempat-punah/ | Karya Kreatif Indonesia, profil UMKM Puta Dino Khayangan – https://www.karyakreatifindonesia.co.id/umkm/puta-dino-khayangan/73356 | Solihat, A., Mastuti, D.W.R., & Harapan, A.A. (2022). Revitalisasi Berbasis Translokal: Menghidupkan Kembali Puta Dino, Tenun Tidore yang Telah Punah. Jurnal Pengabdian dan Pemberdayaan Masyarakat – https://core.ac.uk/download/524572869.pdf | Kompasiana (Sulasmi Kisman), \"Perempuan Heroik di Balik Tenun Tidore\" – https://www.kompasiana.com/sulasmikisman/5fb94580d541df10ba105d93/perempuan-heroik-dibalik-tenun-tidore",
+      "status": "draft",
+      "validated_by": null,
+      "review_note": "Tahun mulai berbeda antar sumber (2017 vs kegiatan sejak 2009). Sebut tahun hanya setelah dikonfirmasi penenun.",
+      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+    },
+    {
+      "id": "motif-utama-tidore",
+      "module": null,
+      "topic": "budaya",
+      "question": "Apa saja motif utama tenun Tidore?",
+      "keywords": [
+        "motif utama",
+        "motif",
+        "barakati",
+        "marasante",
+        "jodati"
+      ],
+      "answer": "Tiga motif utama Puta Dino adalah Barakati, Marasante, dan Jodati. Rumah Tenun Puta Dino disebut memiliki sekitar 30 motif.",
+      "source": "Kalesang.id (27 Agu 2026), \"Dari Warisan ke Penghidupan: Perempuan Tidore Merajut Kembali Tenun yang Nyaris Hilang\" – https://kalesang.id/2026/08/27/dari-warisan-ke-penghidupan-perempuan-tidore-merajut-kembali-tenun-yang-nyaris-hilang/ | Ibrahim, S., Sudana, I W., & Dangkua, S. (2024). Bentuk dan Fungsi Ornamen pada Kain Tenun (Puta Dino) di Kota Tidore Kepulauan Provinsi Maluku Utara. Jambura: Jurnal Seni dan Desain 4(2), 26–39. doi:10.37905/jjsd.v4i2.24075",
+      "status": "draft",
+      "validated_by": null,
+      "review_note": "Jumlah motif (±30) dari keterangan pengrajin; mohon dikonfirmasi.",
+      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+    },
+    {
+      "id": "motif-barakati",
+      "module": null,
+      "topic": "budaya",
+      "question": "Apa makna motif Barakati?",
+      "keywords": [
+        "barakati",
+        "makna",
+        "motif",
+        "berkah"
+      ],
+      "answer": "Motif Barakati bermakna \"diberkahi\".",
+      "source": "Kalesang.id (27 Agu 2026), \"Dari Warisan ke Penghidupan: Perempuan Tidore Merajut Kembali Tenun yang Nyaris Hilang\" – https://kalesang.id/2026/08/27/dari-warisan-ke-penghidupan-perempuan-tidore-merajut-kembali-tenun-yang-nyaris-hilang/ | Annie Nugraha, \"Puta Dino Kayangan. Membidani Lahirnya Kembali Kain Tenun Tidore yang Sempat Punah\" – https://annienugraha.com/puta-dino-kayangan-membidani-lahirnya-kembali-kain-tenun-tidore-yang-sempat-punah/",
+      "status": "draft",
+      "validated_by": null,
+      "review_note": "Mohon konfirmasi makna dan cara penenun menjelaskannya kepada murid.",
+      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+    },
+    {
+      "id": "motif-jodati",
+      "module": null,
+      "topic": "budaya",
+      "question": "Apa makna motif Jodati?",
+      "keywords": [
+        "jodati",
+        "makna",
+        "motif",
+        "tulus"
+      ],
+      "answer": "Motif Jodati bermakna ketulusan hati.",
+      "source": "Kalesang.id (27 Agu 2026), \"Dari Warisan ke Penghidupan: Perempuan Tidore Merajut Kembali Tenun yang Nyaris Hilang\" – https://kalesang.id/2026/08/27/dari-warisan-ke-penghidupan-perempuan-tidore-merajut-kembali-tenun-yang-nyaris-hilang/ | Annie Nugraha, \"Puta Dino Kayangan. Membidani Lahirnya Kembali Kain Tenun Tidore yang Sempat Punah\" – https://annienugraha.com/puta-dino-kayangan-membidani-lahirnya-kembali-kain-tenun-tidore-yang-sempat-punah/",
+      "status": "draft",
+      "validated_by": null,
+      "review_note": "Mohon konfirmasi.",
+      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+    },
+    {
+      "id": "motif-marasante",
+      "module": null,
+      "topic": "budaya",
+      "question": "Apa makna motif Marasante?",
+      "keywords": [
+        "marasante",
+        "makna",
+        "motif",
+        "berani"
+      ],
+      "answer": "Motif Marasante mengandung makna keberanian, sikap gigih dan berani masyarakat Tidore.",
+      "source": "Kalesang.id (27 Agu 2026), \"Dari Warisan ke Penghidupan: Perempuan Tidore Merajut Kembali Tenun yang Nyaris Hilang\" – https://kalesang.id/2026/08/27/dari-warisan-ke-penghidupan-perempuan-tidore-merajut-kembali-tenun-yang-nyaris-hilang/ | Annie Nugraha, \"Puta Dino Kayangan. Membidani Lahirnya Kembali Kain Tenun Tidore yang Sempat Punah\" – https://annienugraha.com/puta-dino-kayangan-membidani-lahirnya-kembali-kain-tenun-tidore-yang-sempat-punah/",
+      "status": "draft",
+      "validated_by": null,
+      "review_note": "Mohon konfirmasi.",
+      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+    },
+    {
+      "id": "motif-kalajengking",
+      "module": null,
+      "topic": "budaya",
+      "question": "Apa makna motif Kalajengking?",
+      "keywords": [
+        "kalajengking",
+        "makna",
+        "motif",
+        "lambang",
+        "kesultanan"
+      ],
+      "answer": "Motif Kalajengking adalah salah satu lambang Kesultanan Tidore.",
+      "source": "Annie Nugraha, \"Puta Dino Kayangan. Membidani Lahirnya Kembali Kain Tenun Tidore yang Sempat Punah\" – https://annienugraha.com/puta-dino-kayangan-membidani-lahirnya-kembali-kain-tenun-tidore-yang-sempat-punah/",
+      "status": "draft",
+      "validated_by": null,
+      "review_note": "Hanya satu sumber; mohon konfirmasi.",
+      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+    },
+    {
+      "id": "motif-nyili-mou",
+      "module": null,
+      "topic": "budaya",
+      "question": "Apa makna motif Nyili Mou?",
+      "keywords": [
+        "nyili mou",
+        "nyili",
+        "makna",
+        "motif",
+        "kekuatan"
+      ],
+      "answer": "Motif Nyili Mou melambangkan kekuatan Kesultanan Tidore.",
+      "source": "Annie Nugraha, \"Puta Dino Kayangan. Membidani Lahirnya Kembali Kain Tenun Tidore yang Sempat Punah\" – https://annienugraha.com/puta-dino-kayangan-membidani-lahirnya-kembali-kain-tenun-tidore-yang-sempat-punah/",
+      "status": "draft",
+      "validated_by": null,
+      "review_note": "Hanya satu sumber; mohon konfirmasi ejaan dan makna.",
+      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+    },
+    {
+      "id": "motif-salawaku",
+      "module": null,
+      "topic": "budaya",
+      "question": "Apa makna motif Salawaku?",
+      "keywords": [
+        "salawaku",
+        "perisai",
+        "makna",
+        "motif"
+      ],
+      "answer": "Motif Salawaku (perisai) terinspirasi dari sebuah kisah sejarah.",
+      "source": "Annie Nugraha, \"Puta Dino Kayangan. Membidani Lahirnya Kembali Kain Tenun Tidore yang Sempat Punah\" – https://annienugraha.com/puta-dino-kayangan-membidani-lahirnya-kembali-kain-tenun-tidore-yang-sempat-punah/",
+      "status": "draft",
+      "validated_by": null,
+      "review_note": "Kisah sejarahnya tidak dijelaskan di sumber; penenun perlu melengkapi sebelum dipakai.",
+      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
     }
   ]
 }
