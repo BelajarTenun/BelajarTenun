@@ -1,0 +1,191 @@
+{
+  "id": "puta-dino-tobaru",
+  "title": "Puta Dino motif Tobaru",
+  "fabricName": "Puta Dino motif Tobaru",
+  "tradition": "Tenun Tidore",
+  "weaver": "Rumah Tenun Puta Dino Kayangan",
+  "cover": null,
+  "level": "lanjutan",
+  "taskClass": 3,
+  "wholeTask": "Selembar kain kecil dengan beberapa satuan motif Tobaru yang rapi",
+  "status": "DRAF – makna & bentuk motif dari jurnal; tahap teknik menunggu validasi Rumah Tenun Puta Dino Kayangan",
+  "published": true,
+  "description": "Motif modern Puta Dino bermakna \"rantai: penghubung empat gunung/kesultanan, masyarakat adat Tidore di Halmahera\". Motif geometris berbentuk rantai yang menyambung.",
+  "intro": {
+    "video": null,
+    "video_attribution": null,
+    "duration_min": 30,
+    "summary": "Kamu akan menenun motif Tobaru (rantai: penghubung empat gunung/kesultanan, masyarakat adat Tidore di Halmahera). Motif geometris berbentuk rantai yang menyambung. Selesaikan Modul Dasar sebelum modul ini.",
+    "tools": [
+      "Alat tenun dengan lungsi terpasang",
+      "Sekoci untuk tiap warna benang pakan",
+      "Contoh kain atau gambar pola motif Tobaru dari penenun"
+    ],
+    "points": []
+  },
+  "sources": [
+    "Ibrahim, Sudana & Dangkua (2024), Jambura: Jurnal Seni dan Desain 4(2):26–39; ANTARA (wawancara pendiri Puta Dino Kayangan)"
+  ],
+  "steps": [
+    {
+      "id": "siapkan-benang",
+      "title": "Menyiapkan benang warna motif",
+      "instruction": "Siapkan alat tenun dengan lungsi terpasang dan sekoci untuk tiap warna pakan: warna sesuai contoh kain dari penenun.",
+      "success_criteria": "Sekoci berisi benang tiap warna motif terlihat siap di dekat alat tenun.",
+      "tips": [
+        "Gulung benang tiap warna di sekoci terpisah supaya tidak tertukar."
+      ],
+      "common_mistakes": [
+        {
+          "mistake": "Benang warna tertukar atau kusut di sekoci",
+          "fix": "Gulung ulang tiap warna di sekoci sendiri sebelum mulai."
+        }
+      ],
+      "auto_detect": true,
+      "validated_by": null,
+      "fieldStatus": {
+        "title": "usulan_ai",
+        "instruction": "usulan_ai",
+        "success_criteria": "usulan_ai",
+        "tips": "usulan_ai",
+        "common_mistakes": "usulan_ai"
+      },
+      "practice": [],
+      "supportive": []
+    },
+    {
+      "id": "baris-dasar",
+      "title": "Menenun baris dasar polos",
+      "instruction": "Tenun beberapa baris polos sebagai dasar, seperti di Modul Dasar: buka celah, masukkan pakan, rapatkan.",
+      "success_criteria": "Beberapa baris polos terlihat rata dan rapat dengan tepi lurus.",
+      "tips": [
+        "Kalau belum lancar, ulangi Modul Dasar dulu."
+      ],
+      "common_mistakes": [
+        {
+          "mistake": "Tepi kain menyempit",
+          "fix": "Biarkan pakan membentuk busur kecil sebelum dirapatkan."
+        }
+      ],
+      "auto_detect": true,
+      "validated_by": null,
+      "fieldStatus": {
+        "title": "usulan_ai",
+        "instruction": "usulan_ai",
+        "success_criteria": "usulan_ai",
+        "tips": "usulan_ai",
+        "common_mistakes": "usulan_ai"
+      },
+      "practice": [],
+      "supportive": []
+    },
+    {
+      "id": "baca-pola",
+      "title": "Membaca pola motif Tobaru",
+      "instruction": "Perhatikan contoh kain atau gambar pola Tobaru dari penenun: mata rantai yang saling menyambung. Hitung berapa helai lungsi dan berapa baris untuk satu satuan motif.",
+      "success_criteria": "Contoh pola motif terlihat di dekat alat tenun dan murid menunjuk satu satuan motif.",
+      "tips": [
+        "Tandai satu satuan motif pada contoh pola supaya mudah dihitung."
+      ],
+      "common_mistakes": [
+        {
+          "mistake": "Langsung menenun tanpa menghitung satuan motif",
+          "fix": "Hitung dulu lebar dan tinggi satu satuan motif pada contoh."
+        }
+      ],
+      "auto_detect": true,
+      "validated_by": null,
+      "fieldStatus": {
+        "title": "usulan_ai",
+        "instruction": "usulan_ai",
+        "success_criteria": "usulan_ai",
+        "tips": "usulan_ai",
+        "common_mistakes": "usulan_ai"
+      },
+      "practice": [],
+      "supportive": [
+        "motif-tobaru"
+      ]
+    },
+    {
+      "id": "bentuk-motif",
+      "title": "Membentuk satu satuan motif Tobaru",
+      "instruction": "Tenun satu satuan motif Tobaru mengikuti pola dari penenun, baris demi baris, sambil membandingkan dengan contoh.",
+      "success_criteria": "Satu satuan motif Tobaru terlihat di kain dan bentuknya sama dengan contoh pola.",
+      "tips": [
+        "Bandingkan dengan contoh setiap beberapa baris."
+      ],
+      "common_mistakes": [
+        {
+          "mistake": "Motif bergeser atau miring",
+          "fix": "Hitung ulang helai lungsi dari tepi sebelum baris berikutnya."
+        }
+      ],
+      "auto_detect": true,
+      "validated_by": null,
+      "fieldStatus": {
+        "title": "usulan_ai",
+        "instruction": "usulan_ai",
+        "success_criteria": "usulan_ai",
+        "tips": "usulan_ai",
+        "common_mistakes": "usulan_ai"
+      },
+      "practice": [],
+      "supportive": [
+        "motif-tobaru"
+      ]
+    },
+    {
+      "id": "ulangi-motif",
+      "title": "Mengulang motif dan memeriksa kerapian",
+      "instruction": "Ulangi satuan motif Tobaru sepanjang lebar kain dan periksa jarak antar-motif tetap sama.",
+      "success_criteria": "Beberapa satuan motif berjajar dengan jarak yang sama dan bentuk yang serupa.",
+      "tips": [
+        "Periksa dari jarak agak jauh supaya ketidakrataan terlihat."
+      ],
+      "common_mistakes": [
+        {
+          "mistake": "Jarak antar-motif tidak sama",
+          "fix": "Gunakan hitungan helai lungsi yang sama untuk setiap pengulangan."
+        }
+      ],
+      "auto_detect": true,
+      "validated_by": null,
+      "fieldStatus": {
+        "title": "usulan_ai",
+        "instruction": "usulan_ai",
+        "success_criteria": "usulan_ai",
+        "tips": "usulan_ai",
+        "common_mistakes": "usulan_ai"
+      },
+      "practice": [],
+      "supportive": []
+    },
+    {
+      "id": "tutup-baris",
+      "title": "Menutup dengan baris polos",
+      "instruction": "Tenun beberapa baris polos untuk mengunci motif, lalu rapatkan.",
+      "success_criteria": "Motif tertutup baris polos yang rapat di atasnya.",
+      "tips": [
+        "Rapatkan dengan kekuatan yang sama seperti baris dasar."
+      ],
+      "common_mistakes": [
+        {
+          "mistake": "Baris penutup longgar",
+          "fix": "Rapatkan setiap baris dengan hentakan yang sama."
+        }
+      ],
+      "auto_detect": true,
+      "validated_by": null,
+      "fieldStatus": {
+        "title": "usulan_ai",
+        "instruction": "usulan_ai",
+        "success_criteria": "usulan_ai",
+        "tips": "usulan_ai",
+        "common_mistakes": "usulan_ai"
+      },
+      "practice": [],
+      "supportive": []
+    }
+  ]
+}

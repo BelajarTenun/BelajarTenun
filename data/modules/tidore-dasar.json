@@ -118,5 +118,9 @@
       "Tekan tombol di kacamata untuk lanjut, ketuk dua kali untuk mengulang instruksi.",
       "Kamu bisa bertanya kapan saja, misalnya \"kenapa benangnya harus lewat sini?\""
     ]
-  }
+  },
+  "taskClass": 1,
+  "fabricName": "Puta Dino polos (dasar)",
+  "weaver": "Rumah Tenun Puta Dino Kayangan",
+  "wholeTask": "Beberapa baris tenun polos yang rata dan rapat"
 }
