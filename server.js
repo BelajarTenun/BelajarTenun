@@ -20,6 +20,7 @@ import { pairsForModule } from './lib/exo-ego.js';
 import { runDiagnostics } from './lib/diagnostics.js';
 import { googleLoginEnabled, authUrl, profileFromCode } from './lib/google-login.js';
 import { createAccessToken, livekitEnabled, roomForSession, toJsonSchema } from './lib/livekit.js';
+const pairs = new Map(); // kode pasangan HP-kamera → { userId, exp }
 
 // ----- Masuk dengan Google: alihkan ke Google, lalu kembali ke /api/auth/google/callback -----
 async function googleRoute(req, res, url) {
@@ -230,6 +231,31 @@ const routes = {
       identity: `murid-${(user?.id ?? 'tamu').slice(0, 12)}-${Math.random().toString(36).slice(2, 6)}`,
       name: user?.name ?? 'Murid', room,
       metadata: { sessionId: session.state.id, source: session.state.source, audioOnly: session.state.audioOnly },
+    });
+    return { url: config.livekitPublicUrl, token, room };
+  },
+  // ----- HP sebagai kamera untuk laptop: pasangkan lewat kode/QR, gambar HP dikirim lewat ruang LiveKit "pair-<kode>" -----
+  'POST /api/pair/new': async (b, req) => {
+    if (!livekitEnabled()) throw fail(501, 'LiveKit belum dikonfigurasi');
+    const user = await auth.currentUser(req);
+    if (!user) throw fail(401, 'Masuk dulu');
+    for (const [k, v] of pairs) if (v.exp < Date.now()) pairs.delete(k);
+    let code; do code = String(Math.floor(100000 + Math.random() * 900000)); while (pairs.has(code));
+    pairs.set(code, { userId: user.id, exp: Date.now() + 15 * 60 * 1000 });
+    return { code, expiresInSec: 900 };
+  },
+  'POST /api/pair/token': async (b, req) => {
+    if (!livekitEnabled()) throw fail(501, 'LiveKit belum dikonfigurasi');
+    const code = String(b.code || '').replace(/\D/g, '');
+    const p = pairs.get(code);
+    if (!p || p.exp < Date.now()) throw fail(404, 'Kode tidak berlaku. Buat kode baru di laptop.');
+    const camera = b.role === 'camera';
+    if (!camera) { const user = await auth.currentUser(req); if (user?.id !== p.userId) throw fail(403, 'Kode milik akun lain'); }
+    if (camera) p.exp = Date.now() + 6 * 3600 * 1000; // sudah dipakai: berlaku selama sesi latihan
+    const room = `pair-${code}`;
+    const token = createAccessToken({
+      identity: `${camera ? 'hp' : 'laptop'}-${Math.random().toString(36).slice(2, 8)}`, name: camera ? 'Kamera HP' : 'Laptop', room,
+      grants: camera ? { canSubscribe: false, canPublishData: false } : { canPublish: false, canPublishData: false },
     });
     return { url: config.livekitPublicUrl, token, room };
   },

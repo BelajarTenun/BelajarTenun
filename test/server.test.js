@@ -177,3 +177,10 @@ test('lanjutkan sesi: mulai dari tahap tertentu dan tercatat di ringkasan progre
   assert.equal(mine.reached, 2);
   assert.equal(mine.done, false);
 });
+
+test('pasangan HP-kamera: tanpa LiveKit ditolak dengan 501', async () => {
+  const r = await call('/api/pair/new', {}, 'admin');
+  assert.equal(r.status, 501);
+  const t = await call('/api/pair/token', { code: '123456', role: 'camera' });
+  assert.equal(t.status, 501);
+});
