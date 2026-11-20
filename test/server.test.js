@@ -195,3 +195,14 @@ test('heartbeat agen: hanya agen yang boleh melapor, diagnostik membaca model Li
   const r = await fetch(`${base}/api/agent/heartbeat`, { method: 'POST', headers: agent, body: JSON.stringify({ ok: true, model: models.models[1] ?? models.models[0], candidates: models.models }) });
   assert.equal(r.status, 200);
 });
+
+test('simulasi: login khusus agen selalu pemula, event sesi bisa dibaca', async () => {
+  const agent = { 'x-agent-token': process.env.AGENT_TOKEN, 'content-type': 'application/json' };
+  assert.equal((await call('/api/admin/sim-login', {}, 'admin')).status, 403, 'admin manusia tidak bisa membuat sesi simulasi');
+  const r = await fetch(`${base}/api/admin/sim-login`, { method: 'POST', headers: agent, body: '{}' });
+  assert.equal(r.status, 200);
+  assert.equal((await r.json()).user.role, 'pemula');
+  assert.match(r.headers.get('set-cookie'), /bt_session=/);
+  const ev = await fetch(`${base}/api/admin/session-events?sessionId=tidak-ada`, { headers: agent });
+  assert.deepEqual((await ev.json()).events, []);
+});

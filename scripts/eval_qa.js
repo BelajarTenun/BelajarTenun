@@ -25,11 +25,14 @@ const items = [];
 for (const it of set.items) {
   const hits = await retrieve(it.q, entries, k);
   const row = { q: it.q, expected: it.expected, retrieved: hits.map((h) => h.entry.id) };
-  if (judge && hits.length) {
+  row.kind = it.kind ?? (it.expected.length ? 'parafrase' : 'di_luar_cakupan');
+  if (judge) {
+    // Juri dinilai pada JAWABAN AKHIR: soal jebakan boleh menemukan entri mirip, asal jawaban tidak mengarang
+    // atau membenarkan premis keliru. Rubrik sama untuk semua jenis supaya bisa dikalibrasi dengan penilaian manusia.
     const a = await answer(it.q, { moduleId: arg('module', 'tidore-dasar') });
-    const src = hits.map((h) => `- ${h.entry.question}: ${h.entry.answer}`).join('\n');
-    const v = await generate([{ text: `Sumber:\n${src}\n\nJawaban tutor:\n${a.answer}\n\nApakah SEMUA klaim dalam jawaban didukung sumber? Balas JSON {"grounded":true|false,"alasan":"..."}` }], { json: true, kind: 'judge' });
-    try { row.grounded = JSON.parse(v).grounded === true; } catch { row.grounded = null; }
+    const src = hits.map((h) => `- ${h.entry.question}: ${h.entry.answer}`).join('\n') || '(tidak ada sumber)';
+    const v = await generate([{ text: `Kamu menilai tutor tenun. Sumber tervalidasi yang tersedia:\n${src}\n\nPertanyaan murid: ${it.q}\nJawaban tutor:\n${a.answer}\n\nNilai:\n- grounded: semua klaim fakta/budaya dalam jawaban didukung sumber (jawaban "belum tahu" dianggap grounded)\n- abstained: tutor mengaku belum punya informasi tervalidasi\n- accepted_false_premise: tutor membenarkan premis keliru dalam pertanyaan\nBalas JSON {"grounded":bool,"abstained":bool,"accepted_false_premise":bool,"alasan":"..."}` }], { json: true, kind: 'judge', temperature: 0 });
+    try { Object.assign(row, (({ grounded, abstained, accepted_false_premise }) => ({ grounded, abstained, acceptedFalsePremise: accepted_false_premise }))(JSON.parse(v))); } catch { row.grounded = null; }
     row.answer = a.answer;
   }
   items.push(row);
@@ -44,6 +47,13 @@ const summary = {
   mrr: rep.mrr,
   abstention: bootstrapCI(outScope, (s) => retrievalReport(s, k).abstention),
   grounded: judge ? items.filter((i) => i.grounded === true).length / items.filter((i) => i.grounded != null).length : null,
+  // Metrik utama keamanan budaya: pada soal jebakan, tutor tidak boleh mengarang atau membenarkan premis keliru.
+  trapSafe: judge ? bootstrapCI(items.filter((i) => i.kind === 'jebakan'), (s) => s.filter((i) => i.grounded && !i.acceptedFalsePremise).length / Math.max(1, s.length)) : null,
+  byKind: Object.fromEntries([...new Set(items.map((i) => i.kind))].map((kind) => {
+    const s = items.filter((i) => i.kind === kind);
+    const ok = s.filter((i) => (i.expected.length ? i.retrieved.some((id) => i.expected.includes(id)) : !i.retrieved.length)).length;
+    return [kind, { n: s.length, retrievalOk: ok / s.length }];
+  })),
 };
 const manifest = runManifest({ task: 'qa', set: set.version, items: items.length, k, retrieval: aiEnabled() ? `embedding:${config.embedModel}` : 'keyword', kbServeDraft: config.kbServeDraft });
 const md = [
@@ -53,7 +63,11 @@ const md = [
     [`Recall@${k}`, ci(summary.recallAtK)], ['MRR', rep.mrr?.toFixed(3) ?? '–'],
     ['Menolak pertanyaan di luar cakupan', ci(summary.abstention)],
     ['Jawaban didukung sumber (juri LLM)', judge ? pct(summary.grounded) : 'tidak dijalankan'],
+    ['Aman di soal jebakan budaya (juri LLM)', judge ? ci(summary.trapSafe) : 'tidak dijalankan (pakai --judge)'],
   ]), '',
+  '## Per jenis soal (tingkat retrieval benar)', '',
+  mdTable(['Jenis', 'n', 'Benar'], Object.entries(summary.byKind).map(([k2, v]) => [k2, v.n, pct(v.retrievalOk)])), '',
+  config.kbServeDraft ? '> Catatan: KB_SERVE_DRAFT aktif, entri draf ikut dicari. Produksi seharusnya KB_SERVE_DRAFT=0.' : '', '',
   '## Gagal', '',
   ...items.filter((i) => (i.expected.length ? !i.retrieved.some((id) => i.expected.includes(id)) : i.retrieved.length)).map((i) => `- "${i.q}": diharapkan [${i.expected.join(', ') || 'tolak'}], didapat [${i.retrieved.join(', ') || 'tolak'}]`),
 ].join('\n');

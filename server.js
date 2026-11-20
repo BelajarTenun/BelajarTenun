@@ -271,6 +271,25 @@ const routes = {
     await store.writeJson('agent-heartbeat.json', { ok: Boolean(b.ok), model: b.model ?? null, candidates: b.candidates ?? [], error: b.error ?? null, at: new Date().toISOString() });
     return { ok: true };
   },
+  // ----- Simulasi sesi (scripts/simulate_session.js, rencana 7.2): khusus token agen -----
+  // Akun murid khusus simulasi (email *.local, tidak bisa login Google) supaya harness bisa jalan di CI tanpa akun manusia.
+  'POST /api/admin/sim-login': async (b, req, res) => {
+    const user = await auth.requireRole(req, 'admin');
+    if (user.id !== 'agent' && !config.authDisabled) throw fail(403, 'Khusus agen');
+    let sim = await auth.loginWithGoogle({ sub: 'simulasi-belajartenun', email: 'simulasi@belajartenun.local', name: 'Murid Simulasi' });
+    // Selalu pemula: di database kosong pengguna pertama otomatis admin, dan simulasi tidak boleh menjadi admin.
+    if (sim.role !== 'pemula') sim = await auth.updateUser(sim.id, { role: 'pemula' });
+    res.setHeader('set-cookie', auth.sessionCookie(sim.id));
+    return { user: sim };
+  },
+  'GET /api/admin/session-events': async (b, req, res, url) => {
+    const user = await auth.requireRole(req, 'admin');
+    if (user.id !== 'agent' && user.role !== 'admin') throw fail(403, 'Khusus admin');
+    const id = url.searchParams.get('sessionId');
+    if (!id) throw fail(400, 'sessionId wajib');
+    const events = (await data.readEvents()).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter((e) => e?.sessionId === id);
+    return { events };
+  },
   // Dipanggil agen Python saat bergabung ke ruang: instruksi + tools sesuai modul & mode sesi.
   'GET /api/agent/session-config': async (b, req, res, url) => {
     const user = await auth.requireRole(req, 'admin');

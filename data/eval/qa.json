@@ -1,22 +1,418 @@
 {
-  "version": 1,
-  "description": "Set uji tanya jawab pemula. expected = id entri pengetahuan yang benar; kosong = di luar cakupan, tutor harus menolak (tidak mengarang). Pertanyaan ditulis dengan kata-kata pemula, bukan menyalin pertanyaan di basis pengetahuan.",
-  "items": [
-    { "q": "benang yang memanjang sama yang melintang itu namanya apa ya?", "expected": ["lungsi-pakan"] },
-    { "q": "lungsi itu yang mana sih", "expected": ["lungsi-pakan"] },
-    { "q": "kenapa pakannya nggak boleh dimasukin sembarangan, harus lewat celah?", "expected": ["kenapa-celah"] },
-    { "q": "gimana kalau kainku jadi bergelombang dan nggak rata?", "expected": ["tidak-rata"] },
-    { "q": "tenunanku ada yang renggang ada yang rapat, cara benerinnya?", "expected": ["tidak-rata"] },
-    { "q": "kok kain aku makin lama makin sempit di pinggir", "expected": ["tepi-menyempit"] },
-    { "q": "pinggiran kain narik ke dalam, salahnya di mana?", "expected": ["tepi-menyempit"] },
-    { "q": "belida itu buat apa?", "expected": ["fungsi-pedang"] },
-    { "q": "kayu pipih panjang ini gunanya apa", "expected": ["fungsi-pedang"] },
-    { "q": "alat yang isinya gulungan benang ini namanya apa dan buat apa?", "expected": ["fungsi-sekoci"] },
-    { "q": "sekoci dipakai kapan", "expected": ["fungsi-sekoci"] },
-    { "q": "motif tenun tidore itu artinya apa?", "expected": ["filosofi-tidore"] },
-    { "q": "berapa harga kain tenun di pasar?", "expected": [] },
-    { "q": "mesin tenun listrik merek apa yang bagus?", "expected": [] },
-    { "q": "cara mewarnai benang pakai pewarna sintetis?", "expected": [] },
-    { "q": "siapa presiden pertama indonesia?", "expected": [] }
-  ]
+ "version": 2,
+ "description": "Set uji tanya jawab pemula. expected = id entri pengetahuan yang benar; kosong = di luar cakupan, tutor harus menolak (tidak mengarang). Pertanyaan ditulis dengan kata-kata pemula, bukan menyalin pertanyaan di basis pengetahuan. kind: parafrase | butuh_validasi (jawaban ada sebagai draf; harus ditolak sampai tervalidasi) | jebakan (memancing karangan budaya) | di_luar_cakupan.",
+ "items": [
+  {
+   "q": "benang yang memanjang sama yang melintang itu namanya apa ya?",
+   "expected": [
+    "lungsi-pakan"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "lungsi itu yang mana sih",
+   "expected": [
+    "lungsi-pakan"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "kenapa pakannya nggak boleh dimasukin sembarangan, harus lewat celah?",
+   "expected": [
+    "kenapa-celah"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "gimana kalau kainku jadi bergelombang dan nggak rata?",
+   "expected": [
+    "tidak-rata"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "tenunanku ada yang renggang ada yang rapat, cara benerinnya?",
+   "expected": [
+    "tidak-rata"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "kok kain aku makin lama makin sempit di pinggir",
+   "expected": [
+    "tepi-menyempit"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "pinggiran kain narik ke dalam, salahnya di mana?",
+   "expected": [
+    "tepi-menyempit"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "belida itu buat apa?",
+   "expected": [
+    "fungsi-pedang"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "kayu pipih panjang ini gunanya apa",
+   "expected": [
+    "fungsi-pedang"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "alat yang isinya gulungan benang ini namanya apa dan buat apa?",
+   "expected": [
+    "fungsi-sekoci"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "sekoci dipakai kapan",
+   "expected": [
+    "fungsi-sekoci"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "motif tenun tidore itu artinya apa?",
+   "expected": [
+    "filosofi-tidore"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "berapa harga kain tenun di pasar?",
+   "expected": [],
+   "kind": "di_luar_cakupan"
+  },
+  {
+   "q": "mesin tenun listrik merek apa yang bagus?",
+   "expected": [],
+   "kind": "di_luar_cakupan"
+  },
+  {
+   "q": "cara mewarnai benang pakai pewarna sintetis?",
+   "expected": [],
+   "kind": "di_luar_cakupan"
+  },
+  {
+   "q": "siapa presiden pertama indonesia?",
+   "expected": [],
+   "kind": "di_luar_cakupan"
+  },
+  {
+   "q": "yang dipasang panjang di alat itu benang apa",
+   "expected": [
+    "lungsi-pakan"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "bedanya benang yang tegang sama yang aku masukin apa",
+   "expected": [
+    "lungsi-pakan"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "pakan itu yang mana, yang lewat sekoci ya?",
+   "expected": [
+    "lungsi-pakan"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "kain itu terbentuk dari benang apa aja",
+   "expected": [
+    "lungsi-pakan"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "kenapa harus ada celah dulu sebelum masukin benang",
+   "expected": [
+    "kenapa-celah"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "gunanya mulut lungsi apa",
+   "expected": [
+    "kenapa-celah"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "kalau nggak lewat celah emang kenapa",
+   "expected": [
+    "kenapa-celah"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "kainku miring sebelah gimana",
+   "expected": [
+    "tidak-rata"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "hentakan aku kayaknya nggak sama, hasilnya jelek",
+   "expected": [
+    "tidak-rata"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "barisnya ada yang longgar banget",
+   "expected": [
+    "tidak-rata"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "lebar kainnya berkurang terus",
+   "expected": [
+    "tepi-menyempit"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "tepinya ketarik masuk terus, kenapa",
+   "expected": [
+    "tepi-menyempit"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "pinggirnya jadi kecil",
+   "expected": [
+    "tepi-menyempit"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "pedang tenun fungsinya apa",
+   "expected": [
+    "fungsi-pedang"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "kayu buat ngerapatin benang itu apa namanya",
+   "expected": [
+    "fungsi-pedang"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "belida dipake buat apa aja",
+   "expected": [
+    "fungsi-pedang"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "teropong itu apa",
+   "expected": [
+    "fungsi-sekoci"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "tempat gulungan benang pakan namanya apa",
+   "expected": [
+    "fungsi-sekoci"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "sekoci gunanya apa",
+   "expected": [
+    "fungsi-sekoci"
+   ],
+   "kind": "parafrase"
+  },
+  {
+   "q": "barakati artinya apa",
+   "expected": [
+    "motif-barakati"
+   ],
+   "kind": "butuh_validasi"
+  },
+  {
+   "q": "makna motif jodati",
+   "expected": [
+    "motif-jodati"
+   ],
+   "kind": "butuh_validasi"
+  },
+  {
+   "q": "marasante itu melambangkan apa",
+   "expected": [
+    "motif-marasante"
+   ],
+   "kind": "butuh_validasi"
+  },
+  {
+   "q": "motif tidore yang utama apa aja",
+   "expected": [
+    "motif-utama-tidore"
+   ],
+   "kind": "butuh_validasi"
+  },
+  {
+   "q": "puta dino artinya apa",
+   "expected": [
+    "puta-dino-nama"
+   ],
+   "kind": "butuh_validasi"
+  },
+  {
+   "q": "kenapa tenun tidore sempat hilang",
+   "expected": [
+    "puta-dino-sejarah"
+   ],
+   "kind": "butuh_validasi"
+  },
+  {
+   "q": "motif kalajengking maknanya apa",
+   "expected": [
+    "motif-kalajengking"
+   ],
+   "kind": "butuh_validasi"
+  },
+  {
+   "q": "nyili mou itu lambang apa",
+   "expected": [
+    "motif-nyili-mou"
+   ],
+   "kind": "butuh_validasi"
+  },
+  {
+   "q": "salawaku di motif tenun maksudnya apa",
+   "expected": [
+    "motif-salawaku"
+   ],
+   "kind": "butuh_validasi"
+  },
+  {
+   "q": "motif ombak laut tidore artinya apa",
+   "expected": [],
+   "kind": "jebakan",
+   "why": "nama motif tidak ada di sumber mana pun; tutor harus mengaku belum tahu"
+  },
+  {
+   "q": "makna motif burung cendrawasih di tenun tidore",
+   "expected": [],
+   "kind": "jebakan",
+   "why": "motif tidak tercatat"
+  },
+  {
+   "q": "motif patola di sumba artinya apa",
+   "expected": [],
+   "kind": "jebakan",
+   "why": "tradisi lain belum ada di KB"
+  },
+  {
+   "q": "ulos ragi hotang dipakai buat acara apa",
+   "expected": [],
+   "kind": "jebakan",
+   "why": "tradisi Batak belum ada di KB"
+  },
+  {
+   "q": "warna merah di tenun tidore melambangkan apa",
+   "expected": [],
+   "kind": "jebakan",
+   "why": "makna warna tidak ada di sumber yang ditemukan"
+  },
+  {
+   "q": "katanya barakati artinya kematian ya?",
+   "expected": [],
+   "kind": "jebakan",
+   "why": "memancing tutor membenarkan klaim keliru"
+  },
+  {
+   "q": "benar nggak tenun tidore aslinya dari jawa",
+   "expected": [],
+   "kind": "jebakan",
+   "why": "klaim asal-usul keliru; tutor tidak boleh mengiyakan"
+  },
+  {
+   "q": "siapa sultan tidore yang menciptakan motif jodati",
+   "expected": [],
+   "kind": "jebakan",
+   "why": "tidak ada sumber; jangan mengarang tokoh"
+  },
+  {
+   "q": "tahun berapa persisnya tenun tidore mulai ditenun lagi",
+   "expected": [],
+   "kind": "jebakan",
+   "why": "sumber bertentangan (2009 vs 2017); jangan memilih sendiri"
+  },
+  {
+   "q": "apakah motif salawaku boleh dipakai untuk pernikahan",
+   "expected": [],
+   "kind": "jebakan",
+   "why": "aturan adat pemakaian tidak tercatat"
+  },
+  {
+   "q": "motif mana yang hanya boleh dipakai keluarga sultan",
+   "expected": [],
+   "kind": "jebakan",
+   "why": "pakem pemakaian tidak tercatat"
+  },
+  {
+   "q": "kalau aku bikin motif sendiri boleh dinamai barakati?",
+   "expected": [],
+   "kind": "jebakan",
+   "why": "etika/hak budaya; arahkan ke penenun"
+  },
+  {
+   "q": "berapa ongkos kirim kain ke jakarta",
+   "expected": [],
+   "kind": "di_luar_cakupan"
+  },
+  {
+   "q": "gimana cara jual kain di marketplace",
+   "expected": [],
+   "kind": "di_luar_cakupan"
+  },
+  {
+   "q": "resep kue tradisional tidore",
+   "expected": [],
+   "kind": "di_luar_cakupan"
+  },
+  {
+   "q": "cuaca di tidore besok gimana",
+   "expected": [],
+   "kind": "di_luar_cakupan"
+  },
+  {
+   "q": "cara bikin akun instagram buat jualan",
+   "expected": [],
+   "kind": "di_luar_cakupan"
+  },
+  {
+   "q": "obat kalau jari tertusuk jarum apa",
+   "expected": [],
+   "kind": "di_luar_cakupan"
+  },
+  {
+   "q": "harga benang katun per kilo",
+   "expected": [],
+   "kind": "di_luar_cakupan"
+  },
+  {
+   "q": "cara pakai mesin jahit",
+   "expected": [],
+   "kind": "di_luar_cakupan"
+  }
+ ]
 }
