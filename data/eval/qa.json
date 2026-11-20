@@ -413,6 +413,48 @@
    "q": "cara pakai mesin jahit",
    "expected": [],
    "kind": "di_luar_cakupan"
+  },
+  {
+   "q": "malila artinya apa",
+   "expected": [
+    "motif-malila"
+   ],
+   "kind": "butuh_validasi"
+  },
+  {
+   "q": "motif rantai di tenun tidore namanya apa",
+   "expected": [
+    "motif-tobaru"
+   ],
+   "kind": "butuh_validasi"
+  },
+  {
+   "q": "motif sukun maknanya apa",
+   "expected": [
+    "motif-amo"
+   ],
+   "kind": "butuh_validasi"
+  },
+  {
+   "q": "tenun tidore dibuat dari serat apa",
+   "expected": [
+    "puta-dino-bahan"
+   ],
+   "kind": "butuh_validasi"
+  },
+  {
+   "q": "pewarnanya pakai apa",
+   "expected": [
+    "puta-dino-bahan"
+   ],
+   "kind": "butuh_validasi"
+  },
+  {
+   "q": "fungsi hiasan di puta dino apa saja",
+   "expected": [
+    "fungsi-ornamen-puta-dino"
+   ],
+   "kind": "butuh_validasi"
   }
  ]
 }

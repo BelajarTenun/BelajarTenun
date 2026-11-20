@@ -109,58 +109,60 @@
       "id": "puta-dino-nama",
       "module": null,
       "topic": "budaya",
-      "question": "Apa arti nama Puta Dino Kayangan?",
+      "question": "Apa arti Puta Dino?",
       "keywords": [
         "puta dino",
-        "kayangan",
-        "arti nama",
-        "nama"
+        "arti",
+        "nama",
+        "kain",
+        "tenun"
       ],
-      "answer": "\"Puta\" berarti kain dan \"Dino\" berarti tenun atau jahit/susun. \"Kayangan\" dimaknai \"tinggi\", sehingga Puta Dino Kayangan dimaknai sebagai susunan kain yang manfaatnya tinggi.",
-      "source": "ANTARA News Mataram, \"Sosok perempuan inspiratif dibalik pelestarian tenun Tidore\" – https://mataram.antaranews.com/berita/237890/sosok-perempuan-inspiratif-dibalik-pelestarian-tenun-tidore | Kalesang.id (27 Agu 2026), \"Dari Warisan ke Penghidupan: Perempuan Tidore Merajut Kembali Tenun yang Nyaris Hilang\" – https://kalesang.id/2026/08/27/dari-warisan-ke-penghidupan-perempuan-tidore-merajut-kembali-tenun-yang-nyaris-hilang/ | Kompasiana (Sulasmi Kisman), \"Perempuan Heroik di Balik Tenun Tidore\" – https://www.kompasiana.com/sulasmikisman/5fb94580d541df10ba105d93/perempuan-heroik-dibalik-tenun-tidore",
+      "answer": "Dalam bahasa Tidore, \"puta\" berarti kain dan \"dino\" berarti tenun atau anyaman benang. Orang Tidore menyebut puta atau puta dino untuk semua jenis kain.",
+      "source": "Ibrahim, S., Sudana, I W., & Dangkua, S. (2024). Bentuk dan Fungsi Ornamen pada Kain Tenun (Puta Dino) di Kota Tidore Kepulauan Provinsi Maluku Utara. Jambura: Jurnal Seni dan Desain 4(2), 26–39. doi:10.37905/jjsd.v4i2.24075, hlm. 27",
       "status": "draft",
       "validated_by": null,
-      "review_note": "Sumber berbeda soal \"Kayangan\": ANTARA (mengutip Anita Gathmir) = tinggi; Kalesang = tinggi atau indah; Kompasiana menyebut nama tambahan dari Jou Sultan Tidore (belum didukung sumber lain). Mohon konfirmasi penenun.",
-      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+      "review_note": "Makna kata \"Kayangan\" pada nama UKM tidak dijelaskan jurnal; berita menyebut \"tinggi\" (ANTARA) atau \"tinggi/indah\" (Kalesang). Mohon penenun menjelaskan.",
+      "origin": "jurnal UNG 2024 dibaca utuh (20 Nov 2026); data jurnal dari observasi & wawancara di UKM Puta Dino Kayangan"
     },
     {
       "id": "puta-dino-sejarah",
       "module": null,
       "topic": "budaya",
-      "question": "Bagaimana sejarah tenun Tidore dihidupkan kembali?",
+      "question": "Bagaimana tenun Tidore dihidupkan kembali?",
       "keywords": [
         "sejarah",
         "punah",
         "dihidupkan",
-        "revitalisasi",
         "leiden",
-        "foto lama"
+        "foto",
+        "anitawati",
+        "2018"
       ],
-      "answer": "Tradisi menenun di Tidore sempat hampir punah. Upaya menghidupkannya kembali dimulai oleh Anita Gathmir bersama Rumah Tenun Puta Dino Kayangan; motif-motifnya direkonstruksi dari foto-foto kain lama, antara lain dari koleksi museum di Leiden, Belanda.",
-      "source": "Annie Nugraha, \"Puta Dino Kayangan. Membidani Lahirnya Kembali Kain Tenun Tidore yang Sempat Punah\" – https://annienugraha.com/puta-dino-kayangan-membidani-lahirnya-kembali-kain-tenun-tidore-yang-sempat-punah/ | Karya Kreatif Indonesia, profil UMKM Puta Dino Khayangan – https://www.karyakreatifindonesia.co.id/umkm/puta-dino-khayangan/73356 | Solihat, A., Mastuti, D.W.R., & Harapan, A.A. (2022). Revitalisasi Berbasis Translokal: Menghidupkan Kembali Puta Dino, Tenun Tidore yang Telah Punah. Jurnal Pengabdian dan Pemberdayaan Masyarakat – https://core.ac.uk/download/524572869.pdf | Kompasiana (Sulasmi Kisman), \"Perempuan Heroik di Balik Tenun Tidore\" – https://www.kompasiana.com/sulasmikisman/5fb94580d541df10ba105d93/perempuan-heroik-dibalik-tenun-tidore",
+      "answer": "Puta dino adalah warisan Kesultanan Tidore yang sempat punah sekitar seratus tahun. UKM Puta Dino Kayangan didirikan tahun 2018 oleh Anitawati Gathmir di Kelurahan Soasio, Tidore, dan menenunnya kembali berdasarkan foto hitam-putih ornamen tikar dari Museum Leiden, Belanda.",
+      "source": "Ibrahim, S., Sudana, I W., & Dangkua, S. (2024). Bentuk dan Fungsi Ornamen pada Kain Tenun (Puta Dino) di Kota Tidore Kepulauan Provinsi Maluku Utara. Jambura: Jurnal Seni dan Desain 4(2), 26–39. doi:10.37905/jjsd.v4i2.24075, hlm. 27–28",
       "status": "draft",
       "validated_by": null,
-      "review_note": "Tahun mulai berbeda antar sumber (2017 vs kegiatan sejak 2009). Sebut tahun hanya setelah dikonfirmasi penenun.",
-      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+      "review_note": "Jurnal: berdiri 2018. Berita/blog menyebut 2017 atau kegiatan sejak 2009. Jurnal juga menyebut foto TIKAR (ornamen tikar khas Halmahera), bukan foto kain. Mohon dikonfirmasi.",
+      "origin": "jurnal UNG 2024 dibaca utuh (20 Nov 2026); data jurnal dari observasi & wawancara di UKM Puta Dino Kayangan"
     },
     {
       "id": "motif-utama-tidore",
       "module": null,
       "topic": "budaya",
-      "question": "Apa saja motif utama tenun Tidore?",
+      "question": "Apa saja motif tenun Tidore?",
       "keywords": [
-        "motif utama",
         "motif",
-        "barakati",
-        "marasante",
-        "jodati"
+        "utama",
+        "tradisional",
+        "modern",
+        "jenis motif"
       ],
-      "answer": "Tiga motif utama Puta Dino adalah Barakati, Marasante, dan Jodati. Rumah Tenun Puta Dino disebut memiliki sekitar 30 motif.",
-      "source": "Kalesang.id (27 Agu 2026), \"Dari Warisan ke Penghidupan: Perempuan Tidore Merajut Kembali Tenun yang Nyaris Hilang\" – https://kalesang.id/2026/08/27/dari-warisan-ke-penghidupan-perempuan-tidore-merajut-kembali-tenun-yang-nyaris-hilang/ | Ibrahim, S., Sudana, I W., & Dangkua, S. (2024). Bentuk dan Fungsi Ornamen pada Kain Tenun (Puta Dino) di Kota Tidore Kepulauan Provinsi Maluku Utara. Jambura: Jurnal Seni dan Desain 4(2), 26–39. doi:10.37905/jjsd.v4i2.24075",
+      "answer": "Ornamen puta dino terbagi dua. Ornamen tradisional: jodati (ketulusan hati), barakati (diberkati), dan marasante (keberanian). Ornamen modern: nyilimou (wilayah yang jauh), malila (saling bantu), tobaru (rantai), amo (buah sukun), dan kalajengking.",
+      "source": "Ibrahim, S., Sudana, I W., & Dangkua, S. (2024). Bentuk dan Fungsi Ornamen pada Kain Tenun (Puta Dino) di Kota Tidore Kepulauan Provinsi Maluku Utara. Jambura: Jurnal Seni dan Desain 4(2), 26–39. doi:10.37905/jjsd.v4i2.24075, hlm. 26, 28–30",
       "status": "draft",
       "validated_by": null,
-      "review_note": "Jumlah motif (±30) dari keterangan pengrajin; mohon dikonfirmasi.",
-      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+      "review_note": "Berita menyebut sekitar 30 motif di rumah tenun; jurnal hanya membahas 8 motif ini.",
+      "origin": "jurnal UNG 2024 dibaca utuh (20 Nov 2026); data jurnal dari observasi & wawancara di UKM Puta Dino Kayangan"
     },
     {
       "id": "motif-barakati",
@@ -171,14 +173,16 @@
         "barakati",
         "makna",
         "motif",
-        "berkah"
+        "berkah",
+        "diberkati",
+        "mahkota"
       ],
-      "answer": "Motif Barakati bermakna \"diberkahi\".",
-      "source": "Kalesang.id (27 Agu 2026), \"Dari Warisan ke Penghidupan: Perempuan Tidore Merajut Kembali Tenun yang Nyaris Hilang\" – https://kalesang.id/2026/08/27/dari-warisan-ke-penghidupan-perempuan-tidore-merajut-kembali-tenun-yang-nyaris-hilang/ | Annie Nugraha, \"Puta Dino Kayangan. Membidani Lahirnya Kembali Kain Tenun Tidore yang Sempat Punah\" – https://annienugraha.com/puta-dino-kayangan-membidani-lahirnya-kembali-kain-tenun-tidore-yang-sempat-punah/",
+      "answer": "Barakati berarti \"diberkati\". Motif ini menggambarkan mahkota yang menghadap ke atas dan ke bawah, lambang kekuasaan dan kemuliaan sultan pada masa lalu.",
+      "source": "Ibrahim, S., Sudana, I W., & Dangkua, S. (2024). Bentuk dan Fungsi Ornamen pada Kain Tenun (Puta Dino) di Kota Tidore Kepulauan Provinsi Maluku Utara. Jambura: Jurnal Seni dan Desain 4(2), 26–39. doi:10.37905/jjsd.v4i2.24075, hlm. 29, 32",
       "status": "draft",
       "validated_by": null,
-      "review_note": "Mohon konfirmasi makna dan cara penenun menjelaskannya kepada murid.",
-      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+      "review_note": "Dari jurnal ilmiah; mohon dikonfirmasi penenun sebelum dipakai.",
+      "origin": "jurnal UNG 2024 dibaca utuh (20 Nov 2026); data jurnal dari observasi & wawancara di UKM Puta Dino Kayangan"
     },
     {
       "id": "motif-jodati",
@@ -189,14 +193,15 @@
         "jodati",
         "makna",
         "motif",
-        "tulus"
+        "tulus",
+        "ketulusan"
       ],
-      "answer": "Motif Jodati bermakna ketulusan hati.",
-      "source": "Kalesang.id (27 Agu 2026), \"Dari Warisan ke Penghidupan: Perempuan Tidore Merajut Kembali Tenun yang Nyaris Hilang\" – https://kalesang.id/2026/08/27/dari-warisan-ke-penghidupan-perempuan-tidore-merajut-kembali-tenun-yang-nyaris-hilang/ | Annie Nugraha, \"Puta Dino Kayangan. Membidani Lahirnya Kembali Kain Tenun Tidore yang Sempat Punah\" – https://annienugraha.com/puta-dino-kayangan-membidani-lahirnya-kembali-kain-tenun-tidore-yang-sempat-punah/",
+      "answer": "Jodati berarti \"ketulusan hati\". Bentuknya geometris: belah ketupat di tengah dengan gelombang atau titik dalam kotak yang berulang, dengan warna hitam dan kuning berselang-seling. Pengulangannya menggambarkan kesatuan dan kebersamaan.",
+      "source": "Ibrahim, S., Sudana, I W., & Dangkua, S. (2024). Bentuk dan Fungsi Ornamen pada Kain Tenun (Puta Dino) di Kota Tidore Kepulauan Provinsi Maluku Utara. Jambura: Jurnal Seni dan Desain 4(2), 26–39. doi:10.37905/jjsd.v4i2.24075, hlm. 28–29, 33",
       "status": "draft",
       "validated_by": null,
-      "review_note": "Mohon konfirmasi.",
-      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+      "review_note": "Dari jurnal ilmiah; mohon dikonfirmasi penenun sebelum dipakai.",
+      "origin": "jurnal UNG 2024 dibaca utuh (20 Nov 2026); data jurnal dari observasi & wawancara di UKM Puta Dino Kayangan"
     },
     {
       "id": "motif-marasante",
@@ -207,14 +212,15 @@
         "marasante",
         "makna",
         "motif",
-        "berani"
+        "berani",
+        "keberanian"
       ],
-      "answer": "Motif Marasante mengandung makna keberanian, sikap gigih dan berani masyarakat Tidore.",
-      "source": "Kalesang.id (27 Agu 2026), \"Dari Warisan ke Penghidupan: Perempuan Tidore Merajut Kembali Tenun yang Nyaris Hilang\" – https://kalesang.id/2026/08/27/dari-warisan-ke-penghidupan-perempuan-tidore-merajut-kembali-tenun-yang-nyaris-hilang/ | Annie Nugraha, \"Puta Dino Kayangan. Membidani Lahirnya Kembali Kain Tenun Tidore yang Sempat Punah\" – https://annienugraha.com/puta-dino-kayangan-membidani-lahirnya-kembali-kain-tenun-tidore-yang-sempat-punah/",
+      "answer": "Marasante berarti \"keberanian\". Motif ini melambangkan keberanian dan kekuatan, dan mengingatkan pada luasnya wilayah Kesultanan Tidore pada masa lalu, misalnya Seram dan Papua.",
+      "source": "Ibrahim, S., Sudana, I W., & Dangkua, S. (2024). Bentuk dan Fungsi Ornamen pada Kain Tenun (Puta Dino) di Kota Tidore Kepulauan Provinsi Maluku Utara. Jambura: Jurnal Seni dan Desain 4(2), 26–39. doi:10.37905/jjsd.v4i2.24075, hlm. 29, 32",
       "status": "draft",
       "validated_by": null,
-      "review_note": "Mohon konfirmasi.",
-      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+      "review_note": "Dari jurnal ilmiah; mohon dikonfirmasi penenun sebelum dipakai.",
+      "origin": "jurnal UNG 2024 dibaca utuh (20 Nov 2026); data jurnal dari observasi & wawancara di UKM Puta Dino Kayangan"
     },
     {
       "id": "motif-kalajengking",
@@ -225,34 +231,35 @@
         "kalajengking",
         "makna",
         "motif",
-        "lambang",
-        "kesultanan"
+        "sultan nuku",
+        "sakral"
       ],
-      "answer": "Motif Kalajengking adalah salah satu lambang Kesultanan Tidore.",
-      "source": "Annie Nugraha, \"Puta Dino Kayangan. Membidani Lahirnya Kembali Kain Tenun Tidore yang Sempat Punah\" – https://annienugraha.com/puta-dino-kayangan-membidani-lahirnya-kembali-kain-tenun-tidore-yang-sempat-punah/",
+      "answer": "Kalajengking adalah salah satu hewan sakral Kesultanan Tidore, tampak pada bangunan dan atribut kesultanan. Ia juga melambangkan karakter Sultan Nuku: hati-hati dan penuh perhitungan, teguh, penuh perjuangan, dermawan, dan penuh kasih sayang.",
+      "source": "Ibrahim, S., Sudana, I W., & Dangkua, S. (2024). Bentuk dan Fungsi Ornamen pada Kain Tenun (Puta Dino) di Kota Tidore Kepulauan Provinsi Maluku Utara. Jambura: Jurnal Seni dan Desain 4(2), 26–39. doi:10.37905/jjsd.v4i2.24075, hlm. 31–32",
       "status": "draft",
       "validated_by": null,
-      "review_note": "Hanya satu sumber; mohon konfirmasi.",
-      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+      "review_note": "Jurnal mengutip informan yang menyebut Sultan Nuku \"sultan pertama\" Tidore; ini perlu dicek (Sultan Nuku dikenal sebagai pahlawan nasional abad ke-18, bukan sultan pertama). Jangan dipakai tutor sebelum dikoreksi penenun.",
+      "origin": "jurnal UNG 2024 dibaca utuh (20 Nov 2026); data jurnal dari observasi & wawancara di UKM Puta Dino Kayangan"
     },
     {
       "id": "motif-nyili-mou",
       "module": null,
       "topic": "budaya",
-      "question": "Apa makna motif Nyili Mou?",
+      "question": "Apa makna motif Nyilimou?",
       "keywords": [
+        "nyilimou",
         "nyili mou",
         "nyili",
         "makna",
         "motif",
-        "kekuatan"
+        "wilayah jauh"
       ],
-      "answer": "Motif Nyili Mou melambangkan kekuatan Kesultanan Tidore.",
-      "source": "Annie Nugraha, \"Puta Dino Kayangan. Membidani Lahirnya Kembali Kain Tenun Tidore yang Sempat Punah\" – https://annienugraha.com/puta-dino-kayangan-membidani-lahirnya-kembali-kain-tenun-tidore-yang-sempat-punah/",
+      "answer": "Nyilimou berarti \"wilayah yang jauh\". Motif ini menggambarkan kekuatan Kesultanan Tidore yang wilayahnya luas dan jauh, disatukan oleh pemimpin yang adil dan bijaksana walau terpisah samudera.",
+      "source": "Ibrahim, S., Sudana, I W., & Dangkua, S. (2024). Bentuk dan Fungsi Ornamen pada Kain Tenun (Puta Dino) di Kota Tidore Kepulauan Provinsi Maluku Utara. Jambura: Jurnal Seni dan Desain 4(2), 26–39. doi:10.37905/jjsd.v4i2.24075, hlm. 30",
       "status": "draft",
       "validated_by": null,
-      "review_note": "Hanya satu sumber; mohon konfirmasi ejaan dan makna.",
-      "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+      "review_note": "DIPERBAIKI: draf sebelumnya (dari blog) hanya menyebut \"melambangkan kekuatan Kesultanan\". Jurnal menulis \"nyilimou\" (satu kata).",
+      "origin": "jurnal UNG 2024 dibaca utuh (20 Nov 2026); data jurnal dari observasi & wawancara di UKM Puta Dino Kayangan"
     },
     {
       "id": "motif-salawaku",
@@ -269,8 +276,126 @@
       "source": "Annie Nugraha, \"Puta Dino Kayangan. Membidani Lahirnya Kembali Kain Tenun Tidore yang Sempat Punah\" – https://annienugraha.com/puta-dino-kayangan-membidani-lahirnya-kembali-kain-tenun-tidore-yang-sempat-punah/",
       "status": "draft",
       "validated_by": null,
-      "review_note": "Kisah sejarahnya tidak dijelaskan di sumber; penenun perlu melengkapi sebelum dipakai.",
+      "review_note": "TIDAK ditemukan di jurnal UNG 2024 (yang membahas 8 motif). Hanya dari satu blog. Jangan dipakai sebelum penenun mengonfirmasi motif ini ada.",
       "origin": "pencarian web 20 Nov 2026 (cuplikan sumber, belum dibaca utuh)"
+    },
+    {
+      "id": "puta-dino-bahan",
+      "module": null,
+      "topic": "budaya",
+      "question": "Puta dino dibuat dari bahan apa dan pewarnanya apa?",
+      "keywords": [
+        "bahan",
+        "serat",
+        "nanas",
+        "pisang",
+        "pewarna",
+        "pala",
+        "cengkeh",
+        "alam"
+      ],
+      "answer": "Puta dino dibuat dari serat nanas dan serat daun pisang; yang dari serat daun pisang lebih berat, dari serat nanas lebih ringan. Pewarnanya pewarna alam dari kulit pala dan daun cengkeh.",
+      "source": "Ibrahim, S., Sudana, I W., & Dangkua, S. (2024). Bentuk dan Fungsi Ornamen pada Kain Tenun (Puta Dino) di Kota Tidore Kepulauan Provinsi Maluku Utara. Jambura: Jurnal Seni dan Desain 4(2), 26–39. doi:10.37905/jjsd.v4i2.24075, hlm. 27",
+      "status": "draft",
+      "validated_by": null,
+      "review_note": "Dari jurnal ilmiah; mohon dikonfirmasi penenun sebelum dipakai.",
+      "origin": "jurnal UNG 2024 dibaca utuh (20 Nov 2026); data jurnal dari observasi & wawancara di UKM Puta Dino Kayangan"
+    },
+    {
+      "id": "puta-dino-alat",
+      "module": null,
+      "topic": "budaya",
+      "question": "Puta dino ditenun dengan alat apa?",
+      "keywords": [
+        "alat",
+        "atbm",
+        "alat tenun bukan mesin",
+        "ikat",
+        "sulam",
+        "teknik"
+      ],
+      "answer": "Puta dino dibuat secara manual dengan alat tenun bukan mesin (ATBM), dengan teknik ikat dan sulam.",
+      "source": "Ibrahim, S., Sudana, I W., & Dangkua, S. (2024). Bentuk dan Fungsi Ornamen pada Kain Tenun (Puta Dino) di Kota Tidore Kepulauan Provinsi Maluku Utara. Jambura: Jurnal Seni dan Desain 4(2), 26–39. doi:10.37905/jjsd.v4i2.24075, hlm. 27",
+      "status": "draft",
+      "validated_by": null,
+      "review_note": "Dari jurnal ilmiah; mohon dikonfirmasi penenun sebelum dipakai.",
+      "origin": "jurnal UNG 2024 dibaca utuh (20 Nov 2026); data jurnal dari observasi & wawancara di UKM Puta Dino Kayangan"
+    },
+    {
+      "id": "motif-malila",
+      "module": null,
+      "topic": "budaya",
+      "question": "Apa makna motif Malila?",
+      "keywords": [
+        "malila",
+        "makna",
+        "motif",
+        "saling bantu",
+        "gotong royong",
+        "panah"
+      ],
+      "answer": "Malila berarti saling bantu, mengajarkan sesama saudara untuk saling melihat dan membantu. Terlihat dari empat kuntum yang menyatu dalam satu kotak (rumah); panah dan busur melambangkan kekuatan yang melindungi masyarakat yang bersatu.",
+      "source": "Ibrahim, S., Sudana, I W., & Dangkua, S. (2024). Bentuk dan Fungsi Ornamen pada Kain Tenun (Puta Dino) di Kota Tidore Kepulauan Provinsi Maluku Utara. Jambura: Jurnal Seni dan Desain 4(2), 26–39. doi:10.37905/jjsd.v4i2.24075, hlm. 30–31",
+      "status": "draft",
+      "validated_by": null,
+      "review_note": "Dari jurnal ilmiah; mohon dikonfirmasi penenun sebelum dipakai.",
+      "origin": "jurnal UNG 2024 dibaca utuh (20 Nov 2026); data jurnal dari observasi & wawancara di UKM Puta Dino Kayangan"
+    },
+    {
+      "id": "motif-tobaru",
+      "module": null,
+      "topic": "budaya",
+      "question": "Apa makna motif Tobaru?",
+      "keywords": [
+        "tobaru",
+        "makna",
+        "motif",
+        "rantai"
+      ],
+      "answer": "Tobaru berarti \"rantai\". Motif ini menggambarkan masyarakat adat Tidore yang hidup di Halmahera; rantainya melambangkan penghubung empat gunung atau kesultanan, serta kekuatan dan ketahanan.",
+      "source": "Ibrahim, S., Sudana, I W., & Dangkua, S. (2024). Bentuk dan Fungsi Ornamen pada Kain Tenun (Puta Dino) di Kota Tidore Kepulauan Provinsi Maluku Utara. Jambura: Jurnal Seni dan Desain 4(2), 26–39. doi:10.37905/jjsd.v4i2.24075, hlm. 31–32",
+      "status": "draft",
+      "validated_by": null,
+      "review_note": "Dari jurnal ilmiah; mohon dikonfirmasi penenun sebelum dipakai.",
+      "origin": "jurnal UNG 2024 dibaca utuh (20 Nov 2026); data jurnal dari observasi & wawancara di UKM Puta Dino Kayangan"
+    },
+    {
+      "id": "motif-amo",
+      "module": null,
+      "topic": "budaya",
+      "question": "Apa makna motif Amo?",
+      "keywords": [
+        "amo",
+        "sukun",
+        "buah sukun",
+        "makna",
+        "motif"
+      ],
+      "answer": "Amo adalah buah sukun; Tidore dikenal sebagai penghasil sukun yang baik. Motif ini dibuat kembali dari motif tua dan oleh pemakainya dimaknai sebagai keteguhan dalam mencapai tujuan.",
+      "source": "Ibrahim, S., Sudana, I W., & Dangkua, S. (2024). Bentuk dan Fungsi Ornamen pada Kain Tenun (Puta Dino) di Kota Tidore Kepulauan Provinsi Maluku Utara. Jambura: Jurnal Seni dan Desain 4(2), 26–39. doi:10.37905/jjsd.v4i2.24075, hlm. 31–32",
+      "status": "draft",
+      "validated_by": null,
+      "review_note": "Dari jurnal ilmiah; mohon dikonfirmasi penenun sebelum dipakai.",
+      "origin": "jurnal UNG 2024 dibaca utuh (20 Nov 2026); data jurnal dari observasi & wawancara di UKM Puta Dino Kayangan"
+    },
+    {
+      "id": "fungsi-ornamen-puta-dino",
+      "module": null,
+      "topic": "budaya",
+      "question": "Apa fungsi ornamen pada puta dino?",
+      "keywords": [
+        "fungsi",
+        "ornamen",
+        "simbol",
+        "kenangan",
+        "hiasan"
+      ],
+      "answer": "Ornamen puta dino punya tiga fungsi: simbolis (menyampaikan pesan lewat simbol), membangkitkan kenangan akan masa lalu Kesultanan Tidore, dan dekoratif sebagai hiasan.",
+      "source": "Ibrahim, S., Sudana, I W., & Dangkua, S. (2024). Bentuk dan Fungsi Ornamen pada Kain Tenun (Puta Dino) di Kota Tidore Kepulauan Provinsi Maluku Utara. Jambura: Jurnal Seni dan Desain 4(2), 26–39. doi:10.37905/jjsd.v4i2.24075, hlm. 26, 32–35",
+      "status": "draft",
+      "validated_by": null,
+      "review_note": "Dari jurnal ilmiah; mohon dikonfirmasi penenun sebelum dipakai.",
+      "origin": "jurnal UNG 2024 dibaca utuh (20 Nov 2026); data jurnal dari observasi & wawancara di UKM Puta Dino Kayangan"
     }
   ]
 }
