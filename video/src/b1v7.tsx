@@ -60,13 +60,12 @@ const Vignette: React.FC = () => <AbsoluteFill style={{ background: 'radial-grad
 const W01: Wd[] = [['Selama', 0.35], ['ratusan', 1.13], ['tahun,', 1.53], ['menenun', 2.33], ['diajarkan', 2.87], ['dari', 3.33], ['tangan', 3.55], ['ke', 3.97], ['tangan.', 4.1]];
 const S01: React.FC = () => {
   const f = useCurrentFrame(), t = f / FPS;
-  const slide = io(t, 2.35, 3.0);
+  const slide = 0;
   const cam: React.CSSProperties = { position: 'absolute', inset: 0, transformOrigin: '50% 45%', transform: `translateX(${-330 * slide}px) scale(${1.0 + 0.04 * (t / 4.8) + 0.16 * slide})` };
   const rev = ez(t, 1.05, 1.6, Easing.out(Easing.exp));
   const txtOut = 1 - ez(t, 2.3, 2.6);
   const lt = ez(t, 0.6, 1.1) * (1 - ez(t, 2.1, 2.45));
-  const rise = sp(f, 2.55, { damping: 18, stiffness: 90 });
-  const yr = t < 3.55 ? 1825 : t < 4.1 ? 1925 : 2025;
+    const yr = t < 3.55 ? 1825 : t < 4.1 ? 1925 : 2025;
   const yrP = sp(f, t < 3.55 ? 2.8 : t < 4.1 ? 3.55 : 4.1, { damping: 14, stiffness: 200 });
   return (
     <AbsoluteFill style={{ background: '#000' }}>
@@ -75,21 +74,18 @@ const S01: React.FC = () => {
         <div style={{ position: 'absolute', top: 150, width: '100%', textAlign: 'center', whiteSpace: 'pre-line', fontFamily: FONT, fontWeight: 900, fontSize: 270, letterSpacing: -12, lineHeight: 0.9, color: '#fff', opacity: 0.95, clipPath: `inset(${(1 - rev) * 100}% 0 0 0)`, transform: `translateY(${(1 - rev) * 60}px)` }}>{'RATUSAN\nTAHUN'}</div>
       </div>
       <div style={cam}><OffthreadVideo src={staticFile('matte/7633-person.mov')} muted transparent style={{ width: '100%', height: '100%' }} /></div>
-      {/* lapisan gelap tipis di kanan agar adegan 3D terbaca */}
-      <AbsoluteFill style={{ background: `linear-gradient(90deg, rgba(10,14,30,0) 40%, rgba(10,14,30,${0.45 * slide}) 75%)` }} />
-      {t > 2.5 && (
+      {/* adegan figur: layar penuh krem (tanpa Andrew), masuk dengan sapuan dari kanan */}
+      {t > 2.55 && (
         <Sequence from={F(2.6)}>
-          <div style={{ position: 'absolute', inset: 0, transform: `translate(${470}px, ${110 + (1 - rise) * 700}px) scale(0.6)`, opacity: Math.min(1, rise * 2) }}>
-            <Layer src="3d/hand.webm" />
-          </div>
+          <AbsoluteFill style={{ clipPath: `inset(0 0 0 ${(1 - io(t, 2.55, 2.85)) * 100}%)`, background: CREAM }}>
+            <OffthreadVideo src={staticFile('3d/hand.mp4')} muted />
+            <div style={{ position: 'absolute', right: 120, top: 120, fontFamily: FONT, color: NAVY, textAlign: 'right', opacity: ez(t, 2.8, 3.05) }}>
+              <div style={{ fontSize: 20, letterSpacing: 4, opacity: 0.6, fontWeight: 700 }}>DARI TANGAN KE TANGAN</div>
+              <div style={{ fontSize: 110, fontWeight: 800, letterSpacing: -3, fontVariantNumeric: 'tabular-nums', transform: `translateY(${(1 - yrP) * 24}px)`, opacity: 0.4 + 0.6 * yrP }}>{yr}</div>
+              <div style={{ height: 3, width: 280, marginLeft: 'auto', background: `linear-gradient(90deg, rgba(212,184,102,0), ${GOLD})`, transform: `scaleX(${io(t, 2.8, 4.6)})`, transformOrigin: 'right' }} />
+            </div>
+          </AbsoluteFill>
         </Sequence>
-      )}
-      {t > 2.75 && (
-        <div style={{ position: 'absolute', right: 120, top: 150, fontFamily: FONT, color: '#fff', textAlign: 'right', opacity: ez(t, 2.75, 3.0) }}>
-          <div style={{ fontSize: 20, letterSpacing: 4, opacity: 0.75, fontWeight: 600 }}>DARI TANGAN KE TANGAN</div>
-          <div style={{ fontSize: 96, fontWeight: 800, letterSpacing: -3, fontVariantNumeric: 'tabular-nums', transform: `translateY(${(1 - yrP) * 24}px)`, opacity: 0.4 + 0.6 * yrP }}>{yr}</div>
-          <div style={{ height: 3, width: 260, marginLeft: 'auto', background: `linear-gradient(90deg, rgba(212,184,102,0), ${GOLD})`, transform: `scaleX(${io(t, 2.8, 4.6)})`, transformOrigin: 'right' }} />
-        </div>
       )}
       {/* nama tanpa kotak: teks putih + garis emas tipis */}
       <div style={{ position: 'absolute', left: 90, bottom: 190, fontFamily: FONT, color: '#fff', opacity: lt, textShadow: '0 2px 14px rgba(0,0,0,0.45)' }}>
@@ -97,7 +93,7 @@ const S01: React.FC = () => {
         <div style={{ fontSize: 34, fontWeight: 700, letterSpacing: -0.5, transform: `translateY(${(1 - lt) * 12}px)` }}>Noe Andrew JM Silalahi</div>
         <div style={{ fontSize: 20, opacity: 0.85, marginTop: 4, letterSpacing: 0.3 }}>Ketua Tim BelajarTenun</div>
       </div>
-      <Captions words={W01} keys={['ratusan', 'tangan']} />
+      <Captions words={W01} keys={['ratusan', 'tangan']} dark={(x) => x > 2.7} />
       <Sfx cues={[[1.05, 'whoosh', 0.35], [2.4, 'whoosh', 0.3], [2.75, 'pop3', 0.35], [3.55, 'tick', 0.5], [4.1, 'tick', 0.5], [3.95, 'pop', 0.45]]} />
     </AbsoluteFill>
   );

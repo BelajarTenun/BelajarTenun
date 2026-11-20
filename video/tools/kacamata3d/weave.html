@@ -8,7 +8,7 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 
 const P = new URLSearchParams(location.search);
 const shot = P.get('shot') || 'hand', T = +(P.get('t') || 0);
-const alpha = shot === 'hand';
+const alpha = false;
 const W = 1920, H = 1080;
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha, preserveDrawingBuffer: true });
 renderer.setSize(W, H); renderer.setPixelRatio(1);
