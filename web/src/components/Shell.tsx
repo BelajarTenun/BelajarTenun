@@ -5,7 +5,7 @@ import { api } from '../lib/api';
 import { useApp } from '../lib/session';
 
 // Kerangka aplikasi murid. Terpisah dari Ruang tim (admin/partner punya dashboard sendiri di public/*.html).
-export default function Shell({ children }: { children: ReactNode }) {
+export default function Shell({ children, wide = false }: { children: ReactNode; wide?: boolean }) {
   const { config, refresh } = useApp();
   const nav = useNavigate();
   const user = config?.user;
@@ -19,7 +19,7 @@ export default function Shell({ children }: { children: ReactNode }) {
     <div className="a-shell">
       <a className="a-skip" href="#konten">Lewati ke konten</a>
       <aside className="a-side">
-        <Link to="/" className="a-brand"><img src="/icon.svg" alt="" /><span>BelajarTenun</span></Link>
+        <Link to="/" className="a-brand"><img src="/icon.svg" alt="" /><span>Belajar<b>Tenun</b></span></Link>
         <nav className="a-tabs" aria-label="Menu utama">
           {item('/belajar', 'Beranda', 'home')}
           {item('/modul', 'Modul', 'book')}
@@ -38,7 +38,7 @@ export default function Shell({ children }: { children: ReactNode }) {
           </div>
         )}
       </aside>
-      <main className="a-main" id="konten" tabIndex={-1}><div className="a-content">{children}</div></main>
+      <main className="a-main" id="konten" tabIndex={-1}><div className={`a-content${wide ? ' wide' : ''}`}>{children}</div></main>
     </div>
   );
 }
