@@ -17,7 +17,8 @@
     <p>Tandai kapan tiap tahap dikerjakan dalam video (seperti anotasi <i>step detection</i> di dataset Watch-Talk-and-Guide). Hasilnya diekspor menjadi frame berlabel untuk uji akurasi, contoh untuk AI, dan data latih model.</p>
   </header>
 
-  <section class="card">
+  <div class="ws-empty" id="no-recs" hidden><b>Belum ada rekaman video</b><span>Rekam penenun atau murid per tahap atau satu sesi penuh, lalu tandai tahapnya di sini.</span><a class="button-link primary" href="rekam.html">Buka Rekam</a></div>
+  <section class="card" id="annotator">
     <label>Rekaman <select id="rec"></select></label>
     <video id="video" controls playsinline></video>
     <div class="timeline" id="timeline"></div>
@@ -148,7 +149,7 @@ $('export').onclick = async () => {
 };
 
 recs = (await api('/api/recordings')).recordings.filter((r) => r.files.some((f) => /\.(webm|mp4)$/.test(f)));
-if (!recs.length) { status('Belum ada rekaman video. Rekam dulu di halaman Rekam.', 'warn'); }
+if (!recs.length) { $('no-recs').hidden = false; $('annotator').hidden = true; document.querySelectorAll('#annotator ~ section').forEach((x) => { x.hidden = true; }); }
 else {
   $('rec').innerHTML = recs.map((r) => `<option value="${r.id}">${r.stepId === 'full' ? 'Sesi penuh · ' : ''}${esc(r.id)} · ${esc(r.weaver || '')}</option>`).join('');
   const want = new URLSearchParams(location.search).get('id');

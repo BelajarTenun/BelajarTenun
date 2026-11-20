@@ -26,6 +26,8 @@ function build() {
 
   const main = document.createElement('main');
   main.className = 'ws-main';
+  main.id = 'konten';
+  main.tabIndex = -1;
   const inner = document.createElement('div');
   inner.className = 'ws-content';
   // Pindahkan isi halaman (kecuali script) ke area konten.
@@ -45,7 +47,9 @@ function build() {
   main.appendChild(inner);
   body.classList.remove('page');
   body.classList.add('ws');
-  body.prepend(nav, main);
+  const skip = document.createElement('a');
+  skip.className = 'ws-skip'; skip.href = '#konten'; skip.textContent = 'Lewati ke konten';
+  body.prepend(skip, nav, main);
 
   // Menu & label mengikuti peran: hanya admin yang melihat menu Admin.
   fetch('/api/auth/me', { credentials: 'same-origin' }).then((r) => r.json()).then(({ user }) => {

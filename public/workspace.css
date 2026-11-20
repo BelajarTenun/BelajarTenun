@@ -194,3 +194,50 @@ body.ws {
   .ws .savebar { left: 0; padding: 12px 16px; }
 }
 .ws .card > .primary, .ws .card > button { width: auto; justify-self: start; }
+
+/* ---------- Kualitas antarmuka (Vercel Web Interface Guidelines + audit Impeccable) ---------- */
+/* Fokus keyboard terlihat untuk SEMUA kontrol, bukan hanya tombol. */
+.ws input:focus-visible, .ws select:focus-visible, .ws textarea:focus-visible { border-color: var(--slate-900, #0f172a); box-shadow: 0 0 0 3px rgba(15,23,42,.12); }
+.ws a:focus-visible, .ws summary:focus-visible, .ws-link:focus-visible { outline: 2px solid var(--slate-900, #0f172a); outline-offset: 2px; border-radius: 4px; }
+/* Lewati ke konten (keyboard / pembaca layar). */
+.ws-skip { position: absolute; left: 12px; top: -48px; z-index: 50; padding: 8px 12px; border-radius: 6px; background: var(--slate-900, #0f172a); color: #fff; font-size: 13px; text-decoration: none; }
+.ws-skip:focus { top: 12px; }
+/* Nama & peran sudah ada di sidebar: jangan diulang di kepala halaman. */
+.ws .brand .account { display: none; }
+/* Kepala halaman: judul + satu aksi utama di kanan. */
+.ws .ws-head { position: relative; }
+.ws .ws-head-actions { position: absolute; right: 0; bottom: 4px; display: flex; gap: 8px; }
+@media (max-width: 860px) { .ws .ws-head-actions { position: static; margin-top: 12px; } }
+/* Angka sejajar dan mudah dibandingkan. */
+.ws table, .ws .stat b { font-variant-numeric: tabular-nums; }
+.ws td.num, .ws th.num { text-align: right; white-space: nowrap; }
+.ws .stat span { display: inline-block; }
+.ws .stat span::first-letter { text-transform: uppercase; }
+/* Target sentuh minimal 32px (WCAG 2.5.8 ≥24px). */
+.ws button, .ws .button-link, .ws select { min-height: 32px; }
+/* Bagian yang bisa dilipat (pengaturan yang jarang diubah). */
+.ws details.card > summary { cursor: pointer; list-style: none; display: flex; align-items: baseline; gap: 10px; font-size: 14px; font-weight: 600; color: var(--slate-900, #0f172a); }
+.ws details.card > summary::-webkit-details-marker { display: none; }
+.ws details.card > summary::after { content: ""; margin-left: auto; align-self: center; width: 8px; height: 8px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg); transition: transform .2s; }
+.ws details.card[open] > summary::after { transform: rotate(-135deg); }
+.ws details.card > summary .hint { font-weight: 400; margin: 0; }
+.ws details.card[open] > summary { margin-bottom: 16px; }
+/* Dialog (formulir yang tidak perlu tampil terus). */
+.ws dialog.ws-dialog { width: min(760px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 0; border: 1px solid rgba(15,23,42,.12); border-radius: 12px; background: var(--paper, #fcf9f2); color: inherit;
+  box-shadow: 0 1px 2px rgba(15,23,42,.06), 0 24px 64px rgba(15,23,42,.18); overscroll-behavior: contain; }
+.ws dialog.ws-dialog::backdrop { background: rgba(15,23,42,.35); }
+.ws dialog.ws-dialog > header { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid rgba(15,23,42,.1); background: inherit; }
+.ws dialog.ws-dialog > header h2 { margin: 0; padding: 0; border: 0; font-size: 16px; }
+.ws dialog.ws-dialog > .body { padding: 20px; }
+.ws dialog.ws-dialog > footer { position: sticky; bottom: 0; display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid rgba(15,23,42,.1); background: inherit; }
+/* Keadaan kosong: jelaskan dan beri langkah berikutnya. */
+.ws .ws-empty { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 24px; border: 1px dashed rgba(15,23,42,.2); border-radius: 8px; color: var(--slate-600, #475569); font-size: 14px; }
+.ws .ws-empty b { color: var(--slate-900, #0f172a); font-size: 15px; }
+/* Saran berupa label ringkas, bukan paragraf. */
+.ws .chip { display: inline-block; margin: 2px 4px 2px 0; padding: 2px 8px; border-radius: 999px; background: rgba(146,64,14,.08); color: #92400e; font-size: 12px; line-height: 18px; white-space: nowrap; }
+@media (prefers-color-scheme: dark) { .ws .chip { background: rgba(252,211,77,.12); color: #fcd34d; } .ws dialog.ws-dialog { background: #1f1f1f; } }
+/* Hormati pengurangan gerak. */
+@media (prefers-reduced-motion: reduce) { .ws *, .ws *::before, .ws *::after { transition-duration: 0s !important; animation-duration: 0s !important; scroll-behavior: auto !important; } }
+
+/* Baris alat (pemilih modul) berjarak dari bagian di bawahnya. */
+.ws .ws-content > .row { margin-bottom: 16px; }

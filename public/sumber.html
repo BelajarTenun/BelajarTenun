@@ -14,13 +14,44 @@
     <div class="account" id="account"></div>
     <a class="wordmark" href="./">BelajarTenun</a>
     <h1>Sumber Video Tenun</h1>
-    <p>Kumpulkan video tenun dari semua tradisi, lalu AI menyusun tahap, alat, istilah, dan draf kurikulum. Penenun meninjaunya di <a href="editor.html">Editor</a>. Status izin menentukan ke mana data boleh dipakai.</p>
+    <p>Video tenun dari semua tradisi. AI menyusun tahap, alat, dan istilah; penenun meninjaunya di <a href="editor.html">Editor modul</a>.</p>
+    <div class="ws-head-actions"><button id="open-add" class="primary">Tambah video</button></div>
   </header>
 
   <section class="stats" id="stats"></section>
 
+
   <section class="card">
-    <h2>1. Tambah video</h2>
+    <h2>Daftar video</h2>
+    <div id="list"></div>
+  </section>
+
+  <section class="card" id="detail" hidden>
+    <h2 id="d-title"></h2>
+    <p id="d-meta" class="hint"></p>
+    <video id="d-video" controls playsinline></video>
+    <div class="timeline" id="d-timeline"></div>
+    <div id="d-steps"></div>
+    <h3>Istilah lokal (dugaan AI)</h3>
+    <ul id="d-terms" class="rec-list"></ul>
+  </section>
+
+  <section class="card">
+    <h2>Bangun draf kurikulum</h2>
+    <p class="hint">Tahap dari semua video dikelompokkan (mis. "membuka mulut lungsi" di berbagai tradisi), lalu dibuat draf modul per tradisi + modul dasar lintas tradisi. Kolom yang sudah divalidasi penenun tidak akan ditimpa.</p>
+    <button id="rebuild" class="primary">Bangun / perbarui draf kurikulum</button>
+    <div id="report"></div>
+  </section>
+
+  <section class="card">
+    <h2>Uji tutor dengan dialog contoh</h2>
+    <div class="row"><select id="dlg-module"></select><input id="dlg-count" type="number" value="2" min="1" max="10" style="width:5rem"><button id="dlg-run">Buat & uji dialog</button></div>
+    <div id="dlg-out"></div>
+  </section>
+
+  <dialog class="ws-dialog" id="add-dialog" aria-labelledby="add-title">
+    <header><h2 id="add-title">Tambah video</h2><button type="button" id="close-add" aria-label="Tutup">Tutup</button></header>
+    <div class="body">
     <div class="grid2">
       <label>Tradisi tenun* <input id="f-tradition" placeholder="mis. Tenun ikat Sikka" list="traditions" required></label>
       <label>Daerah <input id="f-region" placeholder="mis. Sikka, NTT"></label>
@@ -37,42 +68,19 @@
     <label>Berkas video <input id="f-file" type="file" accept="video/*"></label>
     <label class="toggle"><input type="checkbox" id="f-auto" checked> Langsung proses (pra-proses + analisis AI) setelah diunggah</label>
     <datalist id="traditions"></datalist>
-    <button id="add" class="primary">Tambah</button>
-    <p id="add-status" class="feedback"></p>
-  </section>
-
-  <section class="card">
-    <h2>2. Daftar sumber</h2>
-    <div id="list"></div>
-  </section>
-
-  <section class="card" id="detail" hidden>
-    <h2 id="d-title"></h2>
-    <p id="d-meta" class="hint"></p>
-    <video id="d-video" controls playsinline></video>
-    <div class="timeline" id="d-timeline"></div>
-    <div id="d-steps"></div>
-    <h3>Istilah lokal (dugaan AI)</h3>
-    <ul id="d-terms" class="rec-list"></ul>
-  </section>
-
-  <section class="card">
-    <h2>3. Bangun kurikulum dari semua video</h2>
-    <p class="hint">Tahap dari semua video dikelompokkan (mis. "membuka mulut lungsi" di berbagai tradisi), lalu dibuat draf modul per tradisi + modul dasar lintas tradisi. Kolom yang sudah divalidasi penenun tidak akan ditimpa.</p>
-    <button id="rebuild" class="primary">Bangun / perbarui draf kurikulum</button>
-    <div id="report"></div>
-  </section>
-
-  <section class="card">
-    <h2>4. Uji tutor dengan dialog (pola HowToDIV)</h2>
-    <div class="row"><select id="dlg-module"></select><input id="dlg-count" type="number" value="2" min="1" max="10" style="width:5rem"><button id="dlg-run">Buat & uji dialog</button></div>
-    <div id="dlg-out"></div>
-  </section>
+    <p id="add-status" class="feedback" aria-live="polite"></p>
+    </div>
+    <footer><button type="button" id="cancel-add">Batal</button><button id="add" class="primary">Tambah video</button></footer>
+  </dialog>
 
 <script type="module">
 import { api, $, esc, requireLogin, accountBadge } from './js/api.js';
 const cfg = await requireLogin(['partner']);
 accountBadge($('account'), cfg.user);
+const IZIN = { cc_by: 'Lisensi terbuka', riset_internal: 'Hanya analisis', izin_tertulis: 'Izin tertulis', milik_sendiri: 'Milik sendiri' };
+const addDialog = $('add-dialog');
+$('open-add').onclick = () => { addDialog.showModal(); $('f-tradition').focus(); };
+$('close-add').onclick = $('cancel-add').onclick = () => addDialog.close();
 let overview, current;
 const fmt = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 const status = (el, t, k = 'info') => { $(el).textContent = t; $(el).className = `feedback ${k}`; };
@@ -88,9 +96,9 @@ async function refresh() {
     const q = overview.queue[x.id] ?? x.pipeline;
     const st = q?.stage && q.stage !== 'selesai' ? `${q.stage}${q.detail ? ` · ${q.detail}` : ''}${q.error ? ` – ${q.error}` : ''}` : x.status;
     return `<tr><td>${esc(x.title || x.url || x.id)}<br><small class="hint">${x.durationSec ? fmt(x.durationSec) : ''} · ${x.viewpoint}</small></td><td>${esc(x.tradition)}<br><small class="hint">${esc(x.region || '')}</small></td>
-      <td><span class="pill">${x.license.status}</span></td><td>${esc(st)}${x.analysisSummary ? `<br><small class="hint">${x.analysisSummary.steps} tahap · ${x.analysisSummary.ragu} ragu · ${x.analysisSummary.terms} istilah</small>` : ''}</td>
+      <td><span class="pill" title="${esc(x.license.note || '')}">${IZIN[x.license.status] ?? x.license.status}</span></td><td>${esc(st)}${x.analysisSummary ? `<br><small class="hint">${x.analysisSummary.steps} tahap · ${x.analysisSummary.ragu} ragu · ${x.analysisSummary.terms} istilah</small>` : ''}</td>
       <td><button data-open="${x.id}">Lihat</button> <button data-process="${x.id}" ${x.original ? '' : 'disabled'}>Proses</button> <button class="danger" data-del="${x.id}">Hapus</button></td></tr>`;
-  }).join('')}</table>` : '<p class="hint">Belum ada sumber.</p>';
+  }).join('')}</table>` : '<div class="ws-empty"><b>Belum ada video</b><span>Tambahkan video proses menenun beserta status izinnya. Setelah dianalisis, tahap-tahapnya muncul sebagai draf di Editor modul.</span><button class="primary" onclick="document.getElementById(\'open-add\').click()">Tambah video</button></div>';
   const busy = Object.values(overview.queue).some((q) => !['selesai', 'gagal', 'menunggu-ai'].includes(q.stage));
   if (busy) setTimeout(refresh, 3000);
   if (overview.report) renderReport(overview.report);
@@ -116,8 +124,9 @@ $('add').onclick = async () => {
         x.send(file);
       });
     }
-    status('add-status', `Tersimpan: ${src.id}`, 'ok');
+    status('add-status', '', 'ok');
     $('f-file').value = '';
+    addDialog.close();
     refresh();
   } catch (e) { status('add-status', e.message, 'warn'); }
 };
