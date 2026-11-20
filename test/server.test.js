@@ -186,3 +186,12 @@ test('pasangan HP-kamera: tanpa LiveKit ditolak dengan 501', async () => {
   const t = await call('/api/pair/token', { code: '123456', role: 'camera' });
   assert.equal(t.status, 501);
 });
+
+test('heartbeat agen: hanya agen yang boleh melapor, diagnostik membaca model Live', async () => {
+  const agent = { 'x-agent-token': process.env.AGENT_TOKEN, 'content-type': 'application/json' };
+  const models = await (await fetch(`${base}/api/agent/live-models`, { headers: agent })).json();
+  assert.ok(Array.isArray(models.models) && models.models.length >= 1);
+  assert.equal((await call('/api/agent/heartbeat', { ok: true, model: 'x' }, 'admin')).status, 403, 'admin biasa tidak boleh memalsukan laporan agen');
+  const r = await fetch(`${base}/api/agent/heartbeat`, { method: 'POST', headers: agent, body: JSON.stringify({ ok: true, model: models.models[1] ?? models.models[0], candidates: models.models }) });
+  assert.equal(r.status, 200);
+});

@@ -38,6 +38,20 @@ services:
       - ./secrets:/secrets:ro
     depends_on: [app, livekit]
 
+  # Uji model Live sungguhan tiap 6 jam dan lapor ke server (dibaca Dashboard admin > Cek koneksi & tes asap harian).
+  agent-health:
+    image: ${AGENT_IMAGE:-ghcr.io/belajartenun/belajartenun-agent:latest}
+    build: ../agent
+    restart: unless-stopped
+    command: ["python", "main.py", "heartbeat"]
+    env_file: ../.env
+    environment:
+      BT_SERVER: http://app:8080
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/vertex-sa.json
+    volumes:
+      - ./secrets:/secrets:ro
+    depends_on: [app]
+
   livekit:
     image: livekit/livekit-server:v1.8.4
     restart: unless-stopped

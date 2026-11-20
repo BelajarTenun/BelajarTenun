@@ -57,6 +57,35 @@ VERTEX_OPTS = (
     else {}
 )
 UI_TOPIC = "bt.ui"
+LIVE_COMPRESS_TRIGGER = int(os.environ.get("LIVE_COMPRESS_TRIGGER", "100000"))  # ~80% dari 128k
+LIVE_COMPRESS_TARGET = int(os.environ.get("LIVE_COMPRESS_TARGET", "50000"))
+LIVE_PROACTIVE = os.environ.get("LIVE_PROACTIVE") == "1"  # hanya untuk model yang mendukung proactive audio
+
+# ---------------- Pemilihan model Live ----------------
+# Model Live preview/GA pensiun cepat. Agen mencoba daftar model (dari server: cfg["models"]) dan memakai
+# model pertama yang bisa membuka sesi; hasilnya di-cache per proses dan diuji ulang tiap 6 jam.
+_live_pick: dict = {"model": None, "at": 0.0}
+
+
+async def pick_live_model(candidates: list[str]) -> str:
+    if _live_pick["model"] in candidates and time.time() - _live_pick["at"] < 6 * 3600:
+        return _live_pick["model"]
+    from google import genai
+
+    client = genai.Client(**({"vertexai": True, "project": VERTEX_OPTS["project"], "location": VERTEX_OPTS["location"]} if USE_VERTEX else {}))
+    errors = []
+    for m in candidates:
+        try:
+            async with asyncio.timeout(10):
+                async with client.aio.live.connect(model=m, config={"response_modalities": ["AUDIO"]}):
+                    pass
+            _live_pick.update(model=m, at=time.time())
+            if m != candidates[0]:
+                logger.warning("model Live %s tidak tersedia, memakai %s (%s)", candidates[0], m, "; ".join(errors))
+            return m
+        except Exception as e:  # model pensiun, tidak ada di region, atau kuota
+            errors.append(f"{m}: {type(e).__name__}: {str(e)[:120]}")
+    raise RuntimeError("Tidak ada model Live yang bisa dipakai: " + " | ".join(errors))
 
 
 def _headers() -> dict[str, str]:
@@ -200,10 +229,19 @@ async def entrypoint(ctx: JobContext) -> None:
 
         return function_tool(handler, raw_schema={"name": name, "description": spec["description"], "parameters": spec["parameters"]})
 
+    model = await pick_live_model(cfg.get("models") or [cfg["model"]])
+    tracer.emit("live_model", model=model)
     agent = Agent(instructions=cfg["instructions"], tools=[make_tool(t) for t in cfg["tools"]])
     session = AgentSession(
         llm=google.beta.realtime.RealtimeModel(
-            model=cfg["model"],
+            model=model,
+            # Sesi menenun lebih lama dari batas koneksi Live (~10 menit) dan jendela konteks 128k:
+            # resumption menyambung ulang otomatis dengan handle dari server; kompresi menggeser jendela konteks.
+            session_resumption=genai_types.SessionResumptionConfig(),
+            context_window_compression=genai_types.ContextWindowCompressionConfig(
+                trigger_tokens=LIVE_COMPRESS_TRIGGER, sliding_window=genai_types.SlidingWindow(target_tokens=LIVE_COMPRESS_TARGET),
+            ),
+            **({"proactivity": True, "enable_affective_dialog": True} if LIVE_PROACTIVE else {}),
             voice=cfg["voice"],
             **VERTEX_OPTS,
             input_audio_transcription=genai_types.AudioTranscriptionConfig(),
@@ -253,5 +291,28 @@ async def entrypoint(ctx: JobContext) -> None:
         "Lalu panggil get_current_step dan jelaskan tahap ini dengan mengaitkannya ke yang terlihat di kamera."))
 
 
+async def heartbeat_loop(interval_s: int = 6 * 3600) -> None:
+    """Uji model Live sungguhan secara berkala dan laporkan ke server (dibaca diagnostik admin & tes asap)."""
+    while True:
+        report: dict = {"at": datetime.now(timezone.utc).isoformat()}
+        try:
+            models = (await api("GET", "/api/agent/live-models")).get("models") or []
+            _live_pick.update(model=None, at=0.0)  # selalu uji ulang, jangan pakai cache
+            report.update(ok=True, model=await pick_live_model(models), candidates=models)
+        except Exception as e:
+            report.update(ok=False, error=str(e)[:500])
+        try:
+            await api("POST", "/api/agent/heartbeat", report)
+        except Exception as e:
+            logger.error("heartbeat gagal dikirim: %s", e)
+        logger.info("heartbeat model Live: %s", report)
+        await asyncio.sleep(interval_s)
+
+
 if __name__ == "__main__":
-    cli.run_app(server)
+    import sys
+
+    if len(sys.argv) > 1 and sys.argv[1] == "heartbeat":
+        asyncio.run(heartbeat_loop())
+    else:
+        cli.run_app(server)

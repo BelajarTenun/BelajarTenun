@@ -13,7 +13,7 @@ jobs:
       - name: Tes server
         run: npm test
       - name: Cek sintaks halaman tim
-        run: node --check public/app.js && for f in public/js/*.js; do node --check "$f"; done
+        run: for f in public/js/*.js; do node --check "$f"; done
 
   web:
     runs-on: ubuntu-latest
@@ -36,3 +36,5 @@ jobs:
           python-version: "3.12"
       - name: Cek sintaks agen
         run: python -m py_compile agent/main.py
+      - name: Tes agen (pemilihan model Live)
+        run: pip install -q -r agent/requirements.txt pytest && cd agent && python -m pytest -q tests
