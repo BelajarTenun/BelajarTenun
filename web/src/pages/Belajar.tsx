@@ -27,7 +27,7 @@ export default function Belajar() {
   const lanjut = terakhir ? Math.min(terakhir.reached, (byId[terakhir.module]?.steps ?? 1) - 1) : 0;
 
   const kainku = modules.filter((m) => status[m.id] === 'berjalan' || status[m.id] === 'tuntas' || m.id === fokusId);
-  const jelajah = modules.filter((m) => !kainku.includes(m)).slice(0, 3);
+  const jelajah = modules.filter((m) => !kainku.includes(m)).slice(0, 4);
   const dikuasai = (id: string) => Object.values(mastery[id] ?? {}).filter((x) => x.state === 'dikuasai').length;
   const totalTahap = kainku.reduce((a, m) => a + m.steps, 0);
   const totalKuasai = kainku.reduce((a, m) => a + dikuasai(m.id), 0);
@@ -52,27 +52,30 @@ export default function Belajar() {
           <section className="e-sec">
             <h2>Kainku</h2>
             {loading ? <p className="a-muted">Memuat…</p> : (
-              <ul className="e-cards">
+              <ul className="kain-grid">
                 {kainku.map((m) => {
                   const k = dikuasai(m.id), sesiM = riwayat.find((s) => s.module === m.id);
                   const tahap = status[m.id] === 'tuntas' ? m.steps : Math.min(sesiM?.reached ?? 0, m.steps);
                   return (
                     <li key={m.id}>
-                      <Link to={`/belajar/${m.id}`} className="e-card">
-                        <span className="e-card-art"><KainFoto m={m} /></span>
-                        <b>{m.fabricName || m.title}</b>
-                        <span className="sub">{m.weaver || m.tradition}</span>
-                        <span className="e-bar"><i style={{ width: `${(tahap / m.steps) * 100}%` }} /></span>
-                        <span className="meta"><span>Tahap <b>{tahap}/{m.steps}</b></span><span>Dikuasai <b>{k}/{m.steps}</b></span></span>
+                      <Link to={`/belajar/${m.id}`} className={`kain-card ${status[m.id]}`}>
+                        <span className="kain-frame"><KainFoto m={m} />
+                          <span className="kain-status">{status[m.id] === 'tuntas' && <Icon name="check" />}{{ tuntas: 'Tuntas', berjalan: 'Sedang dipelajari', berikut: 'Berikutnya', nanti: 'Belum mulai' }[status[m.id]]}</span></span>
+                        <span className="kain-meta">
+                          <b>{m.fabricName || m.title}</b>
+                          <span>{m.weaver || m.tradition}</span>
+                          <span className="e-progress"><span className="e-bar"><i style={{ width: `${(tahap / m.steps) * 100}%` }} /></span>
+                            <span className="meta"><span>Tahap <b>{tahap}/{m.steps}</b></span><span>Dikuasai <b>{k}/{m.steps}</b></span></span></span>
+                        </span>
                       </Link>
                     </li>
                   );
                 })}
                 <li>
-                  <Link to="/modul" className="e-card e-card-add">
+                  <Link to="/modul" className="kain-card kain-add">
                     <span className="plus"><Icon name="plus" /></span>
                     <b>Pilih kain baru</b>
-                    <span className="sub">{modules.length} kain di jalurmu</span>
+                    <span>{modules.length} kain di jalurmu</span>
                   </Link>
                 </li>
               </ul>
@@ -82,13 +85,12 @@ export default function Belajar() {
           {jelajah.length > 0 && (
             <section className="e-sec">
               <h2>Jelajahi kain lain</h2>
-              <ul className="e-cards e-cards-sm">
+              <ul className="kain-grid">
                 {jelajah.map((m) => (
                   <li key={m.id}>
-                    <Link to={`/belajar/${m.id}`} className="e-card">
-                      <span className="e-card-art"><KainFoto m={m} />{kunci[m.id] && <span className="e-lock"><Icon name="lock" />Setelah Modul Dasar</span>}</span>
-                      <b>{m.fabricName || m.title}</b>
-                      <span className="sub">{m.weaver || m.tradition} · {m.steps} tahap</span>
+                    <Link to={`/belajar/${m.id}`} className={`kain-card ${kunci[m.id] ? 'terkunci' : status[m.id]}`}>
+                      <span className="kain-frame"><KainFoto m={m} />{kunci[m.id] && <span className="kain-status"><Icon name="lock" />Terkunci</span>}</span>
+                      <span className="kain-meta"><b>{m.fabricName || m.title}</b><span>{kunci[m.id] ? 'Selesaikan Modul Dasar dulu' : `${m.weaver || m.tradition} · ${m.steps} tahap`}</span></span>
                     </Link>
                   </li>
                 ))}
