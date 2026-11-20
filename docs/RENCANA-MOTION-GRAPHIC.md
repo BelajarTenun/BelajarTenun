@@ -89,3 +89,19 @@ Aturan skill yang dipakai:
 - `report.html`: setiap efek suara bisa diputar dan diganti.
 - 5 detik yang paling berisiko untuk didengar pakai headphone (riser, ketikan, momen besar, cut dengan selisih ketukan terbesar).
 - Angka LUFS dan puncak (stereo & mono).
+
+## Efek tren yang ditambahkan
+
+| Efek | Cara | Dipakai di |
+|---|---|---|
+| **Teks di belakang orang** (depth text) | Andrew dipisahkan dari latar per frame (MODNet), urutan lapisan: latar → teks raksasa → Andrew | 01 "RATUSAN TAHUN", 05 "TERBUKA", 15 "AKSES", 19 "BEDA", 22 "SANGGAR", 25 "NUSANTARA" |
+| **Caption kinetik dengan kata kunci** | Subtitle per frasa; kata kunci membesar sesaat & berwarna emas tepat saat diucapkan | Seluruh video |
+| **Punch-in penekanan** | Zoom 8–12% cepat pada kata penting, kembali pelan | "tidak tergantikan", "menggabungkan keduanya", "dunia" |
+| **Speed ramp** | POV menenun melambat lalu cepat lagi | Koreksi (11), montase (24) |
+| **Rack focus** | Latar tajam → blur saat panel muncul, kembali tajam saat panel pergi | Semua panel di samping Andrew |
+| **Anotasi garis tangan** | Lingkaran/garis bawah emas yang "digambar" di atas footage | Benang lungsi & pakan di POV (09–11) |
+| **Freeze frame + label** | Gambar berhenti 0,5 dtk, objek diberi label, lalu jalan lagi | "lungsi" (09), "pakan" (10) |
+| **Screen shake halus** | Getar 2–3 frame saat impact | Logo (04), angka 87% (20) |
+| **Light leak / gloss sweep** | Kilau cahaya melintas sekali | Reveal logo (04, 26), HP muncul (09) |
+| **Film grain halus** | Butiran tipis seluruh video | Seluruh video |
+| **J-cut / L-cut** | Suara adegan berikutnya mulai sebelum gambarnya | Antar-babak |
