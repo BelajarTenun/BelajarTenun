@@ -355,3 +355,9 @@ html, body { background: var(--paper); color: var(--s800); font: 14px/1.5 var(--
 .k-note { position: absolute; left: 16px; right: 16px; bottom: calc(24px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; border-radius: 16px;
   background: rgba(20,20,20,.7); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); font-size: 14px; line-height: 1.5; text-align: center; }
 .k-note.gagal { color: #fca5a5; }
+
+/* Lewati ke konten (keyboard / pembaca layar) */
+.a-skip { position: absolute; left: 12px; top: -48px; z-index: 50; padding: 8px 12px; border-radius: 6px; background: var(--brand); color: var(--on-brand); font-size: 13px; text-decoration: none; }
+.a-skip:focus { top: 12px; }
+.a-input:focus-visible { border-color: var(--brand); box-shadow: 0 0 0 3px var(--hover); }
+.a-table, .a-stat b { font-variant-numeric: tabular-nums; }

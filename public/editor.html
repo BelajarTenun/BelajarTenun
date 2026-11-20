@@ -14,11 +14,14 @@
     <div class="account" id="account"></div>
     <a class="wordmark" href="./">BelajarTenun</a>
     <h1>Editor Kurikulum</h1>
-    <p>Untuk partner penenun: isi dan validasi setiap tahap serta jawaban tutor. Kolom berlabel "usulan AI" berasal dari video: putar buktinya, perbaiki, lalu terima. <a href="sumber.html">Sumber video</a> · <a href="rekam.html">Rekam</a> · <a href="anotasi.html">Anotasi</a></p>
+    <p>Isi dan validasi setiap tahap serta jawaban tutor. Kolom berlabel "usulan AI" berasal dari video: putar buktinya, perbaiki, lalu terima.</p>
+    <div class="ws-head-actions"><button id="m-new">Modul baru</button></div>
   </header>
 
-  <section class="card">
-    <div class="row"><label style="flex:1">Modul <select id="m-pick"></select></label><button id="m-new">+ Modul baru</button></div>
+  <div class="row"><label style="flex:1; max-width:420px">Modul <select id="m-pick"></select></label></div>
+
+  <details class="card" id="m-settings">
+    <summary>Pengaturan modul <span class="hint">ID, judul, tradisi, status, kelas tugas</span></summary>
     <label>ID modul <input id="m-id"></label>
     <label>Judul <input id="m-title"></label>
     <label>Tradisi <input id="m-trad"></label>
@@ -29,23 +32,24 @@
       <label>Tugas utuh (hasil akhir yang dikerjakan murid, mis. "5 baris tenun polos yang rapat") <input id="m-wholetask"></label>
     </div>
     <label class="toggle"><input type="checkbox" id="m-pub"> Tampilkan ke pemula</label>
-  </section>
+  </details>
 
   <section class="card" id="evidence" hidden>
     <h3>Bukti video <button id="ev-close" style="float:right" aria-label="Tutup">Tutup</button></h3>
     <video id="ev-video" controls playsinline></video>
     <p id="ev-meta" class="hint"></p>
   </section>
-  <section class="card">
-    <h2>Pengenalan modul</h2>
-    <p class="hint">Ditampilkan ke pemula sebelum memakai kacamata: video tutorial singkat dan penjelasan. Video bisa dipilih dari halaman Rekam atau Sumber video (tombol "Jadikan video pengenalan").</p>
+  <details class="card">
+    <summary>Pengenalan modul <span class="hint">video, ringkasan, alat yang dibutuhkan</span></summary>
+    <p class="hint">Ditampilkan ke pemula sebelum latihan. Video bisa dipilih dari Rekam atau Sumber video ("Jadikan video pengenalan").</p>
     <label>Video pengenalan <input id="i-video" placeholder="(kosong: pakai contoh tiap tahap atau ringkasan)"></label>
     <label>Ringkasan (2–3 kalimat) <textarea id="i-summary" rows="3"></textarea></label>
     <label>Yang dibutuhkan (satu per baris) <textarea id="i-tools" rows="3"></textarea></label>
     <label>Cara kacamata membimbing (satu per baris, kosong = teks bawaan) <textarea id="i-points" rows="3"></textarea></label>
     <label>Perkiraan durasi (menit) <input id="i-duration" type="number" min="1"></label>
-  </section>
+  </details>
 
+  <h2 class="section-title">Tahap <span class="hint" id="step-count"></span></h2>
   <div id="steps"></div>
   <button id="add-step">+ Tambah tahap</button>
 
@@ -116,6 +120,7 @@ function render() {
   $('m-id').value = mod.id; $('m-title').value = mod.title; $('m-trad').value = mod.tradition || ''; $('m-desc').value = mod.description || ''; $('m-status').value = mod.status || ''; $('m-pub').checked = mod.published !== false;
   $('m-taskclass').value = mod.taskClass ?? ''; $('m-wholetask').value = mod.wholeTask ?? '';
   $('steps').innerHTML = mod.steps.map(stepCard).join('');
+  $('step-count').textContent = `${mod.steps.length} tahap · ${mod.steps.filter((s) => s.validated_by).length} tervalidasi`;
   $('kb').innerHTML = kb.entries.map(kbCard).join('');
 }
 function collect() {
@@ -180,6 +185,7 @@ document.body.addEventListener('click', (e) => {
 $('add-step').onclick = () => { collect(); mod.steps.push({ id: `tahap-${mod.steps.length + 1}`, title: '', instruction: '', tips: [], success_criteria: '', common_mistakes: [], auto_detect: true, validated_by: null }); render(); };
 $('add-kb').onclick = () => { collect(); kb.entries.push({ id: `qa-${Date.now().toString(36)}`, status: 'draft', question: '', answer: '', keywords: [], source: null, validated_by: null }); render(); };
 $('m-new').onclick = () => {
+  $('m-settings').open = true;
   const id = prompt('ID modul baru (huruf kecil-tanda-hubung), mis. tidore-motif-1'); if (!id) return;
   mod = { id, title: 'Modul baru', tradition: mod.tradition, level: 'pemula', status: 'DRAFT', description: '', published: false, steps: [{ id: 'tahap-1', title: 'Tahap pertama', instruction: '…', tips: [], success_criteria: '…', common_mistakes: [], auto_detect: false, validated_by: null }] };
   render();
