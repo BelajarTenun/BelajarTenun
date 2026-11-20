@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Icon from './Icon';
 import { api } from '../lib/api';
 import { useApp } from '../lib/session';
@@ -10,14 +10,21 @@ export default function Shell({ children }: { children: ReactNode }) {
   const nav = useNavigate();
   const user = config?.user;
   const keluar = async () => { await api('/api/auth/logout', {}); await refresh(); nav('/'); };
+  const { pathname } = useLocation();
+  // Detail modul (/belajar/:id) termasuk tab Modul; detail sesi (/progres/:id) termasuk tab Progres.
+  const aktif = (to: string) => (to === '/belajar' ? pathname === '/belajar' : to === '/modul' ? pathname.startsWith('/modul') || /^\/belajar\/./.test(pathname) : pathname.startsWith(to));
   const item = (to: string, label: string, icon: string) =>
-    <NavLink className={({ isActive }) => `a-link${isActive ? ' active' : ''}`} to={to} end={to === '/belajar'}><Icon name={icon} /><span>{label}</span><Icon name="arrowUpRight" className="arr" /></NavLink>;
+    <Link className={`a-link${aktif(to) ? ' active' : ''}`} aria-current={aktif(to) ? 'page' : undefined} to={to}><Icon name={icon} /><span>{label}</span><Icon name="arrowUpRight" className="arr" /></Link>;
   return (
     <div className="a-shell">
       <a className="a-skip" href="#konten">Lewati ke konten</a>
       <aside className="a-side">
         <Link to="/" className="a-brand"><img src="/icon.svg" alt="" /><span>BelajarTenun</span></Link>
-        {item('/belajar', 'Modul', 'book')}
+        <nav className="a-tabs" aria-label="Menu utama">
+          {item('/belajar', 'Beranda', 'home')}
+          {item('/modul', 'Modul', 'book')}
+          {item('/progres', 'Progres', 'chart')}
+        </nav>
         {user && user.role !== 'pemula' && (
           <div className="a-preview-note">
             <span>Kamu melihat sebagai murid</span>
