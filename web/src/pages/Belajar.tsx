@@ -1,79 +1,151 @@
 import { Link } from 'react-router-dom';
-import Shell, { ViewHeader } from '../components/Shell';
+import Shell from '../components/Shell';
 import Icon from '../components/Icon';
 import KainFoto from '../components/KainFoto';
+import Maskot from '../components/Maskot';
 import { useApp } from '../lib/session';
-import { streak, tanggal, useProgres } from '../lib/progres';
+import { useModule } from '../lib/useModule';
+import { streak, useProgres } from '../lib/progres';
 
-const TARGET_MENIT = 10;
+const TARGET_MENIT = 10, TARGET_MINGGU = 70;
 
-// Beranda: satu aksi utama (lanjutkan / mulai), ritme minggu ini, target harian, dan satu saran dari data latihan.
+// Beranda gaya edtech: sapaan bersama maskot, kain yang sedang dipelajari, kain lain untuk dijelajahi,
+// dan kolom kanan berisi minggu ini, tahap berikutnya, serta aktivitas.
 export default function Belajar() {
   const { config } = useApp();
-  const { loading, modules, byId, riwayat, status, mastery } = useProgres();
+  const { loading, modules, byId, riwayat, status, kunci, mastery } = useProgres();
+  const nama = config?.user?.name?.split(' ')[0] ?? '';
   const st = streak(riwayat);
   const hariIni = riwayat.filter((s) => new Date(s.start).toDateString() === new Date().toDateString()).reduce((a, s) => a + s.minutes, 0);
-  const terakhir = riwayat.find((s) => !s.done && s.reached < (byId[s.module]?.steps ?? 0));
-  const berikut = modules.find((m) => status[m.id] === 'berikut');
-  const utama = terakhir ? { m: byId[terakhir.module], tahap: Math.min(terakhir.reached, byId[terakhir.module].steps - 1), kapan: terakhir.end } : berikut ? { m: berikut, tahap: 0, kapan: null } : null;
+  const sejak = Date.now() - 7 * 864e5;
+  const minggu = riwayat.filter((s) => new Date(s.start).getTime() >= sejak);
+  const menitMinggu = minggu.reduce((a, s) => a + s.minutes, 0);
 
-  // Saran: tahap yang paling sering diulang tapi belum dikuasai (hanya dari data murid sendiri).
-  let saran: { modulId: string; n: number } | null = null;
-  for (const m of modules) for (const x of Object.values(mastery[m.id] ?? {})) {
-    if (x.state === 'dilatih' && x.attempts >= 2 && (!saran || x.attempts > saran.n)) saran = { modulId: m.id, n: x.attempts };
-  }
+  const terakhir = riwayat.find((s) => !s.done && s.reached < (byId[s.module]?.steps ?? 0));
+  const fokusId = terakhir?.module ?? modules.find((m) => status[m.id] === 'berikut')?.id;
+  const { module: fokus } = useModule(fokusId);
+  const lanjut = terakhir ? Math.min(terakhir.reached, (byId[terakhir.module]?.steps ?? 1) - 1) : 0;
+
+  const kainku = modules.filter((m) => status[m.id] === 'berjalan' || status[m.id] === 'tuntas' || m.id === fokusId);
+  const jelajah = modules.filter((m) => !kainku.includes(m)).slice(0, 4);
+  const dikuasai = (id: string) => Object.values(mastery[id] ?? {}).filter((x) => x.state === 'dikuasai').length;
+  const totalTahap = kainku.reduce((a, m) => a + m.steps, 0);
+  const totalKuasai = kainku.reduce((a, m) => a + dikuasai(m.id), 0);
 
   return (
-    <Shell>
-      <ViewHeader title={`Halo, ${config?.user?.name?.split(' ')[0] ?? ''}`}
-        description={st.hariIni ? 'Latihan hari ini sudah tercatat. Benang demi benang.' : 'Sepuluh menit hari ini sudah cukup untuk menjaga ritme.'} />
+    <Shell wide>
+      <div className="e-home">
+        <div className="e-main">
+          <section className="e-hero">
+            <div className="e-hero-text">
+              <h1>Halo, {nama}!</h1>
+              <p>{st.hariIni ? 'Latihan hari ini sudah tercatat. Benang demi benang, kainmu makin panjang.' : terakhir ? 'Selamat datang kembali. Kainmu menunggu di tahap berikutnya.' : 'Yuk mulai menenun. Sepuluh menit hari ini sudah cukup.'}</p>
+              {fokus && (
+                <Link className="e-hero-btn" to={terakhir ? `/belajar/${fokus.id}/siapkan?mulai=${lanjut}` : `/belajar/${fokus.id}`}>
+                  <Icon name="play" />{terakhir ? `Lanjutkan tahap ${lanjut + 1}` : 'Mulai belajar'}
+                </Link>
+              )}
+            </div>
+            <Maskot pose={st.hariIni ? 'bangga' : 'menyapa'} className="e-hero-art" />
+          </section>
 
-      {loading ? <p className="a-muted">Memuat…</p> : (
-        <>
-          {utama ? (
-            <Link className="b-hero" to={terakhir ? `/belajar/${utama.m.id}/siapkan?mulai=${utama.tahap}` : `/belajar/${utama.m.id}`}>
-              <span className="b-hero-foto"><KainFoto m={utama.m} /></span>
-              <span className="b-hero-body">
-                <span className="k">{terakhir ? 'Lanjutkan' : riwayat.length ? 'Berikutnya di jalurmu' : 'Mulai dari sini'}</span>
-                <b>{utama.m.fabricName || utama.m.title}</b>
-                <span className="d">Tahap {utama.tahap + 1} dari {utama.m.steps}{utama.kapan ? ` · terakhir ${tanggal(utama.kapan)}` : ''}</span>
-                <span className="s-bar"><i style={{ width: `${(utama.tahap / utama.m.steps) * 100}%` }} /></span>
-                <span className="a-btn primary lg"><Icon name="play" />{terakhir ? 'Lanjutkan latihan' : 'Mulai'}</span>
-              </span>
-            </Link>
-          ) : modules.length > 0 && (
-            <div className="a-empty"><Icon name="check" /><b>Semua modul yang tersedia sudah tuntas</b><span>Kamu bisa mengulang modul mana pun dari tab Modul.</span></div>
+          <section className="e-sec">
+            <h2>Kainku</h2>
+            {loading ? <p className="a-muted">Memuat…</p> : (
+              <ul className="kain-grid">
+                {kainku.map((m) => {
+                  const k = dikuasai(m.id), sesiM = riwayat.find((s) => s.module === m.id);
+                  const tahap = status[m.id] === 'tuntas' ? m.steps : Math.min(sesiM?.reached ?? 0, m.steps);
+                  return (
+                    <li key={m.id}>
+                      <Link to={`/belajar/${m.id}`} className={`kain-card ${status[m.id]}`}>
+                        <span className="kain-frame"><KainFoto m={m} />
+                          <span className="kain-status">{status[m.id] === 'tuntas' && <Icon name="check" />}{{ tuntas: 'Tuntas', berjalan: 'Sedang dipelajari', berikut: 'Berikutnya', nanti: 'Belum mulai' }[status[m.id]]}</span></span>
+                        <span className="kain-meta">
+                          <b>{m.fabricName || m.title}</b>
+                          <span>{m.weaver || m.tradition}</span>
+                          <span className="e-progress"><span className="e-bar"><i style={{ width: `${(tahap / m.steps) * 100}%` }} /></span>
+                            <span className="meta"><span>Tahap <b>{tahap}/{m.steps}</b></span><span>Dikuasai <b>{k}/{m.steps}</b></span></span></span>
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+                <li>
+                  <Link to="/modul" className="kain-card kain-add">
+                    <span className="plus"><Icon name="plus" /></span>
+                    <b>Pilih kain baru</b>
+                    <span>{modules.length} kain di jalurmu</span>
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </section>
+
+          {jelajah.length > 0 && (
+            <section className="e-sec">
+              <h2>Jelajahi kain lain</h2>
+              <ul className="kain-grid">
+                {jelajah.map((m) => (
+                  <li key={m.id}>
+                    <Link to={`/belajar/${m.id}`} className={`kain-card ${kunci[m.id] ? 'terkunci' : status[m.id]}`}>
+                      <span className="kain-frame"><KainFoto m={m} />{kunci[m.id] && <span className="kain-status"><Icon name="lock" />Terkunci</span>}</span>
+                      <span className="kain-meta"><b>{m.fabricName || m.title}</b><span>{kunci[m.id] ? 'Selesaikan Modul Dasar dulu' : `${m.weaver || m.tradition} · ${m.steps} tahap`}</span></span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
           )}
+        </div>
 
-          <div className="b-row">
-            <section className="b-tile">
-              <h2>Minggu ini</h2>
-              <div className="b-streak"><span className={`flame${st.hariIni ? ' on' : ''}`}><Icon name="flame" /></span><div><b>{st.n} hari</b><span>berturut-turut</span></div></div>
-              <ol className="week" aria-label="Tujuh hari terakhir">{st.minggu.map((d, i) => <li key={i} className={`${d.aktif ? 'on' : ''}${d.hariIni ? ' now' : ''}`}><i />{d.label}</li>)}</ol>
-            </section>
-            <section className="b-tile">
-              <h2>Target hari ini</h2>
-              <div className="b-goal">
-                <svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15.5" className="bg" /><circle cx="18" cy="18" r="15.5" className="fg" style={{ strokeDasharray: `${Math.min(1, hariIni / TARGET_MENIT) * 97.4} 97.4` }} /></svg>
-                <div><b>{Math.round(hariIni)} / {TARGET_MENIT} menit</b><span>{hariIni >= TARGET_MENIT ? 'Target tercapai. Hebat!' : 'Sedikit tiap hari lebih baik daripada banyak sekali-sekali.'}</span></div>
-              </div>
-            </section>
-          </div>
+        <aside className="e-rail">
+          <section className="e-panel">
+            <h2>Minggu ini</h2>
+            <ol className="e-week">
+              {st.minggu.map((d, i) => {
+                const t = new Date(); t.setDate(t.getDate() - (6 - i));
+                return <li key={i} className={`${d.aktif ? 'on' : ''}${d.hariIni ? ' now' : ''}`}><span>{d.label}</span><b>{t.getDate()}</b></li>;
+              })}
+            </ol>
+            <p className="e-streak"><Icon name="flame" /><span><b>{st.n} hari</b> berturut-turut menenun</span></p>
+          </section>
 
-          {saran && (
-            <section className="b-saran">
-              <Icon name="loom" />
-              <div><b>Tahap yang masih kamu latih</b><span>Satu tahap di “{byId[saran.modulId]?.fabricName || byId[saran.modulId]?.title}” sudah kamu coba {saran.n} kali. Ulangi tahap ini di sesi berikutnya; tutor akan menawarkan latihan bagian.</span></div>
-              <Link className="a-btn sm" to={`/belajar/${saran.modulId}`}>Lihat tahap</Link>
-            </section>
-          )}
+          <section className="e-panel">
+            <h2>Tahap berikutnya</h2>
+            {!fokus ? <p className="a-muted">Pilih kain untuk melihat tahapnya.</p> : (
+              <ul className="e-tasks">
+                {fokus.steps.slice(lanjut, lanjut + 4).map((s, i) => {
+                  const state = mastery[fokus.id]?.[s.id]?.state ?? 'belum';
+                  return (
+                    <li key={s.id}>
+                      <Link to={`/belajar/${fokus.id}/siapkan?mulai=${lanjut + i}`} className={`e-task ${state}`}>
+                        <span className="ic">{state === 'dikuasai' ? <Icon name="check" /> : <b>{lanjut + i + 1}</b>}</span>
+                        <span className="tx"><b>{s.title}</b><span>{state === 'dikuasai' ? 'Sudah dikuasai' : state === 'dilatih' ? 'Sedang dilatih' : 'Belum dicoba'}</span></span>
+                        <Icon name="chevronRight" />
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
 
-          <div className="b-links">
-            <Link to="/modul" className="b-link"><Icon name="book" /><span><b>Semua kain</b>{modules.length} modul di jalurmu</span><Icon name="chevronRight" /></Link>
-            <Link to="/progres" className="b-link"><Icon name="chart" /><span><b>Progres & riwayat</b>{riwayat.length} sesi latihan</span><Icon name="chevronRight" /></Link>
-          </div>
-        </>
-      )}
+          <section className="e-panel">
+            <h2>Aktivitas</h2>
+            <ul className="e-act">
+              {[
+                ['Hari ini', hariIni, TARGET_MENIT, `${Math.round(hariIni)}/${TARGET_MENIT} mnt`],
+                ['Minggu ini', menitMinggu, TARGET_MINGGU, `${Math.round(menitMinggu)}/${TARGET_MINGGU} mnt`],
+                ['Hari aktif', st.minggu.filter((d) => d.aktif).length, 7, `${st.minggu.filter((d) => d.aktif).length}/7`],
+                ['Tahap dikuasai', totalKuasai, Math.max(1, totalTahap), `${totalKuasai}/${totalTahap}`],
+              ].map(([label, v, max, txt]) => (
+                <li key={label as string}><span>{label}</span><i><em style={{ width: `${Math.min(1, (v as number) / (max as number)) * 100}%` }} /></i><b>{txt}</b></li>
+              ))}
+            </ul>
+          </section>
+        </aside>
+      </div>
     </Shell>
   );
 }
