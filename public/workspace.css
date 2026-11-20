@@ -241,3 +241,8 @@ body.ws {
 
 /* Baris alat (pemilih modul) berjarak dari bagian di bawahnya. */
 .ws .ws-content > .row { margin-bottom: 16px; }
+/* Foto kain di Editor modul */
+.ws .cover-edit { display: grid; grid-template-columns: 160px 1fr; gap: 20px; align-items: start; margin-bottom: 8px; }
+.ws .cover-preview { aspect-ratio: 4 / 5; border-radius: 8px; border: 1px solid rgba(15,23,42,.12); background-color: #efe9dc; background-size: cover; background-position: center;
+  background-image: repeating-linear-gradient(0deg, rgba(15,23,42,.07) 0 3px, transparent 3px 6px), repeating-linear-gradient(90deg, rgba(146,64,14,.10) 0 3px, transparent 3px 6px); }
+@media (max-width: 640px) { .ws .cover-edit { grid-template-columns: 1fr; } .ws .cover-preview { max-width: 200px; } }

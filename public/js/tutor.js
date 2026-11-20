@@ -132,6 +132,7 @@ export class TutorClient {
     on('status', (d) => this.ui.status?.(d.text));
     on('speaking', (d) => this.ui.speaking?.(d));
     on('agent', () => this.ui.status?.('Tutor bergabung'));
+    on('tutor_state', (d) => { this.ui.tutorState?.(d); this.tracer.emit('tutor_state', d); });
     on('close', (d) => { this.ui.status?.(`Live berhenti (${d.code})`); earcon('lost'); this.live = null; });
     speechSynthesis.cancel(); this.audio?.pause();
     await this.live.connect();

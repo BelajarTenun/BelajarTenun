@@ -18,6 +18,12 @@ export default function Shell({ children }: { children: ReactNode }) {
       <aside className="a-side">
         <Link to="/" className="a-brand"><img src="/icon.svg" alt="" /><span>BelajarTenun</span></Link>
         {item('/belajar', 'Modul', 'book')}
+        {user && user.role !== 'pemula' && (
+          <div className="a-preview-note">
+            <span>Kamu melihat sebagai murid</span>
+            <a href={config?.home || '/'} className="a-link"><Icon name="chevronLeft" /><span>Kembali ke dashboard</span></a>
+          </div>
+        )}
         {user && (
           <div className="a-user">
             <span className="name">{user.name}</span>

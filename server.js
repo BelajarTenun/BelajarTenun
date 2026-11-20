@@ -361,6 +361,28 @@ const routes = {
 };
 
 // ---------- Upload biner rekaman ----------
+// Foto kain sampul modul (kartu di halaman pilih modul). JPEG/PNG/WebP, maks 8 MB, disimpan di DATA_DIR.
+const COVER_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
+async function handleCoverUpload(req, url) {
+  await auth.requireRole(req, ...PARTNER);
+  const id = url.searchParams.get('id') || '';
+  if (!/^[a-z0-9-]+$/.test(id)) throw fail(400, 'ID modul tidak valid');
+  const ext = COVER_TYPES[String(req.headers['content-type']).split(';')[0]];
+  if (!ext) throw fail(400, 'Foto harus JPEG, PNG, atau WebP');
+  const chunks = []; let size = 0;
+  for await (const c of req) { size += c.length; if (size > 8e6) throw fail(413, 'Foto maksimal 8 MB'); chunks.push(c); }
+  const name = `${id}-${Date.now().toString(36)}.${ext}`;
+  await store.writeFile(`module-media/${name}`, Buffer.concat(chunks));
+  return { url: `/media/modules/${name}` };
+}
+async function serveModuleMedia(res, pathname) {
+  const name = pathname.slice('/media/modules/'.length);
+  if (!/^[a-z0-9-]+\.(jpg|png|webp)$/.test(name)) return res.writeHead(404).end();
+  const buf = await store.readFile(`module-media/${name}`).catch(() => null);
+  if (!buf) return res.writeHead(404).end();
+  res.writeHead(200, { 'content-type': { jpg: 'image/jpeg', png: 'image/png', webp: 'image/webp' }[name.split('.').pop()], 'cache-control': 'public, max-age=31536000, immutable', ...SECURITY_HEADERS }).end(buf);
+}
+
 async function handleUpload(req, res, url) {
   await auth.requireRole(req, ...PARTNER);
   const chunks = []; let size = 0;
@@ -413,6 +435,7 @@ export const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
   try {
     if (req.method === 'POST' && url.pathname === '/api/recordings/upload') return sendJson(res, 200, await handleUpload(req, res, url));
+    if (req.method === 'POST' && url.pathname === '/api/module/cover') return sendJson(res, 200, await handleCoverUpload(req, url));
     if (req.method === 'POST' && url.pathname === '/api/sources/upload') {
       await auth.requireRole(req, ...PARTNER);
       const m = await sources.attachVideoStream(url.searchParams.get('id'), req, String(url.searchParams.get('ext') || '').toLowerCase());
@@ -433,6 +456,7 @@ export const server = http.createServer(async (req, res) => {
     }
     if (url.pathname.startsWith('/api/')) return sendJson(res, 404, { error: 'Tidak ditemukan' });
     if (url.pathname.startsWith('/recordings/')) return await serveRecording(req, res, url.pathname);
+    if (url.pathname.startsWith('/media/modules/')) return await serveModuleMedia(res, url.pathname);
     const file = normalize(url.pathname === '/' ? '/index.html' : url.pathname).replace(/^(\.\.[/\\])+/, '');
     // Halaman Ruang tim dikunci di server: pemula & tamu tidak pernah menerima HTML-nya.
     const need = TEAM_PAGES[file.replace(/^\//, '')];

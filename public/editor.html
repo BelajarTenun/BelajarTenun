@@ -22,6 +22,17 @@
 
   <details class="card" id="m-settings">
     <summary>Pengaturan modul <span class="hint">ID, judul, tradisi, status, kelas tugas</span></summary>
+    <div class="cover-edit">
+      <div class="cover-preview" id="m-cover-preview" aria-hidden="true"></div>
+      <div>
+        <div class="grid2">
+          <label>Nama kain (judul kartu, mis. "Puta Dino motif Jodati") <input id="m-fabric"></label>
+          <label>Penenun (tampil di kartu) <input id="m-weaver" placeholder="mis. Ibu … · Puta Dino Kayangan"></label>
+        </div>
+        <label>Foto kain (JPEG/PNG/WebP, maks 8 MB; foto kain jadi, tampak dekat) <input id="m-cover-file" type="file" accept="image/jpeg,image/png,image/webp"></label>
+        <p class="hint" id="m-cover-status" aria-live="polite"></p>
+      </div>
+    </div>
     <label>ID modul <input id="m-id"></label>
     <label>Judul <input id="m-title"></label>
     <label>Tradisi <input id="m-trad"></label>
@@ -119,6 +130,8 @@ function render() {
   $('i-points').value = (intro.points || []).join('\n'); $('i-duration').value = intro.duration_min || '';
   $('m-id').value = mod.id; $('m-title').value = mod.title; $('m-trad').value = mod.tradition || ''; $('m-desc').value = mod.description || ''; $('m-status').value = mod.status || ''; $('m-pub').checked = mod.published !== false;
   $('m-taskclass').value = mod.taskClass ?? ''; $('m-wholetask').value = mod.wholeTask ?? '';
+  $('m-fabric').value = mod.fabricName ?? ''; $('m-weaver').value = mod.weaver ?? '';
+  $('m-cover-preview').style.backgroundImage = mod.cover ? `url("${mod.cover}")` : '';
   $('steps').innerHTML = mod.steps.map(stepCard).join('');
   $('step-count').textContent = `${mod.steps.length} tahap · ${mod.steps.filter((s) => s.validated_by).length} tervalidasi`;
   $('kb').innerHTML = kb.entries.map(kbCard).join('');
@@ -127,7 +140,8 @@ function collect() {
   const lines = (id) => $(id).value.split('\n').map((x) => x.trim()).filter(Boolean);
   mod.intro = { ...(mod.intro || {}), video: $('i-video').value.trim() || null, summary: $('i-summary').value.trim() || null, tools: lines('i-tools'), points: lines('i-points'), duration_min: Number($('i-duration').value) || null };
   Object.assign(mod, { id: $('m-id').value.trim(), title: $('m-title').value, tradition: $('m-trad').value, description: $('m-desc').value, status: $('m-status').value, published: $('m-pub').checked,
-    taskClass: Number.parseInt($('m-taskclass').value, 10) || undefined, wholeTask: $('m-wholetask').value.trim() || undefined });
+    taskClass: Number.parseInt($('m-taskclass').value, 10) || undefined, wholeTask: $('m-wholetask').value.trim() || undefined,
+    fabricName: $('m-fabric').value.trim() || undefined, weaver: $('m-weaver').value.trim() || undefined });
   document.querySelectorAll('[data-step]').forEach((card) => {
     const s = mod.steps[card.dataset.step], v = (k) => card.querySelector(`[data-k="${k}"]`);
     const prev = { title: s.title, instruction: s.instruction, success_criteria: s.success_criteria, tips: JSON.stringify(s.tips || []), common_mistakes: JSON.stringify(s.common_mistakes || []) };
@@ -184,6 +198,21 @@ document.body.addEventListener('click', (e) => {
 });
 $('add-step').onclick = () => { collect(); mod.steps.push({ id: `tahap-${mod.steps.length + 1}`, title: '', instruction: '', tips: [], success_criteria: '', common_mistakes: [], auto_detect: true, validated_by: null }); render(); };
 $('add-kb').onclick = () => { collect(); kb.entries.push({ id: `qa-${Date.now().toString(36)}`, status: 'draft', question: '', answer: '', keywords: [], source: null, validated_by: null }); render(); };
+// Foto kain: unggah langsung, simpan URL-nya di modul (tersimpan permanen saat "Simpan semua").
+$('m-cover-file').onchange = async (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  $('m-cover-status').textContent = 'Mengunggah…';
+  try {
+    const r = await fetch(`/api/module/cover?id=${encodeURIComponent($('m-id').value.trim() || mod.id)}`, { method: 'POST', headers: { 'content-type': f.type }, body: f, credentials: 'same-origin' });
+    const out = await r.json();
+    if (!r.ok) throw new Error(out.error || 'Gagal mengunggah');
+    mod.cover = out.url;
+    $('m-cover-preview').style.backgroundImage = `url("${out.url}")`;
+    $('m-cover-status').textContent = 'Foto terunggah. Klik "Simpan semua" untuk menyimpan.';
+  } catch (err) { $('m-cover-status').textContent = err.message; }
+  e.target.value = '';
+};
 $('m-new').onclick = () => {
   $('m-settings').open = true;
   const id = prompt('ID modul baru (huruf kecil-tanda-hubung), mis. tidore-motif-1'); if (!id) return;
