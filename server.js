@@ -55,7 +55,7 @@ const fail = (code, message) => Object.assign(new Error(message), { code });
 const b64 = (img) => String(img || '').replace(/^data:image\/\w+;base64,/, '');
 
 // ---------- AI: deteksi tahap (F3: multi-frame + contoh few-shot + output terstruktur) ----------
-export async function checkStep(module, step, frames, { history = [], useExamples = true, excludeRecording = null, allowExample = null } = {}) {
+export async function checkStep(module, step, frames, { history = [], useExamples = !config.stepCheckModel, excludeRecording = null, allowExample = null, model = config.stepCheckModel || config.geminiModel } = {}) {
   if (!aiEnabled() || !step.auto_detect) return { status: 'uncertain', confidence: 0, observation: 'Konfirmasi manual.' };
   const imgs = frames.map(b64).filter(Boolean);
   if (!imgs.length) return { status: 'uncertain', confidence: 0, observation: 'Tidak ada gambar.' };
@@ -63,7 +63,7 @@ export async function checkStep(module, step, frames, { history = [], useExample
   const parts = [{ text: buildStepCheckPrompt(step, { frames: imgs.length, examples: examples.length, history }) }];
   for (const e of examples) parts.push({ inline_data: { mime_type: 'image/jpeg', data: e } });
   for (const f of imgs) parts.push({ inline_data: { mime_type: 'image/jpeg', data: f } });
-  const raw = await generate(parts, { json: true, schema: STEP_CHECK_SCHEMA, kind: 'check_step' });
+  const raw = await generate(parts, { json: true, schema: STEP_CHECK_SCHEMA, kind: 'check_step', model });
   return interpretStepCheck(raw, step);
 }
 
