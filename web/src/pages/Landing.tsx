@@ -56,7 +56,7 @@ export default function Landing() {
         <section id="video" className="landing-video">
           <h2>Lihat BelajarTenun bekerja</h2>
           <div className="glass">
-            <video src="/video-utuh-v7.mp4" poster="/video-utuh-v7.jpg" controls playsInline preload="metadata" onError={() => setVideoOk(false)} />
+            <video src="/video-utuh-v8.mp4" poster="/video-utuh-v8.jpg" controls playsInline preload="metadata" onError={() => setVideoOk(false)} />
           </div>
         </section>
       )}
