@@ -5,33 +5,67 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { config, ROOT } from './lib/config.js';
 import { store, seedDataDir, applyRetention } from './lib/store.js';
-import { aiEnabled, generate, createLiveToken, tts, usageStats, loadUsage } from './lib/ai.js';
+import { aiEnabled, isVertex, generate, createLiveToken, tts, usageStats, loadUsage } from './lib/ai.js';
 import * as auth from './lib/auth.js';
 import * as kb from './lib/knowledge.js';
 import * as data from './lib/data.js';
 import { buildStepCheckPrompt, interpretStepCheck, summarizeLogs, STEP_CHECK_SCHEMA } from './lib/core.js';
 import { createSession } from './lib/session.js';
+import { myMastery, sessionDetail } from './lib/learner.js';
 import { liveSetup, liveInstructions, LIVE_TOOLS } from './lib/live.js';
 import * as sources from './lib/sources.js';
 import * as pipeline from './lib/pipeline.js';
 import { getAnalysis } from './lib/video-analysis.js';
 import { generateDialogs, evaluateDialog, listDialogs } from './lib/dialog-gen.js';
 import { pairsForModule } from './lib/exo-ego.js';
+import { runDiagnostics } from './lib/diagnostics.js';
+import { stepDifficulty, masteryByLearner } from './lib/learning-analytics.js';
+import { googleLoginEnabled, authUrl, profileFromCode } from './lib/google-login.js';
 import { createAccessToken, livekitEnabled, roomForSession, toJsonSchema } from './lib/livekit.js';
+const pairs = new Map(); // kode pasangan HP-kamera → { userId, exp }
 
+// ----- Masuk dengan Google: alihkan ke Google, lalu kembali ke /api/auth/google/callback -----
+async function googleRoute(req, res, url) {
+  const back = (path) => res.writeHead(302, { location: path, ...SECURITY_HEADERS }).end();
+  if (!googleLoginEnabled()) return back('/masuk?galat=google');
+  if (url.pathname === '/api/auth/google') {
+    const { url: to, state } = authUrl(req);
+    const next = /^\/(?!\/)[\w/.-]*$/.test(url.searchParams.get('lanjut') || '') ? url.searchParams.get('lanjut') : '/belajar';
+    res.setHeader('set-cookie', `bt_oauth=${state}.${encodeURIComponent(next)}; Path=/api/auth/google; HttpOnly; SameSite=Lax; Max-Age=600${config.publicUrl.startsWith('https') ? '; Secure' : ''}`);
+    return back(to);
+  }
+  const saved = /(?:^|;\s*)bt_oauth=([^;]+)/.exec(req.headers.cookie || '')?.[1] || '';
+  const [state, next = '%2Fbelajar'] = saved.split('.');
+  if (!state || state !== url.searchParams.get('state') || !url.searchParams.get('code')) return back('/masuk?galat=google');
+  try {
+    const user = await auth.loginWithGoogle(await profileFromCode(req, url.searchParams.get('code')));
+    res.setHeader('set-cookie', [auth.sessionCookie(user.id), 'bt_oauth=; Path=/api/auth/google; Max-Age=0']);
+    // Tujuan bawaan setelah masuk berbeda per peran: pemula belajar, partner ke Editor, admin ke Dashboard admin.
+    const target = decodeURIComponent(next);
+    return back(target === '/belajar' ? homeFor(user) : target);
+  } catch { return back('/masuk?galat=google'); }
+}
+
+const PARTNER_ROLES = ['partner', 'admin'];
+export const homeFor = (user) => ({ admin: '/admin.html', partner: '/editor.html' }[user?.role] ?? '/belajar');
+const TEAM_PAGES = {
+  'admin.html': ['admin'], 'progres.html': PARTNER_ROLES,
+  'editor.html': PARTNER_ROLES, 'validasi.html': PARTNER_ROLES, 'rekam.html': PARTNER_ROLES, 'anotasi.html': PARTNER_ROLES, 'sumber.html': PARTNER_ROLES,
+};
+const WEB_DIST = join(ROOT, 'web', 'dist');
 const fail = (code, message) => Object.assign(new Error(message), { code });
 const b64 = (img) => String(img || '').replace(/^data:image\/\w+;base64,/, '');
 
 // ---------- AI: deteksi tahap (F3: multi-frame + contoh few-shot + output terstruktur) ----------
-export async function checkStep(module, step, frames, { history = [], useExamples = true, excludeRecording = null } = {}) {
+export async function checkStep(module, step, frames, { history = [], patternRows, useExamples = !config.stepCheckModel, excludeRecording = null, allowExample = null, model = config.stepCheckModel || config.geminiModel } = {}) {
   if (!aiEnabled() || !step.auto_detect) return { status: 'uncertain', confidence: 0, observation: 'Konfirmasi manual.' };
   const imgs = frames.map(b64).filter(Boolean);
   if (!imgs.length) return { status: 'uncertain', confidence: 0, observation: 'Tidak ada gambar.' };
-  const examples = useExamples ? await data.examplesFor(module.id, step.id, 2, excludeRecording) : [];
-  const parts = [{ text: buildStepCheckPrompt(step, { frames: imgs.length, examples: examples.length, history }) }];
+  const examples = useExamples ? await data.examplesFor(module.id, step.id, 2, excludeRecording, allowExample) : [];
+  const parts = [{ text: buildStepCheckPrompt(step, { frames: imgs.length, examples: examples.length, history, patternRows }) }];
   for (const e of examples) parts.push({ inline_data: { mime_type: 'image/jpeg', data: e } });
   for (const f of imgs) parts.push({ inline_data: { mime_type: 'image/jpeg', data: f } });
-  const raw = await generate(parts, { json: true, schema: STEP_CHECK_SCHEMA, kind: 'check_step' });
+  const raw = await generate(parts, { json: true, schema: STEP_CHECK_SCHEMA, kind: 'check_step', model });
   return interpretStepCheck(raw, step);
 }
 
@@ -40,11 +74,14 @@ const sessions = new Map();
 const SESSION_TTL_MS = 3 * 3600000;
 async function startSession(body, user) {
   const module = await data.getModule(body.moduleId);
+  // Informasi pendukung (4C/ID): hanya entri pengetahuan yang boleh dipakai (tervalidasi, kecuali KB_SERVE_DRAFT).
+  const kbOk = new Map(kb.servable((await kb.loadKnowledge()).entries, module.id).map((e) => [e.id, e]));
   const session = createSession(module, {
+    supportive: (ids) => ids.map((id) => kbOk.get(id)).filter(Boolean).map((e) => ({ topik: e.question, isi: e.answer, sumber: e.source ?? null })),
     checkStep: (step, frames, opts) => checkStep(module, step, frames, opts),
     ask: (q, step) => kb.answer(q, { step, moduleId: module.id, userId: user?.id }),
     log: (ev) => data.logEvent(ev).catch(() => {}),
-  }, Date.now, { userId: user?.id ?? null, source: String(body.source || 'phone').slice(0, 20), audioOnly: Boolean(body.audioOnly) });
+  }, Date.now, { userId: user?.id ?? null, source: String(body.source || 'phone').slice(0, 20), audioOnly: Boolean(body.audioOnly), startIndex: Number(body.startStep) || 0 });
   sessions.set(session.state.id, { session, touched: Date.now(), userId: user?.id ?? null });
   return session;
 }
@@ -65,7 +102,7 @@ async function withAudio(reply, body) {
 const PARTNER = ['partner', 'admin'];
 const sessionRoutes = (prefix) => ({
   [`POST ${prefix}/start`]: async (b, req) => withAudio((await startSession(b, await auth.currentUser(req))).start(), b),
-  [`POST ${prefix}/frame`]: async (b, req) => withAudio(await getSession(b.sessionId, await auth.currentUser(req)).frame(b.image, { quality: b.quality, local: b.localPrediction }), b),
+  [`POST ${prefix}/frame`]: async (b, req) => withAudio(await getSession(b.sessionId, await auth.currentUser(req)).frame(b.image, { quality: b.quality, local: b.localPrediction, ageMs: b.ageMs }), b),
   [`POST ${prefix}/say`]: async (b, req) => withAudio(await getSession(b.sessionId, await auth.currentUser(req)).say(String(b.text || '').slice(0, 500)), b),
   [`POST ${prefix}/button`]: async (b, req) => withAudio(getSession(b.sessionId, await auth.currentUser(req)).button(b.action), b),
   [`POST ${prefix}/tick`]: async (b, req) => withAudio(getSession(b.sessionId, await auth.currentUser(req)).tick(), b),
@@ -74,14 +111,17 @@ const sessionRoutes = (prefix) => ({
 const routes = {
   'GET /api/health': async () => ({ ok: true }),
   'GET /api/config': async (b, req) => ({
-    ai: aiEnabled(), tts: Boolean(config.ttsKey), model: config.geminiModel, live: aiEnabled() || livekitEnabled(), liveModel: config.liveModel,
-    livekit: livekitEnabled(),
+    ai: aiEnabled(), tts: Boolean(config.ttsKey), model: config.geminiModel, live: (aiEnabled() && !isVertex()) || livekitEnabled(), aiProvider: config.aiProvider, liveModel: config.liveModel,
+    livekit: livekitEnabled(), googleLogin: googleLoginEnabled(), passwordLogin: config.passwordLogin,
+    home: homeFor(await auth.currentUser(req)),
     user: await auth.currentUser(req), authDisabled: config.authDisabled,
   }),
 
   // ----- Akun -----
-  'POST /api/auth/register': async (b, req, res) => { const u = await auth.register(b); if (u.status === 'approved') res.setHeader('set-cookie', auth.sessionCookie(u.id)); return u; },
+  'POST /api/auth/register': async (b, req, res) => {
+    if (!config.passwordLogin) throw fail(403, 'Pendaftaran hanya lewat akun Google'); const u = await auth.register(b); if (u.status === 'approved') res.setHeader('set-cookie', auth.sessionCookie(u.id)); return u; },
   'POST /api/auth/login': async (b, req, res) => {
+    if (!config.passwordLogin) throw fail(403, 'Masuk hanya lewat akun Google');
     const u = await auth.login(b.email, b.password);
     if (u.status !== 'approved') throw fail(403, u.status === 'pending' ? 'Akun menunggu persetujuan admin' : 'Akun dinonaktifkan');
     res.setHeader('set-cookie', auth.sessionCookie(u.id)); return u;
@@ -100,8 +140,19 @@ const routes = {
     return { ai: usageStats(await loadUsage()), activeSessions: sessions.size, unanswered: (await kb.unanswered()).length, recordings: (await data.listRecordings()).length };
   },
 
+  'GET /api/admin/diagnostics': async (b, req) => { await auth.requireRole(req, 'admin'); return runDiagnostics(); },
+
   // ----- Kurikulum -----
   'GET /api/modules': async () => ({ modules: await data.listModules() }),
+  // Kain Bercerita (publik, tanpa login): dibuka dari modul atau dari QR di label kain.
+  'GET /api/story': async (b, req, res, url) => {
+    const id = url.searchParams.get('id'), mod = url.searchParams.get('module'), code = url.searchParams.get('code');
+    const all = await Promise.all((await store.list('stories')).filter((f) => f.endsWith('.json')).map((f) => store.readJson(`stories/${f}`, null)));
+    const st = all.find((x) => x && (x.id === id || (mod && x.module === mod) || (code && x.pieces?.some((p) => p.code === code))));
+    if (!st) throw fail(404, 'Cerita tidak ditemukan');
+    if (code) data.logEvent({ type: 'qr_scan', story: st.id, code }).catch(() => {});
+    return { ...st, piece: code ? st.pieces.find((p) => p.code === code) : null, pieces: undefined };
+  },
   'GET /api/module': async (b, req, res, url) => data.getModule(url.searchParams.get('id')),
   'POST /api/module': async (b, req) => { await data.saveModule(b, await auth.requireRole(req, ...PARTNER)); return { ok: true }; },
 
@@ -135,6 +186,30 @@ const routes = {
     await data.saveModule(module);
     return { ok: true, demo_video: step.demo_video };
   },
+  // Video pengenalan modul: dari rekaman partner atau sumber video yang izinnya membolehkan ditonton pemula.
+  'POST /api/module/intro-video': async (b, req) => {
+    const user = await auth.requireRole(req, ...PARTNER);
+    const module = await data.getModule(b.moduleId);
+    let video, attribution = null;
+    if (b.recordingId) {
+      const rec = await data.getRecording(b.recordingId);
+      if (!rec.consent?.scopes?.includes('pembelajaran')) throw fail(400, 'Penenun tidak mengizinkan rekaman ini ditonton pemula');
+      const f = rec.files.find((x) => /\.(webm|mp4)$/.test(x));
+      if (!f) throw fail(404, 'Rekaman tidak punya video');
+      video = `recordings/${rec.id}/${f}`; attribution = rec.weaver ? `Penenun: ${rec.weaver}` : null;
+    } else if (b.sourceId) {
+      const src = await sources.getSource(b.sourceId);
+      if (!sources.allows(src, 'demo')) throw fail(400, 'Status izin video ini tidak membolehkan ditonton pemula');
+      if (!src.files?.includes('video.mp4')) throw fail(400, 'Video belum dipra-proses');
+      video = `sources/${src.id}/video.mp4`; attribution = [src.title, src.channel].filter(Boolean).join(' – ') || src.url;
+    } else if (b.clear) video = null;
+    else throw fail(400, 'Pilih rekaman atau sumber video');
+    if (video && (Number.isFinite(b.start) || Number.isFinite(b.end))) video += `#t=${Math.floor(b.start || 0)}${Number.isFinite(b.end) ? `,${Math.ceil(b.end)}` : ''}`;
+    module.intro = { ...(module.intro || {}), video, video_attribution: video ? attribution : null };
+    await data.saveModule(module, user);
+    return { ok: true, intro: module.intro };
+  },
+
   'POST /api/check-step': async (b, req) => {
     await auth.requireRole(req, ...PARTNER);
     const module = await data.getModule(b.moduleId);
@@ -173,13 +248,69 @@ const routes = {
     });
     return { url: config.livekitPublicUrl, token, room };
   },
+  // ----- HP sebagai kamera untuk laptop: pasangkan lewat kode/QR, gambar HP dikirim lewat ruang LiveKit "pair-<kode>" -----
+  'POST /api/pair/new': async (b, req) => {
+    if (!livekitEnabled()) throw fail(501, 'LiveKit belum dikonfigurasi');
+    const user = await auth.currentUser(req);
+    if (!user) throw fail(401, 'Masuk dulu');
+    for (const [k, v] of pairs) if (v.exp < Date.now()) pairs.delete(k);
+    let code; do code = String(Math.floor(100000 + Math.random() * 900000)); while (pairs.has(code));
+    pairs.set(code, { userId: user.id, exp: Date.now() + 15 * 60 * 1000 });
+    return { code, expiresInSec: 900 };
+  },
+  'POST /api/pair/token': async (b, req) => {
+    if (!livekitEnabled()) throw fail(501, 'LiveKit belum dikonfigurasi');
+    const code = String(b.code || '').replace(/\D/g, '');
+    const p = pairs.get(code);
+    if (!p || p.exp < Date.now()) throw fail(404, 'Kode tidak berlaku. Buat kode baru di laptop.');
+    const camera = b.role === 'camera';
+    if (!camera) { const user = await auth.currentUser(req); if (user?.id !== p.userId) throw fail(403, 'Kode milik akun lain'); }
+    if (camera) p.exp = Date.now() + 6 * 3600 * 1000; // sudah dipakai: berlaku selama sesi latihan
+    const room = `pair-${code}`;
+    const token = createAccessToken({
+      identity: `${camera ? 'hp' : 'laptop'}-${Math.random().toString(36).slice(2, 8)}`, name: camera ? 'Kamera HP' : 'Laptop', room,
+      grants: camera ? { canSubscribe: false, canPublishData: false } : { canPublish: false, canPublishData: false },
+    });
+    return { url: config.livekitPublicUrl, token, room };
+  },
+  // Heartbeat agen: model Live yang benar-benar bisa tersambung (agent/main.py heartbeat_loop).
+  'GET /api/agent/live-models': async (b, req) => {
+    const user = await auth.requireRole(req, 'admin');
+    if (user.id !== 'agent' && !config.authDisabled) throw fail(403, 'Khusus agen');
+    return { models: config.liveModels };
+  },
+  'POST /api/agent/heartbeat': async (b, req) => {
+    const user = await auth.requireRole(req, 'admin');
+    if (user.id !== 'agent' && !config.authDisabled) throw fail(403, 'Khusus agen');
+    await store.writeJson('agent-heartbeat.json', { ok: Boolean(b.ok), model: b.model ?? null, candidates: b.candidates ?? [], error: b.error ?? null, at: new Date().toISOString() });
+    return { ok: true };
+  },
+  // ----- Simulasi sesi (scripts/simulate_session.js, rencana 7.2): khusus token agen -----
+  // Akun murid khusus simulasi (email *.local, tidak bisa login Google) supaya harness bisa jalan di CI tanpa akun manusia.
+  'POST /api/admin/sim-login': async (b, req, res) => {
+    const user = await auth.requireRole(req, 'admin');
+    if (user.id !== 'agent' && !config.authDisabled) throw fail(403, 'Khusus agen');
+    let sim = await auth.loginWithGoogle({ sub: 'simulasi-belajartenun', email: 'simulasi@belajartenun.local', name: 'Murid Simulasi' });
+    // Selalu pemula: di database kosong pengguna pertama otomatis admin, dan simulasi tidak boleh menjadi admin.
+    if (sim.role !== 'pemula') sim = await auth.updateUser(sim.id, { role: 'pemula' });
+    res.setHeader('set-cookie', auth.sessionCookie(sim.id));
+    return { user: sim };
+  },
+  'GET /api/admin/session-events': async (b, req, res, url) => {
+    const user = await auth.requireRole(req, 'admin');
+    if (user.id !== 'agent' && user.role !== 'admin') throw fail(403, 'Khusus admin');
+    const id = url.searchParams.get('sessionId');
+    if (!id) throw fail(400, 'sessionId wajib');
+    const events = (await data.readEvents()).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter((e) => e?.sessionId === id);
+    return { events };
+  },
   // Dipanggil agen Python saat bergabung ke ruang: instruksi + tools sesuai modul & mode sesi.
   'GET /api/agent/session-config': async (b, req, res, url) => {
     const user = await auth.requireRole(req, 'admin');
     if (user.id !== 'agent' && !config.authDisabled) throw fail(403, 'Khusus agen');
     const session = getSession(url.searchParams.get('sessionId'), user);
     return {
-      sessionId: session.state.id, model: config.liveModel, voice: config.liveVoice,
+      sessionId: session.state.id, model: config.liveModel, models: config.liveModels, voice: config.liveVoice,
       instructions: liveInstructions(session.state.module, { audioOnly: session.state.audioOnly }),
       tools: LIVE_TOOLS.map((t) => ({ name: t.name, description: t.description, parameters: toJsonSchema(t.parameters) })),
     };
@@ -207,19 +338,7 @@ const routes = {
   'GET /api/module/history': async (b, req, res, url) => { await auth.requireRole(req, ...PARTNER); return { history: (await store.readLines(`modules/${url.searchParams.get('id')}.history.jsonl`)).map((l) => JSON.parse(l)).reverse().slice(0, 200) }; },
 
   // ----- Arsip konservasi publik: hanya isi tervalidasi + atribusi; video hanya bila izinnya membolehkan -----
-  'GET /api/arsip': async () => {
-    const mods = [];
-    for (const m of await data.listModules()) {
-      const mod = await data.getModule(m.id);
-      const steps = mod.steps.filter((s) => s.validated_by).map((s) => ({ title: s.title, instruction: s.instruction, success_criteria: s.success_criteria, tips: s.tips, common_mistakes: s.common_mistakes, validated_by: s.validated_by, genericStepId: s.genericStepId ?? null, provenance: s.provenance ?? [] }));
-      if (steps.length) mods.push({ id: mod.id, title: mod.title, tradition: mod.tradition, region: mod.region ?? null, steps });
-    }
-    const knowledge = (await kb.loadKnowledge()).entries.filter((e) => e.status === 'tervalidasi').map(({ id, topic, question, answer, source, validated_by, module }) => ({ id, topic, question, answer, source, validated_by, module }));
-    const srcs = (await sources.listSources()).map((s) => ({ id: s.id, title: s.title, channel: s.channel, url: s.url, tradition: s.tradition, region: s.region, loomType: s.loomType, technique: s.technique, license: s.license.status, video: sources.allows(s, 'arsip_video') && s.files?.includes('video.mp4') ? `sources/${s.id}/video.mp4` : null }));
-    return { generatedAt: new Date().toISOString(), modules: mods, knowledge, sources: srcs };
-  },
-
-  'POST /api/tts': async (b) => ({ audio: await tts(b.text) }),
+  'POST /api/tts': async (b, req) => { await auth.requireRole(req); return { audio: await tts(String(b.text || '').slice(0, 1000)) }; },
 
   // ----- Tracer & progres -----
   'POST /api/trace': async (b, req) => {
@@ -236,14 +355,58 @@ const routes = {
     lines = lines.filter((l) => { try { const e = JSON.parse(l); return (!moduleId || e.module === moduleId) && (!mine || (user && e.userId === user.id)); } catch { return false; } });
     return { ...summarizeLogs(lines), scope: mine ? 'saya' : 'semua' };
   },
+  // Dashboard murid: penguasaan tahap (3 status) dan detail sesi milik sendiri.
+  'GET /api/me/mastery': async (b, req) => {
+    const user = await auth.requireRole(req);
+    const events = (await data.readEvents()).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter((e) => e?.userId === user.id);
+    const modules = (await Promise.all((await data.listModules()).map((m) => data.getModule(m.id).catch(() => null)))).filter(Boolean);
+    return { mastery: myMastery(events, user.id, modules) };
+  },
+  'GET /api/me/session': async (b, req, res, url) => {
+    const user = await auth.requireRole(req);
+    const id = url.searchParams.get('id');
+    const events = (await data.readEvents()).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter((e) => e?.sessionId === id && e.userId === user.id);
+    if (!events.length) throw fail(404, 'Sesi tidak ditemukan');
+    return sessionDetail(events, await data.getModule(events[0].module).catch(() => null));
+  },
+  // Analitik belajar untuk revisi kurikulum: tahap tersulit + penguasaan (BKT) per murid. Khusus tim.
+  'GET /api/admin/learning': async (b, req, res, url) => {
+    await auth.requireRole(req, ...PARTNER);
+    const module = await data.getModule(url.searchParams.get('moduleId'));
+    const events = (await data.readEvents()).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter((e) => e?.module === module.id);
+    const mastery = masteryByLearner(events);
+    const perStep = Object.fromEntries(module.steps.map((s) => {
+      const rows = mastery.filter((m) => m.step === s.id);
+      return [s.id, { learners: rows.length, mastered: rows.filter((m) => m.mastered).length, meanMastery: rows.length ? +(rows.reduce((t, m) => t + m.mastery, 0) / rows.length).toFixed(2) : null }];
+    }));
+    return { module: module.id, difficulty: stepDifficulty(events, module), mastery: perStep };
+  },
 
-  // ----- Pendamping jarak jauh (WebRTC signaling) -----
-  'POST /api/rtc/room': async () => ({ code: data.rtcCreateRoom() }),
-  'POST /api/rtc/signal': async (b) => data.rtcPost(b.room, b),
-  'GET /api/rtc/poll': async (b, req, res, url) => data.rtcPoll(url.searchParams.get('room'), url.searchParams.get('peer'), Number(url.searchParams.get('since') || 0)),
 };
 
 // ---------- Upload biner rekaman ----------
+// Foto kain sampul modul (kartu di halaman pilih modul). JPEG/PNG/WebP, maks 8 MB, disimpan di DATA_DIR.
+const COVER_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
+async function handleCoverUpload(req, url) {
+  await auth.requireRole(req, ...PARTNER);
+  const id = url.searchParams.get('id') || '';
+  if (!/^[a-z0-9-]+$/.test(id)) throw fail(400, 'ID modul tidak valid');
+  const ext = COVER_TYPES[String(req.headers['content-type']).split(';')[0]];
+  if (!ext) throw fail(400, 'Foto harus JPEG, PNG, atau WebP');
+  const chunks = []; let size = 0;
+  for await (const c of req) { size += c.length; if (size > 8e6) throw fail(413, 'Foto maksimal 8 MB'); chunks.push(c); }
+  const name = `${id}-${Date.now().toString(36)}.${ext}`;
+  await store.writeFile(`module-media/${name}`, Buffer.concat(chunks));
+  return { url: `/media/modules/${name}` };
+}
+async function serveModuleMedia(res, pathname) {
+  const name = pathname.slice('/media/modules/'.length);
+  if (!/^[a-z0-9-]+\.(jpg|png|webp)$/.test(name)) return res.writeHead(404).end();
+  const buf = await store.readFile(`module-media/${name}`).catch(() => null);
+  if (!buf) return res.writeHead(404).end();
+  res.writeHead(200, { 'content-type': { jpg: 'image/jpeg', png: 'image/png', webp: 'image/webp' }[name.split('.').pop()], 'cache-control': 'public, max-age=31536000, immutable', ...SECURITY_HEADERS }).end(buf);
+}
+
 async function handleUpload(req, res, url) {
   await auth.requireRole(req, ...PARTNER);
   const chunks = []; let size = 0;
@@ -296,6 +459,7 @@ export const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
   try {
     if (req.method === 'POST' && url.pathname === '/api/recordings/upload') return sendJson(res, 200, await handleUpload(req, res, url));
+    if (req.method === 'POST' && url.pathname === '/api/module/cover') return sendJson(res, 200, await handleCoverUpload(req, url));
     if (req.method === 'POST' && url.pathname === '/api/sources/upload') {
       await auth.requireRole(req, ...PARTNER);
       const m = await sources.attachVideoStream(url.searchParams.get('id'), req, String(url.searchParams.get('ext') || '').toLowerCase());
@@ -303,6 +467,7 @@ export const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, m);
     }
     if (url.pathname.startsWith('/sources/')) return await serveSourceFile(req, res, url.pathname);
+    if (url.pathname.startsWith('/api/auth/google')) return await googleRoute(req, res, url);
     const handler = routes[`${req.method} ${url.pathname}`];
     if (handler) {
       let body = {};
@@ -315,10 +480,26 @@ export const server = http.createServer(async (req, res) => {
     }
     if (url.pathname.startsWith('/api/')) return sendJson(res, 404, { error: 'Tidak ditemukan' });
     if (url.pathname.startsWith('/recordings/')) return await serveRecording(req, res, url.pathname);
+    if (url.pathname.startsWith('/media/modules/')) return await serveModuleMedia(res, url.pathname);
     const file = normalize(url.pathname === '/' ? '/index.html' : url.pathname).replace(/^(\.\.[/\\])+/, '');
-    const buf = await readFile(join(ROOT, 'public', file)).catch(() => null);
+    // Halaman Ruang tim dikunci di server: pemula & tamu tidak pernah menerima HTML-nya.
+    const need = TEAM_PAGES[file.replace(/^\//, '')];
+    if (need) {
+      const user = await auth.currentUser(req);
+      if (!user || !(need.includes(user.role) || user.role === 'admin')) {
+        const to = user ? homeFor(user) : `/masuk?lanjut=${encodeURIComponent(url.pathname)}`;
+        return res.writeHead(302, { location: to, 'cache-control': 'no-store', ...SECURITY_HEADERS }).end();
+      }
+      res.setHeader('cache-control', 'no-store');
+    }
+    // Aplikasi pemula (React, web/dist) didahulukan; halaman tim & modul JS bersama dari public/.
+    let buf = await readFile(join(WEB_DIST, file)).catch(() => null) ?? await readFile(join(ROOT, 'public', file)).catch(() => null);
+    let type = MIME[extname(file)];
+    // Rute aplikasi (/belajar/..., /masuk) tanpa ekstensi: kirim index.html React.
+    if (!buf && !extname(file)) { buf = await readFile(join(WEB_DIST, 'index.html')).catch(() => null); type = MIME['.html']; }
     if (!buf) return res.writeHead(404).end('Not found');
-    res.writeHead(200, { 'content-type': MIME[extname(file)] || 'application/octet-stream', ...SECURITY_HEADERS }).end(buf);
+    if (file.startsWith('/assets/')) res.setHeader('cache-control', 'public, max-age=31536000, immutable');
+    res.writeHead(200, { 'content-type': type || 'application/octet-stream', ...SECURITY_HEADERS }).end(buf);
   } catch (e) {
     if (typeof e.code !== "number") console.error(e);
     sendJson(res, typeof e.code === 'number' ? e.code : 500, { error: e.message });
@@ -330,8 +511,8 @@ if (process.argv[1] === new URL(import.meta.url).pathname) {
   await applyRetention().catch(() => {});
   server.listen(config.port, () => {
     console.log(`BelajarTenun berjalan di http://localhost:${config.port}`);
-    console.log(`AI: ${aiEnabled() ? `aktif (${config.geminiModel}, live: ${config.liveModel})` : 'mode manual (GEMINI_API_KEY kosong)'} | TTS: ${config.ttsKey ? 'aktif' : 'suara browser'} | data: ${config.dataDir}`);
-    if (config.authSecretIsRandom) console.warn('⚠ AUTH_SECRET belum diset: sesi login hilang setiap server restart.');
-    if (config.authDisabled) console.warn('⚠ AUTH_DISABLED=1: semua orang dianggap admin. Jangan dipakai di produksi.');
+    console.log(`AI: ${aiEnabled() ? `${config.aiProvider} (${config.geminiModel}, live: ${config.liveModel})` : 'mode manual (GEMINI_API_KEY atau GOOGLE_CLOUD_PROJECT kosong)'} | TTS: ${config.ttsKey ? 'aktif' : 'suara browser'} | data: ${config.dataDir}`);
+    if (config.authSecretIsRandom) console.warn('Peringatan: AUTH_SECRET belum diset: sesi login hilang setiap server restart.');
+    if (config.authDisabled) console.warn('Peringatan: AUTH_DISABLED=1: semua orang dianggap admin. Jangan dipakai di produksi.');
   });
 }

@@ -1,9 +1,11 @@
 {
   "name": "belajar-tenun",
   "version": "0.3.0",
-  "description": "BelajarTenun \u2013 AI-powered wearable weaving tutor (prototipe v0)",
+  "description": "BelajarTenun – AI-powered wearable weaving tutor (prototipe v0)",
   "type": "module",
   "scripts": {
+    "build": "cd web && npm ci && npm run build",
+    "web": "cd web && npm run dev",
     "start": "node server.js",
     "dev": "AUTH_DISABLED=1 node --watch server.js",
     "test": "node --test test/*.test.js",
@@ -14,7 +16,10 @@
     "agent": "python3 agent/main.py dev",
     "import-sources": "node scripts/import_sources.js",
     "import-motif": "node scripts/import_motif_dataset.js",
-    "dialogs": "node scripts/generate_dialogs.js"
+    "dialogs": "node scripts/generate_dialogs.js",
+    "eval:qa": "node scripts/eval_qa.js",
+    "eval:segmentation": "node scripts/eval_segmentation.js",
+    "dataset-card": "node scripts/dataset_card.js"
   },
   "engines": {
     "node": ">=20"

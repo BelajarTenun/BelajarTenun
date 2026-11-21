@@ -15,3 +15,4 @@ data/sources/
 data/analyses/
 data/dialogs/
 data/modules/*.history.jsonl
+web/dist/

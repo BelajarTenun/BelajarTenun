@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="780" viewBox="0 0 1200 780" role="img" aria-labelledby="t">
+  <title id="t">Arsitektur BelajarTenun</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b4a3f"/></marker>
+    <style>
+      .box{fill:#fffaf3;stroke:#d8c7b2;stroke-width:1.5}
+      .ext{fill:#f4f1ec;stroke:#c9c0b4;stroke-width:1.5}
+      .grp{fill:none;stroke:#b9a48d;stroke-width:1.5;stroke-dasharray:6 5}
+      .hd{font:700 18px Helvetica,Arial,sans-serif;fill:#2b1d14}
+      .gt{font:700 13px Helvetica,Arial,sans-serif;fill:#8a6f58;letter-spacing:2px}
+      .tx{font:14px Helvetica,Arial,sans-serif;fill:#4a3a2f}
+      .sm{font:12.5px Helvetica,Arial,sans-serif;fill:#6b5a4c}
+      .ln{stroke:#5b4a3f;stroke-width:2;fill:none}
+      .lb{font:600 12.5px Helvetica,Arial,sans-serif;fill:#a3361f}
+      .acc{fill:#a3361f}
+    </style>
+  </defs>
+  <rect width="1200" height="780" fill="#ffffff"/>
+
+  <!-- Baris 1 -->
+  <text x="40" y="40" class="gt">PERANGKAT MURID</text>
+  <rect x="30" y="52" width="760" height="190" rx="14" class="grp"/>
+  <rect x="50" y="72" width="270" height="150" rx="10" class="box"/>
+  <rect x="50" y="72" width="6" height="150" rx="3" class="acc"/>
+  <text x="72" y="100" class="hd">Kacamata rakitan</text>
+  <text x="72" y="126" class="tx">Kamera di ujung bingkai</text>
+  <text x="72" y="148" class="tx">XIAO ESP32S3 + baterai</text>
+  <text x="72" y="170" class="tx">di casing gagang</text>
+  <text x="72" y="192" class="sm">Tombol · LED privasi</text>
+  <text x="72" y="210" class="sm">Kamera menyala hanya dengan izin</text>
+
+  <rect x="470" y="72" width="300" height="150" rx="10" class="box"/>
+  <rect x="470" y="72" width="6" height="150" rx="3" class="acc"/>
+  <text x="492" y="100" class="hd">HP (aplikasi web)</text>
+  <text x="492" y="126" class="tx">Mikrofon + earbuds Bluetooth</text>
+  <text x="492" y="148" class="tx">Tampilan tahap, kartu, video demo</text>
+  <text x="492" y="170" class="tx">Filter kualitas foto</text>
+  <text x="492" y="196" class="sm">Bisa juga kamera HP saja, omiGlass,</text>
+  <text x="492" y="213" class="sm">OpenGlass, Brilliant Frame, Mentra</text>
+
+  <path d="M320,130 L468,130" class="ln" marker-end="url(#a)"/>
+  <text x="352" y="120" class="lb">foto (BLE / Wi-Fi)</text>
+  <path d="M468,168 L322,168" class="ln" marker-end="url(#a)"/>
+  <text x="352" y="188" class="lb">izin kamera, tombol</text>
+
+  <rect x="860" y="72" width="300" height="150" rx="10" class="box"/>
+  <text x="882" y="100" class="hd">Penenun pendamping</text>
+  <text x="882" y="126" class="tx">Melihat kamera murid langsung</text>
+  <text x="882" y="148" class="tx">Mengirim arahan singkat yang</text>
+  <text x="882" y="170" class="tx">dibacakan ke murid</text>
+  <text x="882" y="200" class="sm">WebRTC peer-to-peer</text>
+  <path d="M772,148 L858,148" class="ln" marker-end="url(#a)" marker-start="url(#a)"/>
+
+  <!-- Baris 2 -->
+  <text x="880" y="300" class="gt">TUTOR REAL-TIME (LOKAL)</text>
+  <rect x="450" y="312" width="720" height="150" rx="14" class="grp"/>
+  <rect x="470" y="332" width="300" height="110" rx="10" class="box"/>
+  <text x="492" y="362" class="hd">LiveKit server</text>
+  <text x="492" y="388" class="tx">Ruang per sesi latihan</text>
+  <text x="492" y="410" class="sm">self-hosted · scripts/livekit</text>
+  <rect x="860" y="332" width="300" height="110" rx="10" class="box"/>
+  <text x="882" y="362" class="hd">Agen tutor (Python)</text>
+  <text x="882" y="388" class="tx">Gemini Live: dengar, lihat, bicara</text>
+  <text x="882" y="410" class="sm">Bisa disela · agent/main.py</text>
+  <path d="M620,224 L620,330" class="ln" marker-end="url(#a)" marker-start="url(#a)"/>
+  <text x="632" y="282" class="lb">suara + video</text>
+  <path d="M772,387 L858,387" class="ln" marker-end="url(#a)" marker-start="url(#a)"/>
+
+  <!-- Jalur HTTPS HP → server melewati ruang kosong kiri -->
+  <path d="M500,242 C500,300 200,330 200,540" class="ln" marker-end="url(#a)"/>
+  <text x="112" y="380" class="lb">HTTPS: sesi, foto,</text>
+  <text x="112" y="398" class="lb">tanya jawab</text>
+
+  <!-- Baris 3 -->
+  <text x="360" y="530" class="gt">SERVER BELAJARTENUN (NODE.JS)</text>
+  <rect x="30" y="542" width="910" height="210" rx="14" class="grp"/>
+  <rect x="50" y="562" width="280" height="170" rx="10" class="box"/>
+  <text x="70" y="590" class="hd">Halaman partner &amp; tim</text>
+  <text x="70" y="616" class="tx">Editor &amp; tinjau penenun</text>
+  <text x="70" y="638" class="tx">Rekam · anotasi · sumber video</text>
+  <text x="70" y="660" class="tx">Progres · arsip · admin</text>
+  <text x="70" y="682" class="tx">Akun &amp; peran</text>
+  <text x="70" y="712" class="sm">public/*.html · lib/auth.js</text>
+
+  <rect x="350" y="562" width="280" height="170" rx="10" class="box"/>
+  <text x="370" y="590" class="hd">Pengetahuan &amp; data</text>
+  <text x="370" y="616" class="tx">Jawaban hanya dari isi</text>
+  <text x="370" y="638" class="tx">yang divalidasi penenun</text>
+  <text x="370" y="660" class="tx">Rekaman, persetujuan, anotasi</text>
+  <text x="370" y="682" class="tx">Video menjadi kurikulum</text>
+  <text x="370" y="712" class="sm">lib/knowledge.js · data.js · pipeline.js</text>
+
+  <rect x="650" y="562" width="270" height="170" rx="10" class="box"/>
+  <rect x="650" y="562" width="6" height="170" rx="3" class="acc"/>
+  <text x="672" y="590" class="hd">Mesin sesi</text>
+  <text x="672" y="616" class="tx">Pegang urutan tahap</text>
+  <text x="672" y="638" class="tx">Deteksi multi-foto</text>
+  <text x="672" y="660" class="tx">Koreksi &amp; petunjuk</text>
+  <text x="672" y="682" class="tx">AI tidak bisa melompati tahap</text>
+  <text x="672" y="712" class="sm">lib/session.js · policy.js · live.js</text>
+
+  <rect x="960" y="562" width="200" height="170" rx="10" class="ext"/>
+  <text x="980" y="590" class="hd">Google Gemini</text>
+  <text x="980" y="616" class="tx">Live (suara)</text>
+  <text x="980" y="638" class="tx">Deteksi tahap</text>
+  <text x="980" y="660" class="tx">Embedding</text>
+  <text x="980" y="682" class="tx">Analisis video</text>
+
+  <path d="M900,444 L900,560" class="ln" marker-end="url(#a)"/>
+  <text x="824" y="505" class="lb">tool call</text>
+  <path d="M1060,444 L1060,560" class="ln" marker-end="url(#a)"/>
+  <text x="1070" y="505" class="lb">Live API</text>
+  <path d="M922,647 L958,647" class="ln" marker-end="url(#a)"/>
+</svg>

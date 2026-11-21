@@ -5,16 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Progres · BelajarTenun</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="workspace.css">
+  <link rel="icon" href="icon.svg">
+  <script type="module" src="js/shell.js"></script>
 </head>
 <body class="page">
   <header class="brand">
     <div class="account" id="account"></div>
-    <a href="./">← BelajarTenun</a>
+    <a class="wordmark" href="./">BelajarTenun</a>
     <h1>Progres Belajar</h1>
     <p id="scope"></p>
   </header>
-  <label class="picker">Modul <select id="module"></select></label>
+  <label class="picker" style="max-width:420px">Modul <select id="module"></select></label>
   <section class="stats" id="stats"></section>
+  <section class="card">
+    <h2>Tahap tersulit (bahan revisi kurikulum)</h2>
+    <p class="hint">Paling sulit di atas. <b>Benar langsung</b>: selesai tanpa koreksi, paling banyak 1 petunjuk. <b>Dikuasai</b>: murid yang hampir pasti sudah menguasai tahap ini dari riwayat latihannya. Saran muncul setelah 5 percobaan.</p>
+    <div id="difficulty"></div>
+  </section>
   <section class="card">
     <h2>Per tahap</h2>
     <p class="hint">Tahap dengan banyak pertanyaan, petunjuk, atau kesalahan adalah yang paling membingungkan pemula. Prioritaskan untuk diperbaiki instruksi atau video demonya.</p>
@@ -38,8 +46,13 @@ $('module').innerHTML = modules.map((m) => `<option value="${m.id}">${esc(m.titl
 $('module').onchange = render;
 async function render() {
   const id = $('module').value;
-  const [p, mod] = await Promise.all([api(`/api/progress?moduleId=${id}`), api(`/api/module?id=${id}`)]);
-  $('scope').textContent = p.scope === 'saya' ? (cfg.user ? 'Progres latihanmu.' : 'Masuk untuk menyimpan progresmu sendiri.') : 'Ringkasan semua sesi (learning validation).';
+  const [p, mod, la] = await Promise.all([api(`/api/progress?moduleId=${id}`), api(`/api/module?id=${id}`), api(`/api/admin/learning?moduleId=${id}`).catch(() => null)]);
+  $('difficulty').innerHTML = la?.difficulty?.length ? `<table><tr><th>Tahap</th><th class="num">Percobaan</th><th class="num">Selesai</th><th class="num">Benar langsung</th><th class="num">Petunjuk</th><th class="num">Kesalahan</th><th class="num">Dikuasai</th><th>Saran</th></tr>${la.difficulty.map((d) => {
+    const m = la.mastery[d.step];
+    const chip = (a) => `<span class="chip" title="${esc(a)}">${/memecah|pecah/.test(a) ? 'Pecah jadi sub-tahap' : /latihan bagian/.test(a) ? 'Tambah latihan bagian' : /instruksi/.test(a) ? 'Perjelas instruksi' : esc(a)}</span>`;
+    return `<tr><td>${esc(d.title)}</td><td class="num">${d.attempts}${d.lowData ? ' <small class="hint">sedikit</small>' : ''}</td><td class="num">${pct(d.completion)}</td><td class="num">${pct(d.firstTry)}</td><td class="num">${d.hintsPerAttempt.toFixed(1)}</td><td class="num">${d.mistakesPerAttempt.toFixed(1)}</td><td class="num">${m?.learners ? `${m.mastered}/${m.learners}` : '–'}</td><td>${d.advice.map(chip).join('') || '<span class="hint">–</span>'}</td></tr>`;
+  }).join('')}</table>` : '<div class="ws-empty"><b>Belum ada latihan tercatat</b><span>Tabel ini terisi setelah murid berlatih modul ini.</span></div>';
+  $('scope').textContent = p.scope === 'saya' ? (cfg.user ? 'Progres latihanmu.' : 'Masuk untuk menyimpan progresmu sendiri.') : 'Ringkasan semua sesi latihan murid.';
   const title = (sid) => mod.steps.find((s) => s.id === sid)?.title ?? sid;
   const stat = (v, l) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`;
   $('stats').innerHTML = stat(p.totalSessions, 'sesi') + stat(p.completed, 'selesai') + stat(pct(p.completionRate), 'tingkat selesai');
@@ -50,7 +63,7 @@ async function render() {
   const sv = p.survey;
   $('survey').innerHTML = sv?.n ? `<div class="stats">${stat(sv.mudah ?? '-', 'mudah diikuti (1–5)')}${stat(sv.paham ?? '-', 'paham alasan (1–5)')}${stat(sv.percaya_diri ?? '-', 'percaya diri (1–5)')}</div><p class="hint">${sv.n} jawaban.</p><ul>${sv.comments.slice(0, 10).map((c) => `<li>${esc(c)}</li>`).join('')}</ul>` : '<p>Belum ada jawaban.</p>';
   $('sessions').innerHTML = p.sessions.length ? `<table><tr><th>Mulai</th><th>Sumber</th><th>Tahap selesai</th><th>Durasi</th><th>Status</th></tr>${p.sessions.slice(0, 50).map((s) =>
-    `<tr><td>${String(s.start).slice(0, 16).replace('T', ' ')}</td><td>${esc(s.source || '-')}</td><td>${s.stepsDone}</td><td>${s.minutes} mnt</td><td>${s.done ? '✅' : '—'}</td></tr>`).join('')}</table>` : '<p>Belum ada sesi.</p>';
+    `<tr><td>${String(s.start).slice(0, 16).replace('T', ' ')}</td><td>${esc(s.source || '-')}</td><td>${s.stepsDone}</td><td>${s.minutes} mnt</td><td>${s.done ? 'Selesai' : '—'}</td></tr>`).join('')}</table>` : '<p>Belum ada sesi.</p>';
 }
 render();
 </script>

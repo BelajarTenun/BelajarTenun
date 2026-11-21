@@ -1,0 +1,93 @@
+# Deploy BelajarTenun
+
+> **VPS sudah dipakai aplikasi lain?** Jangan aktifkan Caddy bawaan (port 80/443 akan bentrok).
+> App dan LiveKit hanya mendengar di `127.0.0.1:8080` dan `127.0.0.1:7880`; teruskan domain dari web server
+> yang sudah ada. Contoh Nginx: [`nginx-belajartenun.conf`](nginx-belajartenun.conf). Bila port 8080/7880 sudah
+> terpakai, ubah `APP_PORT` / `LIVEKIT_PORT` di `.env`. VPS kosong: set `COMPOSE_PROFILES=caddy` di `.env`.
+
+Satu VPS (mis. 2 vCPU / 4 GB, Ubuntu) dengan Docker Compose:
+
+| Container | Isi |
+|---|---|
+| `app` | Web pemula (React) + halaman tim + API Node |
+| `livekit` | Server WebRTC untuk audio/video realtime |
+| `agent` | Tutor suara: Gemini Live lewat Vertex AI |
+| `caddy` | HTTPS otomatis (wajib untuk kamera & Bluetooth) |
+
+## 1. DNS
+
+Arahkan dua record A ke IP VPS: `DOMAIN` dan `livekit.DOMAIN`.
+Buka port 80, 443, 7881/tcp, dan 51000-51100/udp di firewall.
+
+## 2. Vertex AI
+
+1. Aktifkan Vertex AI API di project Google Cloud.
+2. Buat service account dengan peran **Vertex AI User**
+   (tambah **Storage Object Admin** bila memakai `VERTEX_GCS_BUCKET` untuk analisis video).
+3. Unduh kuncinya ke `deploy/secrets/vertex-sa.json` (folder ini tidak masuk git), lalu izinkan container membacanya:
+   `sudo chgrp 1000 deploy/secrets/vertex-sa.json && sudo chmod 640 deploy/secrets/vertex-sa.json`
+   (app dan agen berjalan sebagai uid/gid 1000).
+
+## 3. Konfigurasi
+
+```bash
+cp .env.example .env
+```
+
+Isi minimal: `DOMAIN`, `AI_PROVIDER=vertex`, `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_LOCATION`,
+`AUTH_SECRET`, `AGENT_TOKEN`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `KB_SERVE_DRAFT=0`.
+
+## 4. Jalankan
+
+```bash
+cd deploy && docker compose up -d --build
+```
+
+Cek: `https://DOMAIN/api/health`. Akun pertama yang mendaftar menjadi admin.
+
+## CI/CD lewat GitHub Actions
+
+- **CI** (`.github/workflows/ci.yml`), setiap push dan PR: tes server, typecheck + build web React, cek sintaks agen.
+- **Deploy** (`.github/workflows/deploy.yml`), setiap push ke `main`: tes → bangun image `app` dan `agent` ke
+  GitHub Container Registry (ghcr.io) → SSH ke VPS → `docker compose pull` + `up -d` → cek `/api/health`.
+
+Persiapan sekali di VPS:
+
+```bash
+sudo mkdir -p /opt/belajartenun/deploy/secrets && sudo chown -R $USER /opt/belajartenun
+```
+
+Taruh `.env` di `/opt/belajartenun/.env` dan kunci Vertex di `/opt/belajartenun/deploy/secrets/vertex-sa.json`.
+Berkas compose disalin otomatis oleh workflow.
+
+Di GitHub: Settings → Environments → buat `production` (bisa diberi reviewer wajib sebelum deploy),
+lalu Settings → Secrets and variables → Actions, tambahkan:
+
+| Secret | Isi |
+|---|---|
+| `VPS_HOST` | IP atau domain VPS |
+| `VPS_USER` | user SSH yang boleh menjalankan docker |
+| `VPS_SSH_KEY` | private key SSH (pasangannya di `~/.ssh/authorized_keys` VPS) |
+
+Selama `VPS_HOST` belum diisi, workflow tetap membangun image tetapi tidak deploy.
+Rollback: jalankan ulang workflow Deploy dari commit sebelumnya (Actions → Deploy → Re-run), atau di VPS
+`APP_IMAGE=ghcr.io/<owner>/belajartenun-app:<sha> docker compose up -d app`.
+
+## Alur Gemini Live dengan Vertex AI
+
+Vertex AI tidak menerbitkan token sementara untuk browser, jadi kredensial tidak pernah keluar dari server:
+
+```
+HP / kacamata ──WebRTC──▶ LiveKit ◀──▶ agen Python ──▶ Vertex AI (Gemini Live)
+       │                                   │
+       └──────── HTTPS ──▶ app (API) ◀─────┘  tool: cek tahap, tandai selesai, jawab
+```
+
+Panggilan non-realtime (cek tahap dari foto, tanya jawab, embeddings, analisis video) dilakukan app langsung ke Vertex AI.
+
+## Pengembangan lokal
+
+```bash
+npm run dev            # API di :3000
+cd web && npm run dev  # web React di :5173 (proxy /api ke :3000)
+```

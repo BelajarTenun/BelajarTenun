@@ -5,10 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin · BelajarTenun</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="workspace.css">
+  <link rel="icon" href="icon.svg">
+  <script type="module" src="js/shell.js"></script>
 </head>
 <body class="page">
-  <header class="brand"><a href="./">← BelajarTenun</a><h1>Dashboard Admin</h1></header>
+  <header class="brand"><a class="wordmark" href="./">BelajarTenun</a><h1>Dashboard Admin</h1></header>
   <section class="stats" id="stats"></section>
+  <section class="card">
+    <h2>Cek koneksi <button id="diag" class="primary" type="button">Jalankan cek</button></h2>
+    <p class="hint">Menguji semua layanan sungguhan: AI menjawab teks, AI membaca gambar, embeddings, LiveKit, agen Gemini Live, login Google, penyimpanan. Butuh ±10–30 detik.</p>
+    <div id="diag-out"></div>
+  </section>
   <section class="card">
     <h2>Pemakaian AI</h2>
     <p class="hint">Latensi p50/p95 dan perkiraan biaya (atur COST_PER_1K_INPUT_USD / COST_PER_1K_OUTPUT_USD sesuai harga terbaru).</p>
@@ -31,9 +39,19 @@ async function render() {
     `<tr><td>${esc(k)}</td><td>${v.calls}</td><td>${v.errors}</td><td>${v.p50} ms</td><td>${v.p95} ms</td><td>${v.inputTokens}/${v.outputTokens}</td><td>$${v.estCostUsd}</td></tr>`).join('')}</table>` : '<p>Belum ada pemanggilan AI.</p>';
   $('users').innerHTML = `<table><tr><th>Nama</th><th>Email</th><th>Komunitas</th><th>Peran</th><th>Status</th></tr>${users.map((u) => `<tr>
     <td>${esc(u.name)}</td><td>${esc(u.email)}</td><td>${esc(u.community || '-')}</td>
-    <td><select data-id="${u.id}" data-f="role">${['pemula', 'partner', 'admin'].map((r) => `<option ${r === u.role ? 'selected' : ''}>${r}</option>`).join('')}</select></td>
-    <td><select data-id="${u.id}" data-f="status">${['approved', 'pending', 'disabled'].map((r) => `<option ${r === u.status ? 'selected' : ''}>${r}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+    <td><select data-id="${u.id}" data-f="role">${[['pemula', 'Pemula'], ['partner', 'Partner penenun'], ['admin', 'Admin']].map(([v, l]) => `<option value="${v}" ${v === u.role ? 'selected' : ''}>${l}</option>`).join('')}</select></td>
+    <td><select data-id="${u.id}" data-f="status">${[['approved', 'Aktif'], ['pending', 'Menunggu persetujuan'], ['disabled', 'Dinonaktifkan']].map(([v, l]) => `<option value="${v}" ${v === u.status ? 'selected' : ''}>${l}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
 }
+$('diag').onclick = async () => {
+  $('diag').disabled = true; $('diag').textContent = 'Mengecek…';
+  try {
+    const r = await api('/api/admin/diagnostics');
+    const badge = { ok: '<span class="pill ok-tag">OK</span>', gagal: '<span class="pill bad-tag">Gagal</span>', skip: '<span class="pill">Dilewati</span>' };
+    $('diag-out').innerHTML = `<table><tr><th>Layanan</th><th>Status</th><th>Waktu</th><th>Keterangan</th></tr>${r.checks.map((c) =>
+      `<tr><td>${esc(c.name)}</td><td>${badge[c.status]}</td><td>${c.ms} ms</td><td>${esc(c.detail)}</td></tr>`).join('')}</table>`;
+  } catch (e) { $('diag-out').innerHTML = `<p class="danger">${esc(e.message)}</p>`; }
+  $('diag').disabled = false; $('diag').textContent = 'Jalankan lagi';
+};
 $('users').onchange = async (e) => { const { id, f } = e.target.dataset; await api('/api/admin/users', { id, [f]: e.target.value }); render(); };
 render();
 </script>

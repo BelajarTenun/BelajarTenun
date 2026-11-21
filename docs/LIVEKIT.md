@@ -67,7 +67,7 @@ Lalu buka aplikasi, centang **"Ngobrol langsung dengan tutor"** (atau "Gemini Li
 ## 5. Status pengujian
 | Bagian | Status |
 |---|---|
-| Unduh & jalankan LiveKit server lokal | ✅ diuji |
-| Browser masuk ruang, menerbitkan mic + kamera | ✅ diuji (kamera/mic palsu Chromium) |
-| Agen terdaftar, menerima tugas, mengambil konfigurasi sesi dengan `AGENT_TOKEN`, bergabung, menerbitkan suara | ✅ diuji |
-| Percakapan Gemini Live, tools, kartu UI, relay check | ⏳ butuh `GEMINI_API_KEY` valid |
+| Unduh & jalankan LiveKit server lokal | Sudah diuji |
+| Browser masuk ruang, menerbitkan mic + kamera | Sudah diuji (kamera/mic palsu Chromium) |
+| Agen terdaftar, menerima tugas, mengambil konfigurasi sesi dengan `AGENT_TOKEN`, bergabung, menerbitkan suara | Sudah diuji |
+| Percakapan Gemini Live, tools, kartu UI, relay check | Belum, butuh `GEMINI_API_KEY` valid |

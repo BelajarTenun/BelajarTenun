@@ -1,0 +1,95 @@
+# BelajarTenun – app (web + API), LiveKit, agen Gemini Live.
+# Jalankan dari folder deploy/:  docker compose --env-file ../.env up -d --build
+#
+# Dua cara menerima HTTPS:
+#  - VPS sudah punya web server (Nginx/Caddy/Traefik) untuk aplikasi lain: JANGAN aktifkan profil "caddy".
+#    App dan LiveKit hanya mendengar di 127.0.0.1:${APP_PORT:-8080} dan 127.0.0.1:${LIVEKIT_PORT:-7880};
+#    web server yang ada meneruskan domain BelajarTenun ke sana (contoh: deploy/nginx-belajartenun.conf).
+#  - VPS kosong: set COMPOSE_PROFILES=caddy di .env, Caddy mengambil port 80/443 dan HTTPS otomatis.
+services:
+  app:
+    # Image dari ghcr.io (dibangun CI). Untuk membangun dari sumber: docker compose build.
+    image: ${APP_IMAGE:-ghcr.io/belajartenun/belajartenun-app:latest}
+    build: ..
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      PORT: "8080"
+      DATA_DIR: /data
+      LIVEKIT_URL: ws://livekit:7880
+      LIVEKIT_PUBLIC_URL: wss://livekit.${DOMAIN}
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/vertex-sa.json
+    volumes:
+      - data:/data
+      - ./secrets:/secrets:ro
+    ports:
+      - "127.0.0.1:${APP_PORT:-8080}:8080"   # hanya dari VPS ini (web server di depannya)
+
+  agent:
+    image: ${AGENT_IMAGE:-ghcr.io/belajartenun/belajartenun-agent:latest}
+    build: ../agent
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      BT_SERVER: http://app:8080
+      LIVEKIT_URL: ws://livekit:7880
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/vertex-sa.json
+    volumes:
+      - ./secrets:/secrets:ro
+    depends_on: [app, livekit]
+
+  # Backup DATA_DIR ke Cloud Storage tiap 24 jam (butuh BACKUP_GCS_BUCKET di .env; tanpa itu layanan ini hanya mencatat galat).
+  backup:
+    image: ${APP_IMAGE:-ghcr.io/belajartenun/belajartenun-app:latest}
+    restart: unless-stopped
+    command: ["node", "scripts/backup_gcs.js", "--loop"]
+    env_file: ../.env
+    environment:
+      DATA_DIR: /data
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/vertex-sa.json
+    volumes:
+      - data:/data:ro
+      - ./secrets:/secrets:ro
+
+  # Uji model Live sungguhan tiap 6 jam dan lapor ke server (dibaca Dashboard admin > Cek koneksi & tes asap harian).
+  agent-health:
+    image: ${AGENT_IMAGE:-ghcr.io/belajartenun/belajartenun-agent:latest}
+    build: ../agent
+    restart: unless-stopped
+    command: ["python", "main.py", "heartbeat"]
+    env_file: ../.env
+    environment:
+      BT_SERVER: http://app:8080
+      GOOGLE_APPLICATION_CREDENTIALS: /secrets/vertex-sa.json
+    volumes:
+      - ./secrets:/secrets:ro
+    depends_on: [app]
+
+  livekit:
+    image: livekit/livekit-server:v1.8.4
+    restart: unless-stopped
+    command: --config /etc/livekit.yaml
+    environment:
+      LIVEKIT_KEYS: "${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"
+    volumes:
+      - ./livekit.yaml:/etc/livekit.yaml:ro
+    ports:
+      - "127.0.0.1:${LIVEKIT_PORT:-7880}:7880"  # sinyal WebSocket, diteruskan web server ke livekit.DOMAIN
+      - "7881:7881/tcp"              # WebRTC lewat TCP (cadangan)
+      - "51000-51100:51000-51100/udp" # media WebRTC (50060-50100 dipakai LiveKit lain di VPS)
+
+  caddy:
+    profiles: ["caddy"]          # hanya untuk VPS tanpa web server lain
+    image: caddy:2.8.4
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN}
+    ports: ["80:80", "443:443", "443:443/udp"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy:/data
+    depends_on: [app, livekit]
+
+volumes:
+  data:
+  caddy:

@@ -1,0 +1,9 @@
+# HTTPS wajib: kamera, mikrofon, dan Web Bluetooth tidak jalan di HTTP.
+{$DOMAIN} {
+	encode zstd gzip
+	reverse_proxy app:8080
+}
+
+livekit.{$DOMAIN} {
+	reverse_proxy livekit:7880
+}

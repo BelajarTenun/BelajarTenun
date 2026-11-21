@@ -9,6 +9,7 @@ const dir = mkdtempSync(join(tmpdir(), 'bt-test-'));
 process.env.DATA_DIR = dir;
 process.env.GEMINI_API_KEY = '';
 process.env.AUTH_SECRET = 'rahasia-tes';
+process.env.PASSWORD_LOGIN = '1';
 process.env.AGENT_TOKEN = 'rahasia-agen-untuk-tes-integrasi';
 const { server } = await import('../server.js');
 const { seedDataDir } = await import('../lib/store.js');
@@ -106,4 +107,161 @@ test('agen LiveKit: hanya rahasia bersama yang benar boleh mengambil konfigurasi
   assert.match(ok.instructions, /tutor menenun/);
   assert.ok(ok.tools.some((t) => t.name === 'check_my_work' && t.parameters.type === 'object'));
   assert.equal((await call('/api/livekit/token', { sessionId: s.sessionId })).status, 501, 'LiveKit tidak dikonfigurasi di tes ini');
+});
+
+test('video pengenalan modul: hanya dari rekaman yang diizinkan untuk pembelajaran', async () => {
+  const rec = (await call('/api/recordings', { stepId: 'full', consent: { given: true, name: 'Ibu B', scopes: ['pengembangan_ai'] } }, 'partner')).body;
+  await fetch(`${base}/api/recordings/upload?id=${rec.id}&name=video.webm`, { method: 'POST', headers: { cookie: jar.partner }, body: Buffer.from('x') });
+  assert.equal((await call('/api/module/intro-video', { moduleId: 'tidore-dasar', recordingId: rec.id }, 'partner')).status, 400);
+  const ok = await call('/api/recordings', { stepId: 'full', consent: { given: true, name: 'Ibu C', scopes: ['pembelajaran'] } }, 'partner');
+  await fetch(`${base}/api/recordings/upload?id=${ok.body.id}&name=video.webm`, { method: 'POST', headers: { cookie: jar.partner }, body: Buffer.from('x') });
+  const r = (await call('/api/module/intro-video', { moduleId: 'tidore-dasar', recordingId: ok.body.id, start: 3, end: 40 }, 'partner')).body;
+  assert.equal(r.intro.video, `recordings/${ok.body.id}/video.webm#t=3,40`);
+  assert.equal(r.intro.video_attribution, 'Penenun: Ibu C');
+  const mod = (await call('/api/module?id=tidore-dasar')).body;
+  assert.ok(mod.intro.summary, 'ringkasan lama tetap ada');
+  assert.equal((await call('/api/module/intro-video', { moduleId: 'tidore-dasar', recordingId: ok.body.id })).status, 401, 'pemula/tamu tidak boleh');
+});
+
+test('login kata sandi bisa dimatikan (bawaan produksi: hanya Google)', async () => {
+  const { config } = await import('../lib/config.js');
+  config.passwordLogin = false;
+  try {
+    assert.equal((await call('/api/auth/login', { email: 'p@x.id', password: 'rahasia123' })).status, 403);
+    assert.equal((await call('/api/auth/register', { name: 'X', email: 'x@x.id', password: 'rahasia123' })).status, 403);
+    assert.equal((await call('/api/config')).body.passwordLogin, false);
+  } finally { config.passwordLogin = true; }
+});
+
+test('halaman Ruang tim dikunci di server, bukan hanya di browser', async () => {
+  const get = (path, who) => fetch(base + path, { redirect: 'manual', headers: who && jar[who] ? { cookie: jar[who] } : {} });
+  const guest = await get('/admin.html');
+  assert.equal(guest.status, 302);
+  assert.match(guest.headers.get('location'), /^\/masuk\?lanjut=%2Fadmin\.html$/);
+  await call('/api/auth/register', { name: 'Murid', email: 'murid@x.id', password: 'rahasia123' }, 'murid');
+  const pemula = await get('/editor.html', 'murid');
+  assert.equal(pemula.status, 302, 'pemula tidak boleh menerima halaman editor');
+  assert.equal(pemula.headers.get('location'), '/belajar', 'pemula dikembalikan ke aplikasi murid');
+  assert.equal((await get('/progres.html', 'murid')).status, 302, 'progres belajar khusus tim');
+  assert.equal((await get('/admin.html', 'partner')).status, 302, 'partner tidak boleh membuka admin');
+  assert.equal((await get('/editor.html', 'partner')).status, 200);
+  assert.equal((await get('/admin.html', 'admin')).status, 200);
+  assert.equal((await get('/arsip.html')).status, 404, 'arsip publik sudah dihapus');
+  assert.equal((await get('/kacamata.html')).status, 404, 'simulator lama sudah dihapus');
+});
+
+test('tujuan setelah masuk berbeda per peran', async () => {
+  const { homeFor } = await import('../server.js');
+  assert.equal(homeFor({ role: 'admin' }), '/admin.html');
+  assert.equal(homeFor({ role: 'partner' }), '/editor.html');
+  assert.equal(homeFor({ role: 'pemula' }), '/belajar');
+  assert.equal(homeFor(null), '/belajar');
+  assert.equal((await call('/api/config', undefined, 'admin')).body.home, '/admin.html');
+  assert.equal((await call('/api/config', undefined, 'murid')).body.home, '/belajar');
+});
+
+test('cek koneksi admin: semua layanan dilaporkan, tanpa AI ditandai dilewati', async () => {
+  assert.equal((await call('/api/admin/diagnostics', undefined, 'partner')).status, 403);
+  const r = (await call('/api/admin/diagnostics', undefined, 'admin')).body;
+  const by = Object.fromEntries(r.checks.map((c) => [c.name, c.status]));
+  assert.equal(by['Penyimpanan data'], 'ok');
+  assert.equal(by['AI: menjawab teks'], 'skip');
+  assert.equal(by['Login Google'], 'gagal');
+  assert.ok(r.checks.length >= 9);
+});
+
+test('lanjutkan sesi: mulai dari tahap tertentu dan tercatat di ringkasan progres', async () => {
+  const s = (await call('/api/session/start', { startStep: 2 }, 'admin')).body;
+  assert.equal(s.step.index, 2);
+  assert.equal((await call('/api/session/start', { startStep: 99 }, 'admin')).body.step.index, 4, 'dibatasi ke tahap terakhir');
+  const p = (await call('/api/progress?mine=1', undefined, 'admin')).body;
+  const mine = p.sessions.find((x) => x.id === s.sessionId);
+  assert.equal(mine.reached, 2);
+  assert.equal(mine.done, false);
+});
+
+test('pasangan HP-kamera: tanpa LiveKit ditolak dengan 501', async () => {
+  const r = await call('/api/pair/new', {}, 'admin');
+  assert.equal(r.status, 501);
+  const t = await call('/api/pair/token', { code: '123456', role: 'camera' });
+  assert.equal(t.status, 501);
+});
+
+test('heartbeat agen: hanya agen yang boleh melapor, diagnostik membaca model Live', async () => {
+  const agent = { 'x-agent-token': process.env.AGENT_TOKEN, 'content-type': 'application/json' };
+  const models = await (await fetch(`${base}/api/agent/live-models`, { headers: agent })).json();
+  assert.ok(Array.isArray(models.models) && models.models.length >= 1);
+  assert.equal((await call('/api/agent/heartbeat', { ok: true, model: 'x' }, 'admin')).status, 403, 'admin biasa tidak boleh memalsukan laporan agen');
+  const r = await fetch(`${base}/api/agent/heartbeat`, { method: 'POST', headers: agent, body: JSON.stringify({ ok: true, model: models.models[1] ?? models.models[0], candidates: models.models }) });
+  assert.equal(r.status, 200);
+});
+
+test('simulasi: login khusus agen selalu pemula, event sesi bisa dibaca', async () => {
+  const agent = { 'x-agent-token': process.env.AGENT_TOKEN, 'content-type': 'application/json' };
+  assert.equal((await call('/api/admin/sim-login', {}, 'admin')).status, 403, 'admin manusia tidak bisa membuat sesi simulasi');
+  const r = await fetch(`${base}/api/admin/sim-login`, { method: 'POST', headers: agent, body: '{}' });
+  assert.equal(r.status, 200);
+  assert.equal((await r.json()).user.role, 'pemula');
+  assert.match(r.headers.get('set-cookie'), /bt_session=/);
+  const ev = await fetch(`${base}/api/admin/session-events?sessionId=tidak-ada`, { headers: agent });
+  assert.deepEqual((await ev.json()).events, []);
+});
+
+test('versi modul: perubahan isi modul terbit membuat snapshot bernomor; simpan ulang tanpa perubahan tidak', async () => {
+  const data = await import('../lib/data.js');
+  const m = await data.getModule('tidore-dasar');
+  const base = m.version ?? 0;
+  await data.saveModule({ ...m, description: `${m.description} (uji versi)` }, { name: 'Penguji' });
+  const v1 = await data.getModule('tidore-dasar');
+  assert.equal(v1.version, base + 1);
+  await data.saveModule(v1, { name: 'Penguji' });
+  assert.equal((await data.getModule('tidore-dasar')).version, base + 1, 'tanpa perubahan isi → versi tetap');
+  assert.ok((await data.listModuleVersions('tidore-dasar')).length >= 1);
+  assert.equal(data.contentHash({ a: 1, b: [2, { c: 3, d: 4 }] }), data.contentHash({ b: [2, { d: 4, c: 3 }], a: 1 }));
+});
+
+test('backup: DATA_DIR dikemas tar.gz dan diunggah ke bucket', async () => {
+  process.env.BACKUP_GCS_BUCKET = 'bucket-uji';
+  const { backupOnce } = await import(`../scripts/backup_gcs.js?${Date.now()}`);
+  let got = null;
+  const fetchImpl = async (url, opt) => {
+    const chunks = []; for await (const c of opt.body) chunks.push(c);
+    got = { url, size: Buffer.concat(chunks).length, auth: opt.headers.authorization };
+    return { ok: true, json: async () => ({ size: String(got.size) }) };
+  };
+  const r = await backupOnce({ fetchImpl, token: async () => 'tok' });
+  assert.match(got.url, /storage\/v1\/b\/bucket-uji\/o\?uploadType=media&name=backup%2Fbelajartenun-/);
+  assert.ok(got.size > 100, 'arsip berisi data');
+  assert.equal(r.bytes, got.size);
+});
+
+test('RAG Engine: hasil dipetakan ke entri lokal; ambang & id tak dikenal disaring', async () => {
+  const { ragRetrieve, entryIdFromUri } = await import('../lib/rag.js');
+  assert.equal(entryIdFromUri('gs://b/rag/123/motif-barakati.txt'), 'motif-barakati');
+  const fetchImpl = async (url, opt) => {
+    assert.match(url, /:retrieveContexts$/);
+    assert.equal(JSON.parse(opt.body).query.rag_retrieval_config.top_k, 5);
+    return { ok: true, json: async () => ({ contexts: { contexts: [{ sourceUri: 'gs://b/rag/1/lungsi-pakan.txt', distance: 0.2 }, { sourceUri: 'gs://b/rag/1/x.pdf', score: 0.9 }] } }) };
+  };
+  const { config } = await import('../lib/config.js');
+  const prev = [config.ragCorpus, config.vertexProject];
+  Object.assign(config, { ragCorpus: 'projects/p/locations/us-central1/ragCorpora/1', vertexProject: 'p' });
+  try {
+    const r = await ragRetrieve('beda lungsi pakan', { fetchImpl, token: async () => 't' });
+    assert.deepEqual(r, [{ id: 'lungsi-pakan', score: 0.8 }]);
+  } finally { [config.ragCorpus, config.vertexProject] = prev; }
+});
+
+test('seed: modul & entri pengetahuan baru dari rilis ikut masuk tanpa menimpa suntingan penenun', async () => {
+  const { seedDataDir, store } = await import('../lib/store.js');
+  const m = await store.readJson('modules/tidore-dasar.json');
+  await store.writeJson('modules/tidore-dasar.json', { ...m, title: 'Disunting penenun' });
+  await store.remove('modules/puta-dino-jodati.json');
+  const kb = await store.readJson('knowledge.json');
+  await store.writeJson('knowledge.json', { ...kb, entries: kb.entries.filter((e) => e.id !== 'motif-tobaru') });
+  await seedDataDir();
+  assert.equal((await store.readJson('modules/tidore-dasar.json')).title, 'Disunting penenun', 'tidak menimpa');
+  assert.ok(await store.exists('modules/puta-dino-jodati.json'), 'modul baru masuk');
+  assert.ok((await store.readJson('knowledge.json')).entries.some((e) => e.id === 'motif-tobaru'), 'entri baru masuk');
+  await store.writeJson('modules/tidore-dasar.json', m);
 });

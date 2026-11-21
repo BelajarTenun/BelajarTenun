@@ -133,6 +133,8 @@ export class LiveTutor extends EventTarget {
   }
   #stopPlayback() { for (const s of this.playing) try { s.stop(); } catch {} this.playing = []; this.playAt = 0; }
 
+  setMuted(muted) { this.muted = muted; }
+
   stop() {
     clearInterval(this.videoTimer);
     this.micStream?.getTracks().forEach((t) => t.stop());

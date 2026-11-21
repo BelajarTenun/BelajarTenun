@@ -20,7 +20,7 @@ export class TutorClient {
 
   async start() {
     await loadLocalModel();
-    const r = await api('/api/session/start', { moduleId: this.moduleId, source: this.source?.kind, audioOnly: this.audioOnly, audio: this.serverTts });
+    const r = await api('/api/session/start', { moduleId: this.moduleId, source: this.source?.kind, audioOnly: this.audioOnly, audio: this.serverTts, startStep: this.startStep ?? 0 });
     this.sessionId = r.sessionId;
     this.tracer.base = { ...this.tracer.base, sessionId: r.sessionId, module: this.moduleId };
     // Label sumber kamera: yang dinyatakan vs yang benar-benar dipakai (VisionClaw capture_source).
@@ -28,6 +28,12 @@ export class TutorClient {
     earcon('connected');
     this.handle(r);
     this.loop = setInterval(() => this.#tick(), 1000);
+    // Tombol kacamata: ketuk = lanjut, ketuk ganda = ulangi instruksi, tahan = bekukan tampilan.
+    if (this.source) this.source.onbutton = (press) => {
+      this.tracer.emit('glasses_button', { press });
+      const action = { tap: 'next', double: 'repeat', long: 'pin' }[press];
+      if (action) this.button(action);
+    };
     return r;
   }
 
@@ -47,17 +53,22 @@ export class TutorClient {
     const motion = motionBetween(this.prevGray, gray);
     this.prevGray = gray;
     if (!q.ok) { this.rejected++; return { quality: q, motion, jpeg: null }; }
-    return { quality: q, motion, jpeg: toJpeg(el), local: predictLocal(el) };
+    // Foto kacamata datang berkala: catat kapan diambil supaya foto basi bisa dibuang.
+    const capturedAt = this.source?.lastPhotoAt ?? Date.now();
+    return { quality: q, motion, jpeg: toJpeg(el), local: predictLocal(el), capturedAt };
   }
 
   async #tick() {
-    if (this.live || !this.sessionId) return;
+    // liveOnly: Gemini Live satu-satunya tutor; mesin foto berkala + suara browser tidak berjalan.
+    if (this.live || this.liveOnly || !this.sessionId) return;
     const now = Date.now();
     const f = this.grab();
     // Kirim foto bila kualitas baik dan (ada gerakan atau sudah 6 dtk); paling cepat tiap 3 dtk.
-    if (f?.jpeg && now - this.lastSent > 3000 && (f.motion > 2.5 || now - this.lastSent > 6000)) {
-      this.lastSent = now;
-      try { this.handle(await api('/api/session/frame', { sessionId: this.sessionId, image: f.jpeg, quality: f.quality, localPrediction: f.local, audio: this.serverTts })); } catch {}
+    const fromGlasses = this.source?.lastPhotoAt !== undefined;
+    const fresh = !fromGlasses || (f?.capturedAt && f.capturedAt !== this.lastCapturedAt);   // jangan kirim foto kacamata yang sama dua kali
+    if (f?.jpeg && fresh && now - this.lastSent > (fromGlasses ? 1000 : 3000) && (fromGlasses || f.motion > 2.5 || now - this.lastSent > 6000)) {
+      this.lastSent = now; this.lastCapturedAt = f.capturedAt;
+      try { this.handle(await api('/api/session/frame', { sessionId: this.sessionId, image: f.jpeg, quality: f.quality, localPrediction: f.local, ageMs: Date.now() - f.capturedAt, audio: this.serverTts })); } catch {}
     } else if (now - this.lastTick > 15000 && now - this.lastSent > 15000) {
       this.lastTick = now;
       try { this.handle(await api('/api/session/tick', { sessionId: this.sessionId, audio: this.serverTts })); } catch {}
@@ -69,14 +80,14 @@ export class TutorClient {
     if (!r) return;
     const prevIndex = this.stepIndex;
     this.stepIndex = r.step?.index;
-    if (r.finished && !this.finished) { this.finished = true; earcon('success'); this.ui.show?.(r); this.speak(r); this.ui.finish?.(r); return; }
+    if (r.finished && !this.finished) { this.finished = true; earcon('success'); this.ui.show?.(r); if (!this.liveOnly) this.speak(r); this.ui.finish?.(r); return; }
     if (prevIndex !== undefined && r.step && r.step.index > prevIndex) earcon('success');
     if (r.intent === 'koreksi') earcon('warning');
     if (r.card) this.ui.card?.(r.card);
     if (r.demo_video !== undefined && (r.intent === 'instruksi' || !r.speak)) this.ui.demo?.(r.demo_video, r.intent);
     if (r.skipped && !r.speak) return;
     this.ui.show?.(r);
-    if (!this.live) this.speak(r);
+    if (!this.live && !this.liveOnly) this.speak(r);
   }
 
   speak(r) {
@@ -119,12 +130,15 @@ export class TutorClient {
     on('ui', (r) => this.handle({ ...r, speak: '' }));
     on('frame', (d) => d.gapMs && this.tracer.emit('view_gap', { ms: d.gapMs, speaking: d.speaking }));
     on('status', (d) => this.ui.status?.(d.text));
+    on('speaking', (d) => this.ui.speaking?.(d));
     on('agent', () => this.ui.status?.('Tutor bergabung'));
+    on('tutor_state', (d) => { this.ui.tutorState?.(d); this.tracer.emit('tutor_state', d); });
     on('close', (d) => { this.ui.status?.(`Live berhenti (${d.code})`); earcon('lost'); this.live = null; });
     speechSynthesis.cancel(); this.audio?.pause();
     await this.live.connect();
     earcon('connected');
     this.tracer.emit('live_start', { engine: this.liveEngine });
   }
+  setMuted(muted) { this.live?.setMuted?.(muted); this.tracer.emit('mic', { muted }); }
   stopLive() { this.live?.stop(); this.live = null; this.tracer.emit('live_stop', {}); }
 }
