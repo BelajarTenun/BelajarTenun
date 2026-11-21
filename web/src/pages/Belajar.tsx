@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import Shell from '../components/Shell';
 import Icon from '../components/Icon';
 import KainFoto from '../components/KainFoto';
@@ -6,6 +6,7 @@ import Maskot from '../components/Maskot';
 import { useApp } from '../lib/session';
 import { useModule } from '../lib/useModule';
 import { streak, useProgres } from '../lib/progres';
+import { LEVELS, bacaProfil, levelOf } from '../lib/level';
 
 const TARGET_MENIT = 10, TARGET_MINGGU = 70;
 
@@ -13,6 +14,7 @@ const TARGET_MENIT = 10, TARGET_MINGGU = 70;
 // dan kolom kanan berisi minggu ini, tahap berikutnya, serta aktivitas.
 export default function Belajar() {
   const { config } = useApp();
+  const profil = bacaProfil();
   const { loading, modules, byId, riwayat, status, kunci, mastery } = useProgres();
   const nama = config?.user?.name?.split(' ')[0] ?? '';
   const st = streak(riwayat);
@@ -22,20 +24,26 @@ export default function Belajar() {
   const menitMinggu = minggu.reduce((a, s) => a + s.minutes, 0);
 
   const terakhir = riwayat.find((s) => !s.done && s.reached < (byId[s.module]?.steps ?? 0));
-  const fokusId = terakhir?.module ?? modules.find((m) => status[m.id] === 'berikut')?.id;
+  const lvl = profil?.level ?? 1;
+  const fokusId = terakhir?.module ?? modules.find((m) => levelOf(m.id) === lvl && status[m.id] !== 'tuntas')?.id ?? modules.find((m) => status[m.id] === 'berikut')?.id;
   const { module: fokus } = useModule(fokusId);
   const lanjut = terakhir ? Math.min(terakhir.reached, (byId[terakhir.module]?.steps ?? 1) - 1) : 0;
 
   const kainku = modules.filter((m) => status[m.id] === 'berjalan' || status[m.id] === 'tuntas' || m.id === fokusId);
-  const jelajah = modules.filter((m) => !kainku.includes(m)).slice(0, 4);
+  const jelajah = modules.filter((m) => !kainku.includes(m) && levelOf(m.id) <= lvl + 1).slice(0, 4);
   const dikuasai = (id: string) => Object.values(mastery[id] ?? {}).filter((x) => x.state === 'dikuasai').length;
   const totalTahap = kainku.reduce((a, m) => a + m.steps, 0);
   const totalKuasai = kainku.reduce((a, m) => a + dikuasai(m.id), 0);
 
+  if (!profil) return <Navigate to="/mulai" replace />;
   return (
     <Shell wide>
       <div className="e-home">
         <div className="e-main">
+          {(() => { const L = LEVELS[lvl - 1]; return (
+            <div className="e-level"><span className="ph" style={{ backgroundImage: `url(${L.foto})` }} />
+              <div><span>Level {L.n} · {L.name}</span><b>Menenun dengan {L.alat.toLowerCase()}</b></div>
+              <Link to="/mulai">Ubah</Link></div>); })()}
           <section className="e-hero">
             <div className="e-hero-text">
               <h1>Halo, {nama}!</h1>

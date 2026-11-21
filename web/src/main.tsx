@@ -9,6 +9,7 @@ import Belajar from './pages/Belajar';
 import Pengenalan from './pages/Pengenalan';
 import Modul from './pages/Modul';
 import Cerita from './pages/Cerita';
+import Mulai from './pages/Mulai';
 import Progres from './pages/Progres';
 import SesiDetail from './pages/SesiDetail';
 // Halaman yang memuat modul kamera/tutor dipisah supaya landing & login ringan di HP.
@@ -39,6 +40,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/belajar" element={<Perlu><Belajar /></Perlu>} />
           <Route path="/cerita/:id" element={<Cerita />} />
           <Route path="/k/:kode" element={<Cerita />} />
+          <Route path="/mulai" element={<Perlu><Mulai /></Perlu>} />
           <Route path="/modul" element={<Perlu><Modul /></Perlu>} />
           <Route path="/progres" element={<Perlu><Progres /></Perlu>} />
           <Route path="/progres/:sesi" element={<Perlu><SesiDetail /></Perlu>} />

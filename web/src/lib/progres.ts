@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api, type ModuleSummary } from './api';
+import { bacaProfil, levelOf } from './level';
 
 // Kemajuan belajar dari riwayat sesi: hari beruntun (streak), 7 hari terakhir, dan status tiap modul di jalur.
 export type Sesi = { id: string; module: string; start: string; end: string; done: boolean; reached: number; questions: number; minutes: number };
@@ -44,6 +45,9 @@ export function terkunci(modules: ModuleSummary[], status: Record<string, Status
   const kelas = modules.map((m) => m.taskClass ?? 1);
   const min = Math.min(...kelas);
   const dasarTuntas = modules.filter((m) => (m.taskClass ?? 1) === min).every((m) => status[m.id] === 'tuntas');
+  // Dengan level dari onboarding: modul terkunci hanya bila levelnya di atas level murid.
+  const prof = bacaProfil();
+  if (prof) return Object.fromEntries(modules.map((m) => [m.id, levelOf(m.id) > prof.level]));
   return Object.fromEntries(modules.map((m) => [m.id, !dasarTuntas && (m.taskClass ?? 1) > min]));
 }
 
