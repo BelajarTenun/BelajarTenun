@@ -4,7 +4,7 @@
   "fabricName": "Puta Dino motif Tobaru",
   "tradition": "Tenun Tidore",
   "weaver": "Rumah Tenun Puta Dino Kayangan",
-  "cover": null,
+  "cover": "/img/kain/puta-dino-tobaru.jpg",
   "level": "lanjutan",
   "taskClass": 3,
   "wholeTask": "Selembar kain kecil dengan beberapa satuan motif Tobaru yang rapi",
@@ -133,7 +133,41 @@
       "practice": [],
       "supportive": [
         "motif-tobaru"
-      ]
+      ],
+      "pattern": {
+        "label": "Pola latihan rantai (bukan motif Tobaru asli)",
+        "authentic": false,
+        "technique": "pakan_tambahan",
+        "unit": "1 kolom = 2 helai lungsi",
+        "palette": {
+          ".": {
+            "name": "hitam (dasar)",
+            "color": "#1f1d1b"
+          },
+          "K": {
+            "name": "kuning",
+            "color": "#d9a81e"
+          },
+          "M": {
+            "name": "merah",
+            "color": "#9b2f22"
+          }
+        },
+        "rows": [
+          ".......MMMMMMM",
+          "......MM.....M",
+          "......MM.....M",
+          "......MM.....M",
+          "....K..MMMMMMM",
+          ".KKKKKKK..M...",
+          "KK.....KK.....",
+          "KK.....KK.....",
+          "KK.....KK.....",
+          ".KKKKKKK......",
+          "....K........."
+        ],
+        "validated_by": null
+      }
     },
     {
       "id": "ulangi-motif",
@@ -187,5 +221,6 @@
       "practice": [],
       "supportive": []
     }
-  ]
+  ],
+  "coverNote": "Ilustrasi render dari pola latihan, bukan foto kain asli."
 }
