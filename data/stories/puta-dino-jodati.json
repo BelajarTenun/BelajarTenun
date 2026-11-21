@@ -15,8 +15,14 @@
       "title": "Puta Dino, kain yang ditenun",
       "text": "Dalam bahasa Tidore, puta berarti kain dan dino berarti tenun atau benang yang ditenun. Puta Dino adalah sebutan untuk kain tenun Tidore.",
       "hotspots": [
-        { "label": "Puta", "body": "Kain." },
-        { "label": "Dino", "body": "Tenun, benang yang ditenun." }
+        {
+          "label": "Puta",
+          "body": "Kain."
+        },
+        {
+          "label": "Dino",
+          "body": "Tenun, benang yang ditenun."
+        }
       ],
       "media": null,
       "source": "Ibrahim, Sudana & Dangkua (2024), Jambura: Jurnal Seni dan Desain"
@@ -28,20 +34,49 @@
       "title": "Warisan Kesultanan Tidore",
       "text": "Puta Dino adalah warisan Kesultanan Tidore. Seiring waktu, tradisi menenunnya menghilang dan kainnya nyaris tidak dikenal lagi.",
       "hotspots": [
-        { "label": "Kesultanan Tidore", "body": "Kesultanan di Maluku Utara yang menjadi asal tradisi tenun Puta Dino." }
+        {
+          "label": "Kesultanan Tidore",
+          "body": "Kesultanan di Maluku Utara yang menjadi asal tradisi tenun Puta Dino."
+        }
       ],
       "media": null,
       "source": "ANTARA Ambon, \"Perempuan inspiratif di balik pelestarian tenun Tidore\""
     },
     {
+      "id": "kapal-rempah",
+      "band": "garis",
+      "kicker": "Bab 3",
+      "title": "Kapal-kapal rempah",
+      "scene": "kapal",
+      "text": "Cengkih dari Maluku diburu bangsa Eropa. Portugis tiba di Maluku sekitar 1512, lalu pada November 1521 kapal Spanyol Trinidad dan Victoria berlabuh di Tidore. Kain dan rempah Tidore pun ikut dikenal dunia.",
+      "hotspots": [
+        {
+          "label": "Trinidad & Victoria",
+          "body": "Dua kapal tersisa dari ekspedisi Magellan tiba di Tidore pada November 1521 (sumber menyebut 5 atau 8 November). Victoria kemudian kembali ke Spanyol membawa rempah."
+        },
+        {
+          "label": "Portugis di Maluku",
+          "body": "Portugis tiba di Maluku sekitar 1512 dan bersekutu dengan Ternate, saingan Tidore."
+        }
+      ],
+      "media": null,
+      "source": "Google Arts & Culture, \"The Trinidad and the Other Circumnavigation of the Globe\"; tirto.id, \"Keruwetan Perang Ternate-Portugis vs Tidore-Spanyol\". Menunggu tinjauan Rumah Tenun Puta Dino Kayangan."
+    },
+    {
       "id": "leiden",
       "band": "tikar",
-      "kicker": "Bab 3",
+      "kicker": "Bab 4",
       "title": "Selembar foto dari Leiden",
       "text": "Tahun 2017, Anita Gathmir melihat foto hitam-putih ornamen tikar Tidore koleksi museum di Leiden, Belanda, di Dinas Perpustakaan dan Kearsipan Tidore. Dari foto itulah motif-motif lama mulai digambar ulang.",
       "hotspots": [
-        { "label": "Foto hitam-putih", "body": "Dokumentasi ornamen tikar lama yang tersimpan di museum Leiden. Menunggu izin untuk ditampilkan." },
-        { "label": "2017", "body": "Tahun foto itu ditemukan di arsip daerah Tidore." }
+        {
+          "label": "Foto hitam-putih",
+          "body": "Dokumentasi ornamen tikar lama yang tersimpan di museum Leiden. Menunggu izin untuk ditampilkan."
+        },
+        {
+          "label": "2017",
+          "body": "Tahun foto itu ditemukan di arsip daerah Tidore."
+        }
       ],
       "media": null,
       "source": "ANTARA Ambon; Ibrahim dkk. (2024)"
@@ -49,11 +84,14 @@
     {
       "id": "kayangan",
       "band": "anyam",
-      "kicker": "Bab 4",
+      "kicker": "Bab 5",
       "title": "Lahirnya Puta Dino Kayangan",
       "text": "Tahun 2018, Rumah Tenun Puta Dino Kayangan berdiri di Soasio, Tidore. Para penenunnya menghidupkan kembali Puta Dino dari motif-motif yang direkonstruksi.",
       "hotspots": [
-        { "label": "Soasio", "body": "Kelurahan di Kota Tidore Kepulauan, tempat rumah tenun ini berdiri." }
+        {
+          "label": "Soasio",
+          "body": "Kelurahan di Kota Tidore Kepulauan, tempat rumah tenun ini berdiri."
+        }
       ],
       "media": null,
       "source": "ANTARA Ambon; Ibrahim dkk. (2024)"
@@ -61,12 +99,18 @@
     {
       "id": "jodati",
       "band": "jodati",
-      "kicker": "Bab 5",
+      "kicker": "Bab 6",
       "title": "Jodati, ketulusan hati",
       "text": "Motif Jodati bermakna ketulusan hati. Bentuknya geometris: belah ketupat di tengah dengan gelombang atau titik di dalam kotak, diulang teratur, dengan warna hitam dan kuning berselang-seling.",
       "hotspots": [
-        { "label": "Belah ketupat", "body": "Bentuk utama di tengah motif." },
-        { "label": "Hitam dan kuning", "body": "Dua warna yang berselang-seling di motif Jodati." }
+        {
+          "label": "Belah ketupat",
+          "body": "Bentuk utama di tengah motif."
+        },
+        {
+          "label": "Hitam dan kuning",
+          "body": "Dua warna yang berselang-seling di motif Jodati."
+        }
       ],
       "media": null,
       "source": "Ibrahim, Sudana & Dangkua (2024), hlm. motif Jodati"
@@ -74,17 +118,26 @@
     {
       "id": "dunia",
       "band": "bintang",
-      "kicker": "Bab 6",
+      "kicker": "Bab 7",
       "title": "Dari Tidore ke dunia",
       "text": "Kini Puta Dino dibawa ke pameran di dalam dan luar negeri, termasuk Bulan Indonesia 2026 di Hamburg, Jerman. Setiap lembar yang kamu pegang meneruskan cerita ini.",
       "hotspots": [
-        { "label": "Hamburg 2026", "body": "Puta Dino Kayangan memperkenalkan tenun Tidore di Bulan Indonesia, Mei 2026." }
+        {
+          "label": "Hamburg 2026",
+          "body": "Puta Dino Kayangan memperkenalkan tenun Tidore di Bulan Indonesia, Mei 2026."
+        }
       ],
       "media": null,
       "source": "RRI Ternate, \"Puta Dino Kayangan kenalkan tenun Tidore di Jerman\""
     }
   ],
   "pieces": [
-    { "code": "PDK-DEMO-0001", "weaver": null, "year": 2026, "place": "Soasio, Tidore", "note": "Lembar contoh untuk purwarupa label QR." }
+    {
+      "code": "PDK-DEMO-0001",
+      "weaver": null,
+      "year": 2026,
+      "place": "Soasio, Tidore",
+      "note": "Lembar contoh untuk purwarupa label QR."
+    }
   ]
 }

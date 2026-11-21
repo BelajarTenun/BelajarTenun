@@ -5,6 +5,7 @@ import { AppProvider, useApp } from './lib/session';
 import Landing from './pages/Landing';
 import Kamera from './pages/Kamera';
 import Masuk from './pages/Masuk';
+import Onboarding from './pages/Onboarding';
 import Belajar from './pages/Belajar';
 import Pengenalan from './pages/Pengenalan';
 import Modul from './pages/Modul';
@@ -35,6 +36,7 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/masuk" element={<Masuk />} />
+          <Route path="/mulai" element={<Perlu><Onboarding /></Perlu>} />
           <Route path="/kamera" element={<Kamera />} />
           <Route path="/belajar" element={<Perlu><Belajar /></Perlu>} />
           <Route path="/cerita/:id" element={<Cerita />} />

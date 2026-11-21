@@ -15,7 +15,7 @@ export default function Masuk() {
         {params.get('galat') === 'google' && <p className="a-status warn">Masuk dengan Google belum berhasil. Coba lagi.</p>}
         {config && !config.googleLogin
           ? <p className="a-status warn">Masuk dengan Google belum disiapkan di server ini.</p>
-          : <GoogleButton next={params.get('lanjut') || '/belajar'} className="a-google" />}
+          : <GoogleButton next={params.get('lanjut') || '/mulai'} className="a-google" />}
       </div>
     </main>
   );

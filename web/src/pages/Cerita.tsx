@@ -4,7 +4,7 @@ import Icon from '../components/Icon';
 import { api } from '../lib/api';
 
 type Hotspot = { label: string; body: string };
-type Chapter = { id: string; band: string; kicker: string; title: string; text: string; hotspots: Hotspot[]; media: { type: 'video' | 'image'; src: string; caption?: string } | null; source?: string };
+type Chapter = { id: string; band: string; kicker: string; title: string; text: string; hotspots: Hotspot[]; scene?: 'kapal'; media: { type: 'video' | 'image'; src: string; caption?: string } | null; source?: string };
 type Story = { id: string; module: string; title: string; subtitle: string; owner: string; status: string; statusNote?: string; validated_by: string | null; chapters: Chapter[];
   piece: { code: string; weaver: string | null; year: number; place: string; note?: string } | null };
 
@@ -57,7 +57,7 @@ export default function Cerita() {
       <main className="kc-cloth">
         {st.chapters.map((c, i) => (
           <section key={c.id} data-ch={c.id} className={`kc-ch${seen.has(c.id) ? ' in' : ''}${i % 2 ? ' alt' : ''}`}>
-            <div className="kc-band" aria-hidden="true"><Band kind={c.band} /></div>
+            <div className="kc-band" aria-hidden="true"><Band kind={c.band} />{c.scene === 'kapal' && <Kapal />}</div>
             <article className="kc-card">
               <span className="k">{c.kicker}</span>
               <h2>{c.title}</h2>
@@ -113,5 +113,23 @@ function Band({ kind }: { kind: string }) {
       <rect width="100%" height="100%" fill={`url(#${id})`} />
       <rect width="100%" height="4%" fill={GOLD} opacity=".85" /><rect y="96%" width="100%" height="4%" fill={GOLD} opacity=".85" />
     </svg>
+  );
+}
+
+// Kapal layar berlayar dari kanan ke kiri saat bab terbuka (sejarah interaktif).
+function Kapal() {
+  return (
+    <div className="kc-kapal">
+      <svg viewBox="0 0 220 160" className="kc-kapal-ship">
+        <path d="M20 112h180l-26 30H48z" fill="#5a3a22" />
+        <path d="M30 112h160" stroke="#d4b866" strokeWidth="3" />
+        <path d="M108 20v92M64 44v68M152 48v64" stroke="#3b2616" strokeWidth="4" />
+        <path d="M108 26c34 10 40 46 0 66z" fill="#f5efe2" />
+        <path d="M64 50c24 8 28 34 0 50z" fill="#efe6d3" />
+        <path d="M152 54c22 8 24 30 0 44z" fill="#efe6d3" />
+        <path d="M108 20l22 8-22 6z" fill="#8a3b22" />
+      </svg>
+      <svg viewBox="0 0 400 40" preserveAspectRatio="none" className="kc-kapal-sea"><path d="M0 20c25-12 50-12 75 0s50 12 75 0 50-12 75 0 50 12 75 0 50-12 75 0 25 6 25 6V40H0z" fill="#141c3a" opacity=".55" /></svg>
+    </div>
   );
 }
