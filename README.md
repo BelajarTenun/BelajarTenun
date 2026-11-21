@@ -79,6 +79,18 @@ File omiGlass dan OpenGlass disalin tanpa perubahan beserta lisensinya. Desain a
 | Firmware (PlatformIO, dikompilasi otomatis oleh CI) | [`firmware/belajartenun-glasses/`](firmware/belajartenun-glasses/) |
 | Komponen, skema kabel, MVP dan v2 | [`hardware/README.md`](hardware/README.md) |
 
+### Model 3D
+
+Render three.js dari STL di repo ini: casing BelajarTenun v2 (`hardware/casing/body-v2-speaker.stl`) dan dudukan kamera (`camera.stl`), dipasang di bingkai kacamata seperti yang dipakai di video demo. Kodenya ada di [`video/tools/kacamata3d/`](video/tools/kacamata3d/) (`scene.html`).
+
+<p align="center">
+  <img src="docs/assets/kacamata-3d.gif" alt="Kacamata BelajarTenun 3D berputar" width="640">
+</p>
+
+<p align="center">
+  <img src="docs/assets/kacamata-3d.png" alt="Kacamata BelajarTenun 3D dari empat sudut" width="760">
+</p>
+
 Tombol di kacamata: **ketuk** untuk lanjut ke tahap berikutnya, **ketuk dua kali** untuk mengulang instruksi, **tahan** untuk membekukan tampilan.
 
 ## Aplikasi
