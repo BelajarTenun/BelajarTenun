@@ -69,8 +69,8 @@ const Alur8: React.FC = () => {
   const shiftL = io(t, V2 - 0.3, V2 + 0.6);
   const step = t < 3.6 ? ['01', 'Masuk dengan Google'] : t < V2 ? ['02', 'Jawab beberapa pertanyaan'] : ['03', 'Mulai dari levelmu'];
   const stP = sp(f, t < 3.6 ? 0 : t < V2 ? 3.6 : V2);
-  const [ax, ay] = tapPos('depan', PH.x - 600 * shiftL, PH.y, PH.h, 195, 54 + 434);
-  const [bx, by] = tapPos('depan', PH.x - 600 * shiftL, PH.y, PH.h, 200, 54 + 433);
+  const [ax, ay] = tapPos('depan', PH.x - 820 * shiftL, PH.y, PH.h, 195, 54 + 434);
+  const [bx, by] = tapPos('depan', PH.x - 820 * shiftL, PH.y, PH.h, 200, 54 + 433);
   return (
     <AbsoluteFill style={{ background: CREAM }}>
       {/* judul langkah (kiri), hilang saat kartu level muncul */}
@@ -78,7 +78,7 @@ const Alur8: React.FC = () => {
         <div style={{ fontSize: 28, fontWeight: 800, color: GOLDD, letterSpacing: 2, transform: `translateY(${(1 - stP) * 20}px)`, opacity: stP }}>LANGKAH {step[0]}</div>
         <div style={{ fontSize: 82, fontWeight: 800, letterSpacing: -3, lineHeight: 1.02, marginTop: 10, transform: `translateY(${(1 - stP) * 30}px)`, opacity: stP }}>{step[1]}</div>
       </div>
-      <div style={{ position: 'absolute', inset: 0, transform: `translateX(${-600 * shiftL}px)` }}>
+      <div style={{ position: 'absolute', inset: 0, transform: `translateX(${-820 * shiftL}px)` }}>
         <Phone3D pose="depan" x={PH.x} y={PH.y} h={PH.h}>
           <Screen dark={screen === 'landing'} bar={screen === 'landing' ? '#1b2440' : '#fbf8f1'}>
             {screen === 'landing' && <Shot src="hd-landing.png" />}
@@ -91,13 +91,13 @@ const Alur8: React.FC = () => {
         [4.6, bx + 40, by + 300], [5.4, bx, by - 70], [5.8, bx, by - 70], [6.9, bx, by - 70], [7.4, bx, by - 70], [7.8, bx, by - 70], [8.9, bx, by - 70], [9.4, bx, by - 70], [9.8, bx + 60, by + 200]]} taps={[2.6, 5.5, 7.5, 9.5]} />
       {/* kartu empat level dengan foto alat asli dari Rumah Tenun Puta Dino Kayangan */}
       {t > V2 - 0.2 && (
-        <div style={{ position: 'absolute', left: 860, top: 140, width: 1000, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 26 }}>
+        <div style={{ position: 'absolute', left: 880, top: 150, width: 940, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
           {LV.map(([n, name, alat, foto, at]) => {
             const p = sp(f, V2 + at - 0.2, { damping: 15, stiffness: 170 });
             const on = t >= V2 + at;
             return (
-              <div key={n} style={{ height: 380, borderRadius: 28, overflow: 'hidden', position: 'relative', background: '#fff', boxShadow: '0 30px 70px rgba(20,28,58,0.18)', transform: `translateY(${(1 - p) * 60}px) scale(${0.9 + 0.1 * p})`, opacity: Math.min(1, p * 1.5), outline: on ? `4px solid ${GOLD}` : 'none' }}>
-                <Img src={staticFile(`pdfoto/${foto}`)} style={{ width: '100%', height: 250, objectFit: 'cover', transform: `scale(${1.05 + 0.05 * ez(t, V2 + at, V2 + at + 3)})` }} />
+              <div key={n} style={{ height: 360, borderRadius: 28, overflow: 'hidden', position: 'relative', background: '#fff', boxShadow: '0 30px 70px rgba(20,28,58,0.18)', transform: `translateY(${(1 - p) * 60}px) scale(${0.9 + 0.1 * p})`, opacity: Math.min(1, p * 1.5), outline: on ? `4px solid ${GOLD}` : 'none' }}>
+                <Img src={staticFile(`pdfoto/${foto}`)} style={{ width: '100%', height: 232, objectFit: 'cover', transform: `scale(${1.05 + 0.05 * ez(t, V2 + at, V2 + at + 3)})` }} />
                 <div style={{ padding: '18px 24px', fontFamily: FONT, color: NAVY }}>
                   <div style={{ fontSize: 18, fontWeight: 800, letterSpacing: 3, color: GOLDD }}>LEVEL {n}</div>
                   <div style={{ fontSize: 34, fontWeight: 800, letterSpacing: -1 }}>{name}</div>
