@@ -73,6 +73,21 @@ const Laptop: React.FC<{ x: number; y: number; w?: number; h?: number; url: stri
   </div>
 );
 
+// Layar laptop = tangkapan layar halaman admin asli (1440×900 CSS)
+const LK = 1216 / 1440;
+const lp = (x: number, y: number, X = 340, Y = 110): [number, number] => [X + 12 + x * LK, Y + 56 + y * LK];
+const Ring: React.FC<{ x: number; y: number; w: number; h: number; at: number; label?: string; side?: 'top' | 'bottom' }> = ({ x, y, w, h, at, label, side = 'bottom' }) => {
+  const { f, t } = useT();
+  if (t < at) return null;
+  const p = spring({ frame: f - F(at), fps: FPS, config: { damping: 14, stiffness: 200 } });
+  return (
+    <>
+      <div style={{ position: 'absolute', left: x - 10, top: y - 10, width: w + 20, height: h + 20, borderRadius: 16, border: `4px solid ${GOLD}`, boxShadow: '0 0 0 9999px rgba(20,28,58,0.08)', opacity: Math.min(1, p * 1.5), transform: `scale(${1.08 - 0.08 * p})` }} />
+      {label && <div style={{ position: 'absolute', left: x - 10, top: side === 'bottom' ? y + h + 22 : y - 70, padding: '10px 18px', borderRadius: 14, background: NAVY, color: '#fff', fontFamily: FONT, fontSize: 22, fontWeight: 700, opacity: p, transform: `translateY(${(1 - p) * 12}px)` }}>{label}</div>}
+    </>
+  );
+};
+
 // Peta titik Indonesia (dan dunia)
 const DotMap: React.FC<{ lit: number; pins?: [string, number][]; dim?: number; world?: number; scale?: number; cx?: number; cy?: number; color?: string }> = ({ lit, pins = [], world = 0, scale = 1, cx = 960, cy = 570, color = NAVY }) => {
   const { t } = useT();
@@ -113,139 +128,70 @@ const DotMap: React.FC<{ lit: number; pins?: [string, number][]; dim?: number; w
 // ════════════════════════════════════════════════════════════════════════════
 // ALUR PENGGUNA (tanpa narasi; musik + SFX + teks langkah). UI dibangun ulang dari web/src/pages.
 // ════════════════════════════════════════════════════════════════════════════
-const PX = 1060, PY = 130; // posisi HP
-const STEPS: [number, string, string][] = [
-  [0.0, '01', 'Buka belajartenun.com'],
-  [3.0, '02', 'Masuk dengan Google'],
-  [6.0, '03', 'Pilih modul'],
-  [9.6, '04', 'Sambungkan kacamata'],
-  [14.2, '05', 'Mulai latihan'],
+const PX = 1060, PY = 110; // posisi HP
+const SC = 372 / 390; // tangkapan layar asli (lebar 390 px CSS) → layar HP
+const tp = (x: number, y: number): [number, number] => [PX + 14 + x * SC, PY + 14 + y * SC];
+const STEPS: [number, string, string, string][] = [
+  [0.0, '01', 'Buka belajartenun.com', 'masuk dengan akun Google'],
+  [2.6, '02', 'Pilih kain di dasbor', 'lanjutkan dari terakhir'],
+  [5.2, '03', 'Lihat tahap latihan', 'instruksi tiap tahap'],
+  [8.4, '04', 'Sambungkan kacamata', 'kamera di kacamata, tutor di HP'],
+  [13.4, '05', 'Latihan bersama tutor', 'bilang “sudah”, “ulangi”, atau bertanya'],
 ];
-export const ALUR_SECONDS = 18.2;
+export const ALUR_SECONDS = 17.2;
+// Layar HP = tangkapan layar aplikasi asli (web/src/pages) yang dijalankan lokal.
+const Shot: React.FC<{ src: string; at: number; y?: number }> = ({ src, at, y = 0 }) => {
+  const { f } = useT();
+  const p = spring({ frame: f - F(at), fps: FPS, config: { damping: 20, stiffness: 150 } });
+  return <Img src={staticFile(`ui/${src}`)} style={{ position: 'absolute', left: 0, top: -y, width: '100%', transform: `translateY(${(1 - Math.min(1, p)) * 50}px)`, opacity: Math.min(1, p * 1.5) }} />;
+};
 const Alur: React.FC = () => {
   const { f, t } = useT();
   const st = [...STEPS].reverse().find((s) => t >= s[0])!;
   const stP = sp(f, st[0], { damping: 18, stiffness: 170 });
-  const url = 'belajartenun.com'.slice(0, Math.max(0, Math.floor((t - 0.5) * 14)));
-  const screen = t < 1.8 ? 'url' : t < 3.0 ? 'landing' : t < 6.0 ? 'masuk' : t < 8.4 ? 'belajar' : t < 9.6 ? 'kenal' : t < 14.2 ? 'siapkan' : 'praktik';
-  const slideIn = (at: number) => { const p = sp(f, at, { damping: 20, stiffness: 150 }); return { transform: `translateY(${(1 - p) * 60}px)`, opacity: Math.min(1, p * 1.4) }; };
-  const glassesIn = sp(f, 10.4, { damping: 18, stiffness: 90 });
-  const paired = t > 12.4;
-  const flow = t > 11.6 && t < 14.4;
-  const zoomOut = io(t, 17.0, 18.2);
+  const screen = t < 2.6 ? 'landing' : t < 5.2 ? 'belajar' : t < 8.4 ? 'kenal' : t < 9.25 ? 'siapkan' : t < 11.7 ? 'kacamata' : t < 13.4 ? 'tersambung' : 'praktik';
+  const glassesIn = sp(f, 9.3, { damping: 18, stiffness: 90 });
+  const flow = t > 10.5 && t < 13.5;
+  const zoomOut = io(t, 16.1, 17.2);
+  const qi = Math.floor(((t - 13.4) * 10) % 30);
+  const [bx, by] = tp(195, 366), [mx, my] = tp(194, 358), [lx, ly] = tp(94, 248), [kx, ky] = tp(194, 395), [sx, sy] = tp(111, 469);
   return (
     <AbsoluteFill style={{ background: CREAM }}>
-      <div style={{ position: 'absolute', inset: 0, transform: `scale(${1 + zoomOut * 1.8})`, transformOrigin: `${PX + 200}px ${PY + 410}px`, opacity: 1 - ez(t, 17.7, 18.2) }}>
-        {/* judul langkah */}
-        <div style={{ position: 'absolute', left: 150, top: 380, fontFamily: FONT, color: NAVY, width: 760 }}>
+      <div style={{ position: 'absolute', inset: 0, transform: `scale(${1 + zoomOut * 1.8})`, transformOrigin: `${PX + 200}px ${PY + 410}px`, opacity: 1 - ez(t, 16.7, 17.2) }}>
+        <div style={{ position: 'absolute', left: 150, top: 360, fontFamily: FONT, color: NAVY, width: 760 }}>
           <div style={{ display: 'flex', gap: 10, marginBottom: 26 }}>{STEPS.map(([a, n]) => <div key={n} style={{ height: 6, width: 54, borderRadius: 3, background: t >= a ? GOLD : 'rgba(20,28,58,0.12)' }} />)}</div>
-          <div style={{ fontSize: 30, fontWeight: 800, color: GOLDD, letterSpacing: 2, ...{ transform: `translateY(${(1 - stP) * 20}px)`, opacity: stP } }}>LANGKAH {st[1]}</div>
-          <div style={{ fontSize: 84, fontWeight: 800, letterSpacing: -3, lineHeight: 1.02, marginTop: 10, transform: `translateY(${(1 - stP) * 30}px)`, opacity: stP }}>{st[2]}</div>
+          <div style={{ fontSize: 30, fontWeight: 800, color: GOLDD, letterSpacing: 2, transform: `translateY(${(1 - stP) * 20}px)`, opacity: stP }}>LANGKAH {st[1]}</div>
+          <div style={{ fontSize: 80, fontWeight: 800, letterSpacing: -3, lineHeight: 1.02, marginTop: 10, transform: `translateY(${(1 - stP) * 30}px)`, opacity: stP }}>{st[2]}</div>
+          <div style={{ fontSize: 28, marginTop: 18, opacity: 0.6 * stP }}>{st[3]}</div>
         </div>
-        {/* kacamata 3D (still) + aliran Bluetooth */}
-        {t > 10.2 && t < 14.6 && (
-          <div style={{ position: 'absolute', left: 420, top: 560, width: 760, height: 430, transform: `translateY(${(1 - glassesIn) * 400}px)`, opacity: Math.min(1, glassesIn * 1.5) * (1 - ez(t, 14.2, 14.6)) }}>
+        {t > 9.1 && t < 13.8 && (
+          <div style={{ position: 'absolute', left: 420, top: 560, width: 760, height: 430, transform: `translateY(${(1 - glassesIn) * 400}px)`, opacity: Math.min(1, glassesIn * 1.5) * (1 - ez(t, 13.4, 13.8)) }}>
             <Img src={staticFile('3d/glasses-still.png')} style={{ position: 'absolute', left: -330, top: -80, width: 1920 * 0.55, height: 1080 * 0.55 }} />
           </div>
         )}
         {flow && (
           <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>
-            <path d={`M 860 720 C 950 640, 1000 600, ${PX + 30} 560`} fill="none" stroke={GOLD} strokeWidth={5} strokeDasharray="6 18" strokeDashoffset={-t * 120} strokeLinecap="round" opacity={ez(t, 11.6, 11.9) * (1 - ez(t, 14.0, 14.4))} />
-            {[0, 1, 2].map((i) => { const r = ((t * 1.4 + i / 3) % 1); return <circle key={i} cx={860} cy={720} r={20 + r * 70} fill="none" stroke={GOLD} strokeWidth={3} opacity={(1 - r) * ez(t, 11.6, 11.9) * (1 - ez(t, 14.0, 14.4))} />; })}
+            <path d={`M 860 720 C 950 640, 1000 600, ${PX + 30} 560`} fill="none" stroke={GOLD} strokeWidth={5} strokeDasharray="6 18" strokeDashoffset={-t * 120} strokeLinecap="round" opacity={ez(t, 10.5, 10.8) * (1 - ez(t, 13.1, 13.5))} />
+            {[0, 1, 2].map((i) => { const r = ((t * 1.4 + i / 3) % 1); return <circle key={i} cx={860} cy={720} r={20 + r * 70} fill="none" stroke={GOLD} strokeWidth={3} opacity={(1 - r) * ez(t, 10.5, 10.8) * (1 - ez(t, 13.1, 13.5))} />; })}
           </svg>
         )}
-        {/* HP */}
         <Phone x={PX} y={PY}>
-          {screen === 'url' && (
-            <div style={{ padding: 26 }}>
-              <div style={{ marginTop: 40, height: 56, borderRadius: 28, background: '#fff', display: 'flex', alignItems: 'center', padding: '0 22px', fontSize: 24, boxShadow: '0 6px 18px rgba(20,28,58,0.08)' }}>{url}<span style={{ width: 2, height: 28, background: NAVY, marginLeft: 2, opacity: Math.floor(t * 3) % 2 }} /></div>
-            </div>
-          )}
-          {screen === 'landing' && (
-            <div style={{ padding: 34, ...slideIn(1.8) }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 22, fontWeight: 700 }}><Mark size={34} /> BelajarTenun</div>
-              <div style={{ marginTop: 90, fontFamily: LOGO.serif, fontSize: 48, lineHeight: 1.05 }}>Belajar menenun, dipandu ilmu Nusantara.</div>
-              <div style={{ marginTop: 24, fontSize: 20, opacity: 0.65, lineHeight: 1.4 }}>Tutor AI di kacamata yang melihat dari matamu.</div>
-              <div style={{ marginTop: 60, height: 70, borderRadius: 35, background: NAVY, color: '#fff', fontSize: 24, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${t > 2.55 && t < 2.75 ? 0.96 : 1})` }}>Masuk</div>
-            </div>
-          )}
-          {screen === 'masuk' && (
-            <div style={{ padding: 34, textAlign: 'center', ...slideIn(3.0) }}>
-              <div style={{ marginTop: 120, display: 'flex', justifyContent: 'center' }}><Mark size={90} /></div>
-              <div style={{ marginTop: 26, fontSize: 40, fontWeight: 800, letterSpacing: -1 }}>Masuk</div>
-              <div style={{ marginTop: 12, fontSize: 20, opacity: 0.65, lineHeight: 1.4 }}>Pakai akun Google untuk menyimpan progres latihanmu.</div>
-              <div style={{ marginTop: 60, height: 70, borderRadius: 35, background: '#fff', border: '1px solid rgba(20,28,58,0.15)', fontSize: 22, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, transform: `scale(${t > 4.55 && t < 4.75 ? 0.96 : 1})` }}>
-                <svg width="26" height="26" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke={NAVY} strokeWidth="3" /><path d="M12 12h9" stroke={GOLD} strokeWidth="3" /></svg>Masuk dengan Google
-              </div>
-              {t > 4.9 && <div style={{ marginTop: 40, display: 'inline-flex', alignItems: 'center', gap: 12, padding: '12px 20px', borderRadius: 30, background: '#fff', fontSize: 20, fontWeight: 700, ...slideIn(4.9) }}><div style={{ width: 36, height: 36, borderRadius: 18, background: NAVY, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>N</div>Tersambung ✓</div>}
-            </div>
-          )}
-          {screen === 'belajar' && (
-            <div style={{ padding: 28, ...slideIn(6.0) }}>
-              <div style={{ fontSize: 34, fontWeight: 800, letterSpacing: -1 }}>Belajar</div>
-              <div style={{ marginTop: 18, padding: 20, borderRadius: 22, background: '#fff', display: 'flex', alignItems: 'center', gap: 16 }}>
-                <div style={{ fontSize: 46, fontWeight: 900, color: GOLDD }}>{Math.round(1 * ez(t, 6.3, 7.0))}</div>
-                <div><div style={{ fontSize: 18, fontWeight: 700 }}>hari berturut-turut berlatih</div>
-                  <div style={{ display: 'flex', gap: 5, marginTop: 8, alignItems: 'flex-end', height: 30 }}>{[0, 0, 0, 0, 0, 0, 1].map((h, i) => <div key={i} style={{ width: 16, height: 4 + 26 * h * ez(t, 6.3 + i * 0.06, 6.8 + i * 0.06), borderRadius: 4, background: h ? GOLD : 'rgba(20,28,58,0.15)' }} />)}</div></div>
-              </div>
-              {[['Tenun Tidore – Modul Dasar', 'Sedang dipelajari', 'Lanjutkan'], ['Puta Dino motif Jodati', 'Berikutnya', 'Mulai'], ['Puta Dino motif Barakati', 'Berikutnya', '']].map(([n, s, b], i) => (
-                <div key={n} style={{ marginTop: 14, padding: 20, borderRadius: 22, background: '#fff', ...slideIn(6.3 + i * 0.15), outline: i === 0 && t > 7.9 ? `3px solid ${GOLD}` : 'none' }}>
-                  <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, color: i === 0 ? GOLDD : 'rgba(20,28,58,0.45)' }}>{s.toUpperCase()}</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 }}><div style={{ fontSize: 21, fontWeight: 800 }}>{n}</div>{b && <div style={{ padding: '8px 16px', borderRadius: 20, background: i === 0 ? NAVY : 'rgba(20,28,58,0.08)', color: i === 0 ? '#fff' : NAVY, fontSize: 16, fontWeight: 700 }}>{b}</div>}</div>
-                </div>
-              ))}
-            </div>
-          )}
-          {screen === 'kenal' && (
-            <div style={{ ...slideIn(8.4) }}>
-              <div style={{ height: 230, position: 'relative', overflow: 'hidden' }}><OffthreadVideo src={staticFile('footage/7644-full.mp4')} startFrom={F(2)} muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} /><div style={{ position: 'absolute', left: 16, bottom: 12, padding: '6px 12px', borderRadius: 12, background: 'rgba(20,28,58,0.6)', color: '#fff', fontSize: 14, fontWeight: 700 }}>Video pengenalan</div></div>
-              <div style={{ padding: 24 }}>
-                <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: -1 }}>Tenun Tidore – Modul Dasar</div>
-                <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, marginTop: 14, opacity: 0.5 }}>TAHAP LATIHAN</div>
-                {['Mengenal alat tenun', 'Membuka celah (mulut) lungsi', 'Memasukkan benang pakan', 'Merapatkan pakan', 'Mengulang beberapa baris'].map((s, i) => <div key={s} style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 10, fontSize: 17, ...slideIn(8.6 + i * 0.08) }}><div style={{ width: 28, height: 28, borderRadius: 14, background: 'rgba(212,184,102,0.3)', fontSize: 14, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</div>{s}</div>)}
-                <div style={{ marginTop: 22, height: 60, borderRadius: 30, background: NAVY, color: '#fff', fontSize: 20, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Mulai latihan</div>
-              </div>
-            </div>
-          )}
-          {screen === 'siapkan' && (
-            <div style={{ padding: 26, ...slideIn(9.6) }}>
-              <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: -1 }}>Sambungkan kamera</div>
-              <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, marginTop: 18, opacity: 0.5 }}>PERANGKAT</div>
-              {[['Kamera HP', 'Kamera belakang HP ini'], ['Kacamata BelajarTenun', paired ? 'Tersambung lewat Bluetooth' : 'Butuh Chrome di Android']].map(([a, b], i) => (
-                <div key={a} style={{ marginTop: 12, padding: 18, borderRadius: 20, background: '#fff', border: i === 1 && t > 10.3 ? `3px solid ${GOLD}` : '3px solid transparent' }}>
-                  <div style={{ fontSize: 20, fontWeight: 800 }}>{a}</div><div style={{ fontSize: 15, opacity: 0.6, marginTop: 4, color: i === 1 && paired ? GOLDD : undefined, fontWeight: i === 1 && paired ? 700 : 400 }}>{b}{i === 1 && paired ? ' ✓' : ''}</div>
-                </div>
-              ))}
-              <div style={{ marginTop: 16, height: 250, borderRadius: 20, overflow: 'hidden', background: 'rgba(20,28,58,0.08)', position: 'relative' }}>
-                {paired ? <OffthreadVideo src={staticFile('footage/7653-full.mp4')} startFrom={F(23)} muted style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: ez(t, 12.4, 12.8) }} /> : <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, opacity: 0.5 }}>Belum ada gambar</div>}
-              </div>
-              {/* dialog Bluetooth */}
-              {t > 10.8 && t < 12.3 && (
-                <div style={{ position: 'absolute', left: 20, right: 20, top: 220, padding: 22, borderRadius: 24, background: '#fff', boxShadow: '0 20px 60px rgba(20,28,58,0.3)', ...slideIn(10.8) }}>
-                  <div style={{ fontSize: 18, fontWeight: 800 }}>belajartenun.com ingin memasangkan</div>
-                  <div style={{ marginTop: 14, padding: 14, borderRadius: 14, background: 'rgba(212,184,102,0.2)', display: 'flex', justifyContent: 'space-between', fontSize: 18, fontWeight: 700 }}>BelajarTenun-Glass <span style={{ color: GOLDD }}>{'▂▄▆'.slice(0, 1 + (Math.floor(t * 4) % 3))}</span></div>
-                  <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}><div style={{ padding: '10px 22px', borderRadius: 20, background: NAVY, color: '#fff', fontSize: 16, fontWeight: 700 }}>Pasangkan</div></div>
-                </div>
-              )}
-            </div>
-          )}
+          {screen === 'landing' && <Shot src="w-01-landing.png" at={0.1} />}
+          {screen === 'belajar' && <Shot src="w-03-belajar.png" at={2.6} />}
+          {screen === 'kenal' && <Shot src="w-04-kenal.png" at={5.2} />}
+          {screen === 'siapkan' && <Shot src="w-05-siapkan.png" at={8.4} />}
+          {screen === 'kacamata' && <Img src={staticFile('ui/w-05b-kacamata.png')} style={{ position: 'absolute', left: 0, top: 0, width: '100%' }} />}
+          {screen === 'tersambung' && <Img src={staticFile('ui/w-06-tersambung.png')} style={{ position: 'absolute', left: 0, top: 0, width: '100%' }} />}
+          {screen === 'praktik' && <Img src={staticFile(`ui/praktik-${String(Math.max(0, qi)).padStart(2, '0')}.png`)} style={{ position: 'absolute', left: 0, top: 0, width: '100%' }} />}
           {screen === 'praktik' && (
-            <div style={{ position: 'absolute', inset: 0, ...slideIn(14.2) }}>
-              <OffthreadVideo src={staticFile('footage/7647-full.mp4')} startFrom={F(9)} muted style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
-              <div style={{ position: 'absolute', left: 16, right: 16, bottom: 16, padding: 20, borderRadius: 24, ...glassCard(0.85) }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 16, fontWeight: 700 }}><Mark size={26} speaking={t > 15} /> Tutor · Tahap 1/5</div>
-                <div style={{ fontSize: 26, fontWeight: 800, marginTop: 8 }}>Mengenal alat tenun</div>
-                <div style={{ fontSize: 15, opacity: 0.7, marginTop: 8, lineHeight: 1.4 }}>Tutor memindahkan tahap sendiri. Bilang "sudah", "ulangi", atau tanyakan apa saja.</div>
-                <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>{['sudah', 'ulangi', 'tanya'].map((w, i) => <div key={w} style={{ padding: '8px 14px', borderRadius: 16, background: NAVY, color: '#fff', fontSize: 15, fontWeight: 700, ...slideIn(15.2 + i * 0.3) }}>“{w}”</div>)}</div>
-              </div>
+            <div style={{ position: 'absolute', left: 16, right: 16, bottom: 150, padding: '14px 18px', borderRadius: 20, background: 'rgba(20,28,58,0.72)', color: '#fff', fontSize: 15, lineHeight: 1.4, ...{ opacity: ez(t, 14.2, 14.6) } }}>
+              Tutor memindahkan tahap sendiri. Bilang "sudah", "ulangi", atau tanyakan apa saja.
             </div>
           )}
         </Phone>
-        <Finger path={[[2.2, PX + 200, PY + 900], [2.55, PX + 200, PY + 520], [2.8, PX + 200, PY + 520], [4.2, PX + 200, PY + 520], [4.6, PX + 200, PY + 500], [5.0, PX + 260, PY + 900],
-          [7.5, PX + 300, PY + 900], [7.9, PX + 330, PY + 395], [8.2, PX + 330, PY + 395], [9.0, PX + 200, PY + 760], [9.3, PX + 200, PY + 760], [9.9, PX + 200, PY + 300], [10.25, PX + 200, PY + 335], [11.0, PX + 300, PY + 600], [11.6, PX + 315, PY + 478], [12.2, PX + 260, PY + 900]]}
-          taps={[2.6, 4.6, 8.2, 9.3, 10.3, 11.6]} />
+        <Finger path={[[1.7, bx + 40, by + 300], [2.1, bx, by], [2.4, bx, by], [4.1, mx + 40, my + 300], [4.6, mx, my], [4.9, mx, my], [7.0, lx + 60, ly + 300], [7.5, lx, ly], [7.8, lx, ly], [8.7, kx + 40, ky + 300], [9.2, kx, ky], [9.9, sx, sy], [10.4, sx, sy], [10.9, sx + 60, sy + 260]]} taps={[2.25, 4.75, 7.65, 9.2, 10.4]} />
       </div>
-      <Sfx cues={[...Array.from({ length: 12 }, (_, i) => [0.5 + i * 0.07, 'tick', 0.15] as Cue), [1.8, 'whoosh', 0.3], [2.6, 'click', 0.6], [3.0, 'whoosh', 0.3], [4.6, 'click', 0.6], [4.9, 'pop', 0.5], [6.0, 'whoosh', 0.3], [6.4, 'pop2', 0.35], [8.2, 'click', 0.6], [8.4, 'whoosh', 0.3], [9.3, 'click', 0.6], [9.6, 'whoosh', 0.3], [10.3, 'toggle', 0.5], [10.4, 'whoosh', 0.35], [10.8, 'pop', 0.45], [11.6, 'click', 0.6], [11.7, 'blip', 0.35], [12.0, 'blip', 0.3], [12.4, 'ding', 0.5], [14.2, 'whoosh', 0.3], [15.2, 'pop3', 0.35], [15.5, 'pop3', 0.35], [15.8, 'pop3', 0.35], [17.0, 'riser', 0.3]]} />
+      <Sfx cues={[[0.1, 'whoosh', 0.3], [2.25, 'click', 0.6], [2.6, 'whoosh', 0.3], [4.75, 'click', 0.6], [5.2, 'whoosh', 0.3], [7.65, 'click', 0.6], [8.4, 'whoosh', 0.3], [9.2, 'toggle', 0.5], [9.3, 'whoosh', 0.35], [10.4, 'click', 0.6], [10.6, 'blip', 0.35], [11.0, 'blip', 0.3], [11.7, 'ding', 0.5], [13.4, 'whoosh', 0.3], [14.2, 'pop3', 0.35], [16.0, 'riser', 0.3]]} />
     </AbsoluteFill>
   );
 };
@@ -375,38 +321,16 @@ const S07: React.FC = () => {
       {ed && (
         <AbsoluteFill style={{ opacity: ez(t, 2.6, 2.9) }}>
           <Laptop x={340} y={110} w={1240} h={800} url="belajartenun.com/editor.html">
-            <div style={{ padding: 34 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontSize: 34, fontWeight: 800, letterSpacing: -1 }}>Editor Kurikulum</div>
-                <div style={{ padding: '10px 22px', borderRadius: 22, background: t > 8.2 ? GOLD : NAVY, color: t > 8.2 ? NAVY : '#fff', fontSize: 18, fontWeight: 700, transform: `scale(${t > 8.15 && t < 8.35 ? 0.95 : 1})` }}>{t > 8.3 ? 'Tersimpan ✓' : 'Simpan semua'}</div>
-              </div>
-              <div style={{ display: 'flex', gap: 14, marginTop: 20, fontSize: 18 }}>
-                <div style={{ padding: '8px 16px', borderRadius: 14, background: '#fff' }}>Modul · <b>Tenun Tidore – Modul Dasar</b></div>
-                <div style={{ padding: '8px 16px', borderRadius: 14, background: status === 'Tervalidasi' ? 'rgba(212,184,102,0.35)' : '#fff', fontWeight: 700 }}>Status · {status} ▾</div>
-              </div>
-              <div style={{ fontSize: 15, fontWeight: 800, letterSpacing: 2, marginTop: 28, opacity: 0.5 }}>TAHAP</div>
-              {['Mengenal alat tenun', 'Membuka celah (mulut) lungsi', 'Memasukkan benang pakan'].map((s, i) => (
-                <div key={s} style={{ marginTop: 12, padding: '18px 22px', borderRadius: 18, background: '#fff', display: 'flex', gap: 16, alignItems: 'center', outline: i === 1 && t > 3.8 ? `3px solid ${GOLD}` : 'none', transform: `translateY(${(1 - sp(f, 2.8 + i * 0.12)) * 30}px)` }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 18, background: 'rgba(212,184,102,0.3)', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 22, fontWeight: 800 }}>{s}</div>
-                    {i === 1 && <div style={{ fontSize: 18, marginTop: 6 }}><span style={{ textDecoration: 'line-through', opacity: t > 4.3 ? 0.45 : 1 }}>Angkat pakan selang-seling</span>{t > 4.6 && <span style={{ marginLeft: 12, color: GOLDD, fontWeight: 700 }}>{fixed}</span>}</div>}
-                  </div>
-                  {t > 6.6 && <div style={{ padding: '6px 12px', borderRadius: 12, background: 'rgba(212,184,102,0.3)', fontSize: 14, fontWeight: 800, transform: `scale(${sp(f, 6.6 + i * 0.25, { damping: 10, stiffness: 260 })})` }}>✓ divalidasi</div>}
-                </div>
-              ))}
-              <div style={{ marginTop: 22, padding: 18, borderRadius: 18, background: 'rgba(20,28,58,0.04)', fontSize: 17, opacity: ez(t, 7.4, 7.7) }}>
-                <b>Riwayat perubahan modul</b><div style={{ marginTop: 8, opacity: 0.75 }}>Tahap 2 dikoreksi penenun sebelum diajarkan</div>
-              </div>
-            </div>
-            {/* cap emas */}
-            {t > 6.5 && (
-              <div style={{ position: 'absolute', right: 60, top: 160, width: 230, height: 230, borderRadius: 115, border: `8px solid ${GOLD}`, color: GOLDD, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 30, transform: `rotate(-14deg) scale(${2 - stamp})`, opacity: Math.min(1, stamp * 1.5), background: 'rgba(255,255,255,0.6)' }}>
-                <div style={{ fontSize: 60 }}>✓</div>TERVALIDASI<div style={{ fontSize: 15, letterSpacing: 2 }}>OLEH PENENUN</div>
-              </div>
-            )}
+            <Img src={staticFile('ui/d-editor.png')} style={{ position: 'absolute', left: 0, top: 0, width: '100%', transform: `translateY(${-io(t, 3.2, 4.0) * 120}px)` }} />
           </Laptop>
-          <Finger path={[[3.6, 900, 1000], [3.9, 760, 470], [4.4, 760, 470], [6.2, 820, 300], [6.5, 820, 300], [7.9, 1450, 210], [8.25, 1450, 210]]} taps={[3.9, 6.5, 8.25]} />
+          {(() => { const sh = 120 * io(t, 3.2, 4.0) / LK; const [x1, y1] = lp(355, 428 - sh); const [x2, y2] = lp(1195, 470 - sh); const [x3, y3] = lp(360, 634 - sh); const [x4, y4] = lp(1341, 870); return (
+            <>
+              <Ring x={x1} y={y1} w={250} h={28} at={4.0} label="Tahap: 5 · 0 tervalidasi" side="top" />
+              <Ring x={x2} y={y2} w={100} h={22} at={6.4} />
+              <Ring x={x3} y={y3} w={810} h={80} at={7.0} label="Penenun memeriksa instruksi tiap tahap" />
+              <Finger path={[[7.6, x4 + 200, y4 + 200], [8.1, x4 + 60, y4 + 14], [8.4, x4 + 60, y4 + 14]]} taps={[8.25]} />
+            </>
+          ); })()}
         </AbsoluteFill>
       )}
       <Captions words={words} keys={['salah', 'kualitas', 'diperiksa', 'penenun']} dark={(x) => x > 2.6} />
@@ -537,18 +461,11 @@ const S16: React.FC = () => {
   return (
     <AbsoluteFill>
       <Andrew src="footage/7637b-full.mp4" from={0} slide={slide} />
-      <Phone x={1230} y={120} w={420} h={840} style={{ transform: `translateY(${(1 - pin) * 900}px) rotate(${(1 - pin) * 8}deg)` }}>
-        <div style={{ padding: 30 }}>
-          <Kicker>SESI SELESAI</Kicker>
-          <div style={{ display: 'flex', gap: 10, marginTop: 18 }}>{[['Tahap dicapai', 4, '/5'], ['Pertanyaan', 4, ''], ['Dicatat', 1, '']].map(([l, v, u]) => <div key={l as string} style={{ flex: 1, padding: 12, borderRadius: 16, background: '#fff' }}><div style={{ fontSize: 30, fontWeight: 900 }}>{Math.round((v as number) * ez(t, 0.9, 1.8))}<span style={{ fontSize: 14 }}>{u}</span></div><div style={{ fontSize: 12, opacity: 0.6 }}>{l}</div></div>)}</div>
-          <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, marginTop: 26, opacity: 0.5 }}>SUDAH BISA</div>
-          {['Mengenal alat tenun', 'Membuka celah lungsi', 'Memasukkan benang pakan'].map((s, i) => <div key={s} style={{ marginTop: 10, padding: 14, borderRadius: 14, background: '#fff', display: 'flex', gap: 10, alignItems: 'center', fontSize: 18, fontWeight: 700, transform: `translateX(${(1 - sp(f, 2.9 + i * 0.18)) * 200}px)` }}><span style={{ color: GOLDD, fontSize: 22 }}>✓</span>{s}</div>)}
-          <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, marginTop: 22, opacity: 0.5 }}>MEMBINGUNGKAN</div>
-          <div style={{ marginTop: 10, padding: 14, borderRadius: 14, background: 'rgba(212,184,102,0.3)', display: 'flex', gap: 10, alignItems: 'center', fontSize: 18, fontWeight: 700, transform: `translateX(${(1 - sp(f, 4.6)) * 200}px)` }}><span style={{ fontSize: 22 }}>?</span>Kalau benang putus</div>
-        </div>
+      <Phone x={1230} y={110} w={420} h={860} style={{ transform: `translateY(${(1 - pin) * 900}px) rotate(${(1 - pin) * 8}deg)` }}>
+        <Img src={staticFile('ui/w-08-selesai.png')} style={{ position: 'absolute', left: 0, top: -ez(t, 3.6, 4.4) * 230, width: '100%' }} />
       </Phone>
       <Captions words={words} keys={['catatan', 'bisa', 'membingungkan']} />
-      <Sfx cues={[[0.3, 'whoosh', 0.35], ...[0, 1, 2].map((i) => [2.9 + i * 0.18, 'tick', 0.4] as Cue), [4.6, 'pop', 0.45]]} />
+      <Sfx cues={[[0.3, 'whoosh', 0.35], [2.9, 'pop3', 0.35], [3.6, 'whoosh', 0.2], [4.6, 'pop', 0.4]]} />
     </AbsoluteFill>
   );
 };
@@ -557,34 +474,16 @@ const S16: React.FC = () => {
 const S17: React.FC = () => {
   const { t } = useT();
   const words = W([['Dari', 0.0], ['situ', 0.12], ['kami', 0.42], ['bisa', 0.7], ['mengukur', 0.88], ['efektivitasnya', 1.26], ['dan', 2.14], ['memperbaiki', 2.46], ['tahap', 2.88], ['yang', 3.36], ['paling', 3.52], ['sulit.', 3.76]]);
-  // Hasil `npm run eval:qa` (data/eval/qa.json, 70 soal pemula): tingkat retrieval benar per jenis soal
-  const rows: [string, number, number][] = [['Parafrase', 0.774, 31], ['Di luar cakupan', 0.75, 12], ['Butuh validasi', 0.933, 15], ['Jebakan budaya', 0.083, 12]];
+  const [a1, b1] = lp(355, 245), [a2, b2] = lp(355, 370);
   return (
     <AbsoluteFill style={{ background: CREAM }}>
-      <Laptop x={300} y={100} w={1320} h={820} url="belajartenun.com · npm run eval:qa" style={{ transform: `scale(${0.96 + 0.04 * ez(t, 0, 0.5)})` }}>
-        <div style={{ padding: 36 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <div style={{ fontSize: 34, fontWeight: 800 }}>Evaluasi tanya jawab</div>
-            <div style={{ fontSize: 18, opacity: 0.6 }}>70 soal pemula · Recall@3 <b>82,6%</b></div>
-          </div>
-          <div style={{ display: 'flex', gap: 40, alignItems: 'flex-end', height: 440, marginTop: 40 }}>
-            {rows.map(([n, v, c], i) => {
-              const h = v * ez(t, 0.3 + i * 0.12, 1.0 + i * 0.12);
-              const hard = i === 3 && t > 2.4;
-              return (
-                <div key={n} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-                  <div style={{ fontSize: 26, fontWeight: 800, color: hard ? GOLDD : NAVY }}>{(h * 100).toFixed(1).replace('.', ',')}%</div>
-                  <div style={{ width: '100%', height: Math.max(8, 400 * h), borderRadius: 14, background: hard ? GOLD : NAVY, outline: hard ? `4px solid ${GOLD}` : 'none', outlineOffset: 6 }} />
-                  <div style={{ fontSize: 18, fontWeight: 700, opacity: 0.75, textAlign: 'center' }}>{n}<div style={{ fontSize: 14, opacity: 0.6 }}>{c} soal</div></div>
-                </div>
-              );
-            })}
-          </div>
-          {t > 2.4 && <div style={{ position: 'absolute', right: 40, top: 110, padding: '14px 20px', borderRadius: 16, background: 'rgba(212,184,102,0.3)', fontSize: 18, fontWeight: 800, opacity: ez(t, 2.4, 2.7) }}>Paling sulit → diperbaiki berikutnya</div>}
-        </div>
+      <Laptop x={340} y={110} w={1240} h={800} url="belajartenun.com/progres.html" style={{ transform: `scale(${0.97 + 0.03 * ez(t, 0, 0.5)})` }}>
+        <Img src={staticFile('ui/d-progres.png')} style={{ position: 'absolute', left: 0, top: 0, width: '100%' }} />
       </Laptop>
+      <Ring x={a1} y={b1} w={810} h={55} at={0.9} label="Sesi · Selesai · Tingkat selesai" side="top" />
+      {t > 2.4 && <Ring x={a2} y={b2} w={810} h={170} at={2.45} label="Tahap tersulit → bahan revisi kurikulum" side="top" />}
       <Captions words={words} keys={['mengukur', 'efektivitas', 'memperbaiki', 'sulit']} dark={() => true} />
-      <Sfx cues={[...rows.map((_, i) => [0.3 + i * 0.12, 'tick', 0.35] as Cue), [2.45, 'pop', 0.45]]} />
+      <Sfx cues={[[0.2, 'whoosh', 0.3], [0.9, 'pop', 0.4], [2.45, 'pop', 0.45]]} />
     </AbsoluteFill>
   );
 };
