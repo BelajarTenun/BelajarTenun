@@ -15,7 +15,7 @@ for (let a = 0, k = 0; a < composition.durationInFrames; a += step, k++) {
   const b = Math.min(composition.durationInFrames - 1, a + step - 1);
   const file = `${dir}/p${String(k).padStart(2, '0')}.mp4`;
   if (!fs.existsSync(file)) {
-    await renderMedia({ composition, serveUrl, codec: 'h264', crf: 20, frameRange: [a, b], outputLocation: file, concurrency: 2, offthreadVideoCacheSizeInBytes: 512 * 1024 * 1024 });
+    await renderMedia({ composition, serveUrl, codec: 'h264', crf: 20, frameRange: [a, b], outputLocation: file, concurrency: 3, offthreadVideoCacheSizeInBytes: 512 * 1024 * 1024 });
   }
   parts.push(file); console.log('✓', file);
 }

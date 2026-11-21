@@ -168,7 +168,7 @@ const Scan: React.FC = () => {
 // ════════════════════════════════════════════════════════════════════════════
 // E · LATIHAN TIAP LEVEL: POV asli (Drive) + HP 3D berisi layar Praktik asli
 // ════════════════════════════════════════════════════════════════════════════
-type Seg = { dur: number; src: string; from: number; audio?: string; tutor?: string; words?: Wd[]; me?: boolean };
+type Seg = { dur: number; src: string; from: number; audio?: string; tutor?: string; words?: Wd[]; me?: boolean; rate?: number };
 const PovLevel: React.FC<{ n: number; name: string; alat: string; ui: string; segs: Seg[] }> = ({ n, name, alat, ui, segs }) => {
   const { t } = useT();
   let acc = 0; const starts = segs.map((s) => { const a = acc; acc += s.dur; return a; });
@@ -180,14 +180,14 @@ const PovLevel: React.FC<{ n: number; name: string; alat: string; ui: string; se
     <AbsoluteFill style={{ background: '#000' }}>
       {segs.map((s, k) => (
         <Sequence key={k} from={F(starts[k])} durationInFrames={F(s.dur)}>
-          <Full src={s.src} from={s.from} />
+          <Full src={s.src} from={s.from} rate={s.rate} />
           {s.audio && <Audio src={staticFile(s.audio)} startFrom={F(s.from)} />}
           {s.tutor && <><Audio src={staticFile('sfx2/blip.wav')} volume={0.35} /><Sequence from={F(0.25)}><Audio src={staticFile(`tutor/${s.tutor}.mp3`)} /></Sequence></>}
           {/* HP 3D di kanan: layar Praktik asli, kamera = POV yang sama */}
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.35))' }} />
           <Phone3D pose="kanan" x={1395} y={150} h={880}>
             <Screen dark bar="#000">
-              <OffthreadVideo src={staticFile(s.src)} startFrom={F(s.from)} muted style={{ position: 'absolute', left: -507, top: 0, height: 790, width: 1404, objectFit: 'cover' }} />
+              <OffthreadVideo src={staticFile(s.src)} startFrom={F(s.from)} muted playbackRate={s.rate} style={{ position: 'absolute', left: -507, top: 0, height: 790, width: 1404, objectFit: 'cover' }} />
               <Img src={staticFile(`ui/prak-ui-${ui}.png`)} style={{ position: 'absolute', left: 0, top: 0, width: SCREEN_W }} />
             </Screen>
           </Phone3D>
@@ -221,7 +221,7 @@ const L3: Seg[] = [
 ];
 const L4: Seg[] = [
   { dur: 4.7, src: 'footage/pd7826.mp4', from: 0.2, audio: 'audio/pd7826-clean.wav', words: W([['Baiklah,', 0.37], ['sekarang', 1.27], ['aku', 1.33], ['sudah', 1.51], ['punya', 1.65], ['ATBM,', 1.85], ['yang', 3.41], ['pertama', 3.57], ['harus', 3.85], ['apa?', 4.07]], 0.2) },
-  { dur: 9.4, src: 'footage/pd7826.mp4', from: 5.0, tutor: 'T12', words: T12W },
+  { dur: 9.4, src: 'footage/pd7826.mp4', from: 4.9, tutor: 'T12', words: T12W, rate: 0.66 },
 ];
 const sum = (s: Seg[]) => s.reduce((a, b) => a + b.dur, 0);
 
@@ -301,7 +301,7 @@ const OwnerClip: React.FC<{ src: string; from: number; words: Wd[]; title: strin
 // peta kecil: pola harus dicerminkan (yang dijelaskan owner)
 const MirrorNote: React.FC = () => {
   const { t } = useT();
-  const flip = io(t, 13.3, 14.4);
+  const flip = io(t, 7.4, 8.4);
   return (
     <div style={{ width: 360 }}>
       <Kicker>KENAPA PENENUN PERLU MEMERIKSA</Kicker>
@@ -407,7 +407,7 @@ const S19v8: React.FC = () => {
   const gIn = sp(f, 8.4, { damping: 16, stiffness: 110 });
   // tiga momen nyata dari footage Drive
   const M: [string, string, number, string, number][] = [
-    ['Melihat dari mata murid', 'footage/pd7826.mp4', 9.7, 'POV kacamata · ATBM', 9.5],
+    ['Melihat dari mata murid', 'footage/pd7826.mp4', 9.7, 'POV kacamata · ATBM', 4.6],
     ['Mengoreksi saat itu juga', 'footage/pd7824A.mp4', 11.2, 'inkle loom · rapatkan pakan', 10.0],
     ['Setia pada ilmu penenun', 'footage/pd7819.mp4', 13.4, 'dibimbing owner Puta Dino Kayangan', 20.0],
   ];
@@ -459,13 +459,12 @@ const ROWS: Row[] = [
   ['SCAN', SCAN_SECONDS, <Scan />, null],
   ['L1', sum(L1), <PovLevel n={1} name="Dasar" alat="Bingkai sumpit" ui="t2" segs={L1} />, null],
   ['L2', sum(L2), <PovLevel n={2} name="Pengembangan" alat="Inkle loom" ui="t3" segs={L2} />, null],
-  ['L3', sum(L3), <PovLevel n={3} name="Teknik Lanjutan" alat="Alat empat gun" ui="j2" segs={L3} />, null],
   ['L4', sum(L4), <PovLevel n={4} name="Kreasi" alat="ATBM" ui="j3" segs={L4} />, null],
   ['05', 8.3, <S05 />, { src: 'audio/7635b-clean.wav', from: 0.6 }],
   ['06', 10.1, <S06v8 />, { src: 'audio/7635a-clean.wav', from: 0 }],
   ['07a', 2.6, <S07a />, { src: 'audio/7636-clean.wav', from: 0 }],
-  ['O1', 17.3, <OwnerClip src="footage/pd7801.mp4" from={0} words={W7801} title="Owner · menjelaskan kesalahan pola" />, { src: 'audio/pd7801-clean.wav', from: 0 }],
-  ['O2', 15.7, <OwnerClip src="footage/pd7802.mp4" from={0} words={W7802} title="Owner · pola harus dicerminkan" note={[[6.4, <MirrorNote />]]} />, { src: 'audio/pd7802-clean.wav', from: 0 }],
+  ['O1', 7.5, <OwnerClip src="footage/pd7801.mp4" from={0} words={W7801} title="Owner · menjelaskan kesalahan pola" />, { src: 'audio/pd7801-clean.wav', from: 0 }],
+  ['O2', 9.5, <OwnerClip src="footage/pd7802.mp4" from={0} words={W7802} title="Owner · pola harus dicerminkan" note={[[6.4, <MirrorNote />]]} />, { src: 'audio/pd7802-clean.wav', from: 0 }],
   ['07b', 6.8, <S07b />, { src: 'audio/7636-clean.wav', from: 2.4 }],
   ['MITRA', MITRA8_SECONDS, <Mitra8 />, null],
   ['15', 8.4, <S15v8 />, { src: 'audio/7637a-clean.wav', from: 0.2 }],
