@@ -285,7 +285,7 @@ const LINES: Line[] = [
   { me: false, words: at('T7', segAt(11) + TUT0) },
 ];
 
-const Learn: React.FC = () => {
+export const Learn: React.FC = () => {
   const t = useCurrentFrame() / FPS;
   const i = Math.max(0, SEGS.findIndex((s) => t >= s.a0 && t < s.a0 + s.dur));
   const seg = SEGS[i];
@@ -517,7 +517,7 @@ const S23: React.FC = () => {
 
 // ── 24 · montase cepat ────────────────────────────────────────────────────────
 const MONT: [string, number][] = [['footage/7652-full.mp4', 1.0], ['footage/7653-full.mp4', 23], ['footage/7644-full.mp4', 2.0], ['footage/7647-full.mp4', 12], ['footage/7648-full.mp4', 5.0], ['footage/7649-full.mp4', 1.0], ['footage/7647-full.mp4', 30]];
-const S24: React.FC = () => (
+export const S24: React.FC = () => (
   <AbsoluteFill>
     {MONT.map(([src, from], i) => (
       <Sequence key={i} from={F(i * 0.55)} durationInFrames={F(0.55)}>
@@ -534,7 +534,7 @@ const S25: React.FC = () => {
 };
 
 // ── 26 · kartu penutup + kredit ───────────────────────────────────────────────
-const S26: React.FC = () => {
+export const S26: React.FC = () => {
   const t = useCurrentFrame() / FPS;
   const d = ez(t, 0, 1.0, Easing.out(Easing.cubic));
   const n = ez(t, 0.6, 1.1);

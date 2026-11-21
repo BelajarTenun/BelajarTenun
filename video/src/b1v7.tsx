@@ -15,14 +15,14 @@ const ez = (t: number, a: number, b: number, e = Easing.out(Easing.cubic)) => in
 const io = (t: number, a: number, b: number) => ez(t, a, b, Easing.inOut(Easing.cubic));
 const sp = (f: number, at: number, cfg = { damping: 16, stiffness: 160 }) => spring({ frame: f - F(at), fps: FPS, config: cfg });
 
-type Cue = [number, string, number?];
-const Sfx: React.FC<{ cues: Cue[] }> = ({ cues }) => (
+export type Cue = [number, string, number?];
+export const Sfx: React.FC<{ cues: Cue[] }> = ({ cues }) => (
   <>{cues.map(([t, s, v = 0.6], i) => <Sequence key={i} from={Math.max(0, F(t))} durationInFrames={F(3)}><Audio src={staticFile(`sfx2/${s}.wav`)} volume={v} /></Sequence>)}</>
 );
 
 // Caption per frasa; kata kunci emas. Spasi antar-kata dijaga (marginRight tidak ditimpa).
-type Wd = [string, number];
-const Captions: React.FC<{ words: Wd[]; keys?: string[]; dark?: (t: number) => boolean }> = ({ words, keys = [], dark }) => {
+export type Wd = [string, number];
+export const Captions: React.FC<{ words: Wd[]; keys?: string[]; dark?: (t: number) => boolean }> = ({ words, keys = [], dark }) => {
   const t = useCurrentFrame() / FPS;
   const chunks: Wd[][] = []; let cur: Wd[] = [];
   words.forEach((w, i) => { cur.push(w); if (/[.,?!:…]$/.test(w[0]) || cur.length >= 6 || i === words.length - 1) { chunks.push(cur); cur = []; } });
@@ -44,7 +44,7 @@ const Captions: React.FC<{ words: Wd[]; keys?: string[]; dark?: (t: number) => b
 };
 
 // Video 3D berlapis transparan (webm VP9 alfa)
-const Layer: React.FC<{ src: string; style?: React.CSSProperties }> = ({ src, style }) => (
+export const Layer: React.FC<{ src: string; style?: React.CSSProperties }> = ({ src, style }) => (
   <OffthreadVideo src={staticFile(src)} muted transparent style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', ...style }} />
 );
 import WALKMAP from '../public/3d/walkmap-anchors.json';
@@ -54,7 +54,7 @@ const ANCH: Record<string, Anch> = { walkmap: WALKMAP as unknown as Anch, glass:
 const anchorsOf = (name: string): Anch => ANCH[name] || [];
 
 // Vinyet halus untuk footage yang belum di-grade
-const Vignette: React.FC = () => <AbsoluteFill style={{ background: 'radial-gradient(ellipse 75% 70% at 50% 42%, rgba(0,0,0,0) 55%, rgba(8,10,20,0.42) 100%)', pointerEvents: 'none' }} />;
+export const Vignette: React.FC = () => <AbsoluteFill style={{ background: 'radial-gradient(ellipse 75% 70% at 50% 42%, rgba(0,0,0,0) 55%, rgba(8,10,20,0.42) 100%)', pointerEvents: 'none' }} />;
 
 // ── 01 · RATUSAN TAHUN di belakang Andrew → Andrew geser kiri, serah-terima 3D naik di kanan ──
 const W01: Wd[] = [['Selama', 0.35], ['ratusan', 1.13], ['tahun,', 1.53], ['menenun', 2.33], ['diajarkan', 2.87], ['dari', 3.33], ['tangan', 3.55], ['ke', 3.97], ['tangan.', 4.1]];
@@ -278,7 +278,7 @@ const S04: React.FC = () => {
 const SC = { s01: [0, 4.8], s02: [4.8, 13.8], s03: [13.8, 18.5], s04: [18.5, 29.9] };
 const SPEECH: [number, number][] = [[0.3, 4.6], [5.0, 13.6], [13.8, 18.4], [18.8, 29.6]];
 export const B1V7_SECONDS = 30;
-export const Babak1V7: React.FC = () => {
+export const Babak1V7: React.FC<{ music?: boolean }> = ({ music = true }) => {
   const seq = ([a, b]: number[]) => ({ from: F(a), durationInFrames: F(b - a) });
   return (
     <AbsoluteFill style={{ background: CREAM }}>
@@ -289,7 +289,7 @@ export const Babak1V7: React.FC = () => {
       <Sequence {...seq([0, 13.8])}><Audio src={staticFile('audio/7633-clean.wav')} startFrom={F(0.5)} /></Sequence>
       <Sequence {...seq(SC.s03)}><Audio src={staticFile('audio/7634b-clean.wav')} /></Sequence>
       <Sequence {...seq(SC.s04)}><Audio src={staticFile('audio/7634a-clean.wav')} startFrom={F(o4)} /></Sequence>
-      <Audio src={staticFile('audio/music-bed.wav')} volume={(fr) => { const s = fr / FPS; return SPEECH.some(([a, b]) => s > a && s < b) ? 0.05 : 0.12; }} />
+      {music && <Audio src={staticFile('audio/music-bed.wav')} volume={(fr) => { const s = fr / FPS; return SPEECH.some(([a, b]) => s > a && s < b) ? 0.05 : 0.12; }} />}
     </AbsoluteFill>
   );
 };

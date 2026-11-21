@@ -14,6 +14,7 @@ import { StickTest } from './sticktest';
 import { FullVideo3, FULL3_SECONDS } from './full3';
 import { Babak1V5, B1V5_SECONDS } from './b1v5';
 import { Babak1V7, B1V7_SECONDS } from './b1v7';
+import { FullVideo7, FULL7_SECONDS } from './full7';
 import { PeepsTest } from './peepstest';
 
 // Semua 1920×1080, 30 fps. Nama dengan akhiran "-overlay" dirender transparan untuk ditumpuk di atas footage.
@@ -92,6 +93,7 @@ list.push(['STICK-test', StickTest, 4]);
 list.push(['FULL-v3', FullVideo3, FULL3_SECONDS]);
 list.push(['B1-v5', Babak1V5, B1V5_SECONDS]);
 list.push(['B1-v7', Babak1V7, B1V7_SECONDS]);
+list.push(['Video-v7', FullVideo7, FULL7_SECONDS]);
 list.push(['PEEPS-test', PeepsTest, 2]);
 
 const cache = new Map<any, any>();
