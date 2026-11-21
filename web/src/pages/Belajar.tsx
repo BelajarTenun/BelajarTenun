@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import Shell from '../components/Shell';
 import Icon from '../components/Icon';
 import KainFoto from '../components/KainFoto';
@@ -6,6 +6,7 @@ import Maskot from '../components/Maskot';
 import { useApp } from '../lib/session';
 import { useModule } from '../lib/useModule';
 import { streak, useProgres } from '../lib/progres';
+import { LEVELS, TEKNIK, bacaProfil, levelOf } from '../lib/level';
 
 const TARGET_MENIT = 10, TARGET_MINGGU = 70;
 
@@ -13,6 +14,7 @@ const TARGET_MENIT = 10, TARGET_MINGGU = 70;
 // dan kolom kanan berisi minggu ini, tahap berikutnya, serta aktivitas.
 export default function Belajar() {
   const { config } = useApp();
+  const profil = bacaProfil();
   const { loading, modules, byId, riwayat, status, kunci, mastery } = useProgres();
   const nama = config?.user?.name?.split(' ')[0] ?? '';
   const st = streak(riwayat);
@@ -22,20 +24,25 @@ export default function Belajar() {
   const menitMinggu = minggu.reduce((a, s) => a + s.minutes, 0);
 
   const terakhir = riwayat.find((s) => !s.done && s.reached < (byId[s.module]?.steps ?? 0));
-  const fokusId = terakhir?.module ?? modules.find((m) => status[m.id] === 'berikut')?.id;
+  const lvl = profil?.level ?? 1;
+  const fokusId = terakhir?.module ?? modules.find((m) => levelOf(m.id) === lvl && status[m.id] !== 'tuntas')?.id ?? modules.find((m) => status[m.id] === 'berikut')?.id;
   const { module: fokus } = useModule(fokusId);
   const lanjut = terakhir ? Math.min(terakhir.reached, (byId[terakhir.module]?.steps ?? 1) - 1) : 0;
 
   const kainku = modules.filter((m) => status[m.id] === 'berjalan' || status[m.id] === 'tuntas' || m.id === fokusId);
-  const jelajah = modules.filter((m) => !kainku.includes(m)).slice(0, 4);
   const dikuasai = (id: string) => Object.values(mastery[id] ?? {}).filter((x) => x.state === 'dikuasai').length;
   const totalTahap = kainku.reduce((a, m) => a + m.steps, 0);
   const totalKuasai = kainku.reduce((a, m) => a + dikuasai(m.id), 0);
 
+  if (!profil) return <Navigate to="/mulai" replace />;
   return (
     <Shell wide>
       <div className="e-home">
         <div className="e-main">
+          {(() => { const L = LEVELS[lvl - 1]; return (
+            <div className="e-level"><span className="ph" style={{ backgroundImage: `url(${L.foto})` }} />
+              <div><span>Level {L.n} · {L.name}</span><b>Menenun dengan {L.alat.toLowerCase()}</b></div>
+              <Link to="/mulai">Ubah</Link></div>); })()}
           <section className="e-hero">
             <div className="e-hero-text">
               <h1>Halo, {nama}!</h1>
@@ -50,7 +57,7 @@ export default function Belajar() {
           </section>
 
           <section className="e-sec">
-            <h2>Kainku</h2>
+            <h2>Sedang kamu pelajari</h2>
             {loading ? <p className="a-muted">Memuat…</p> : (
               <ul className="kain-grid">
                 {kainku.map((m) => {
@@ -62,7 +69,7 @@ export default function Belajar() {
                         <span className="kain-frame"><KainFoto m={m} />
                           <span className="kain-status">{status[m.id] === 'tuntas' && <Icon name="check" />}{{ tuntas: 'Tuntas', berjalan: 'Sedang dipelajari', berikut: 'Berikutnya', nanti: 'Belum mulai' }[status[m.id]]}</span></span>
                         <span className="kain-meta">
-                          <b>{m.fabricName || m.title}</b>
+                          <b>{TEKNIK.find((t) => t.module === m.id)?.title ?? m.title}</b>
                           <span>{m.weaver || m.tradition}</span>
                           <span className="e-progress"><span className="e-bar"><i style={{ width: `${(tahap / m.steps) * 100}%` }} /></span>
                             <span className="meta"><span>Tahap <b>{tahap}/{m.steps}</b></span><span>Dikuasai <b>{k}/{m.steps}</b></span></span></span>
@@ -74,29 +81,26 @@ export default function Belajar() {
                 <li>
                   <Link to="/modul" className="kain-card kain-add">
                     <span className="plus"><Icon name="plus" /></span>
-                    <b>Pilih kain baru</b>
-                    <span>{modules.length} kain di jalurmu</span>
+                    <b>Pilih teknik baru</b>
+                    <span>{TEKNIK.length} teknik di 4 level</span>
                   </Link>
                 </li>
               </ul>
             )}
           </section>
 
-          {jelajah.length > 0 && (
-            <section className="e-sec">
-              <h2>Jelajahi kain lain</h2>
-              <ul className="kain-grid">
-                {jelajah.map((m) => (
-                  <li key={m.id}>
-                    <Link to={`/belajar/${m.id}`} className={`kain-card ${kunci[m.id] ? 'terkunci' : status[m.id]}`}>
-                      <span className="kain-frame"><KainFoto m={m} />{kunci[m.id] && <span className="kain-status"><Icon name="lock" />Terkunci</span>}</span>
-                      <span className="kain-meta"><b>{m.fabricName || m.title}</b><span>{kunci[m.id] ? 'Selesaikan Modul Dasar dulu' : `${m.weaver || m.tradition} · ${m.steps} tahap`}</span></span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+          <section className="e-sec">
+            <h2>Teknik di level {lvl}</h2>
+            <ul className="kain-grid">
+              {TEKNIK.filter((t) => t.level === lvl).map((t) => {
+                const isi = (<>
+                  <span className="kain-frame"><span className="kain-photo" style={{ backgroundImage: `url("${t.foto}")` }} role="img" aria-label={t.title} />
+                    <span className="kain-status">{t.module ? 'Bisa dipraktikkan' : 'Segera hadir'}</span></span>
+                  <span className="kain-meta"><b>{t.title}</b><span>{t.desc}</span></span></>);
+                return <li key={t.id}>{t.module ? <Link to={`/belajar/${t.module}`} className="kain-card">{isi}</Link> : <div className="kain-card segera">{isi}</div>}</li>;
+              })}
+            </ul>
+          </section>
         </div>
 
         <aside className="e-rail">
