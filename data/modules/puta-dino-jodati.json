@@ -4,7 +4,7 @@
   "fabricName": "Puta Dino motif Jodati",
   "tradition": "Tenun Tidore",
   "weaver": "Rumah Tenun Puta Dino Kayangan",
-  "cover": null,
+  "cover": "/img/kain/puta-dino-jodati.jpg",
   "level": "pemula",
   "taskClass": 2,
   "wholeTask": "Selembar kain kecil dengan beberapa satuan motif Jodati yang rapi",
@@ -142,23 +142,27 @@
         "palette": {
           ".": {
             "name": "hitam (dasar)",
-            "color": "#232323"
+            "color": "#1f1d1b"
           },
           "K": {
             "name": "kuning",
-            "color": "#e0b21b"
+            "color": "#d9a81e"
           }
         },
         "rows": [
-          "....K....",
-          "...KKK...",
-          "..KKKKK..",
-          ".KKKKKKK.",
-          "KKKKKKKKK",
-          ".KKKKKKK.",
-          "..KKKKK..",
-          "...KKK...",
-          "....K...."
+          "......K......",
+          ".....K.K.....",
+          "....K.K.K....",
+          "...K.K.K.K...",
+          "..K.K...K.K..",
+          ".K.K.....K.K.",
+          "K.K...K...K.K",
+          ".K.K.....K.K.",
+          "..K.K...K.K..",
+          "...K.K.K.K...",
+          "....K.K.K....",
+          ".....K.K.....",
+          "......K......"
         ],
         "validated_by": null
       }
@@ -215,5 +219,6 @@
       "practice": [],
       "supportive": []
     }
-  ]
+  ],
+  "coverNote": "Ilustrasi render dari pola latihan, bukan foto kain asli."
 }

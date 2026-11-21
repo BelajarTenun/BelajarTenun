@@ -4,7 +4,7 @@
   "fabricName": "Puta Dino motif Barakati",
   "tradition": "Tenun Tidore",
   "weaver": "Rumah Tenun Puta Dino Kayangan",
-  "cover": null,
+  "cover": "/img/kain/puta-dino-barakati.jpg",
   "level": "lanjutan",
   "taskClass": 5,
   "wholeTask": "Selembar kain kecil dengan beberapa satuan motif Barakati yang rapi",
@@ -133,7 +133,43 @@
       "practice": [],
       "supportive": [
         "motif-barakati"
-      ]
+      ],
+      "pattern": {
+        "label": "Pola latihan mahkota atas-bawah (bukan motif Barakati asli)",
+        "authentic": false,
+        "technique": "pakan_tambahan",
+        "unit": "1 kolom = 2 helai lungsi",
+        "palette": {
+          ".": {
+            "name": "hitam (dasar)",
+            "color": "#1f1d1b"
+          },
+          "K": {
+            "name": "kuning",
+            "color": "#d9a81e"
+          },
+          "M": {
+            "name": "merah",
+            "color": "#9b2f22"
+          }
+        },
+        "rows": [
+          "...........",
+          ".K...K...K.",
+          ".KK.KKK.KK.",
+          ".KKKKKKKKK.",
+          ".KKKKKKKKK.",
+          "..MMMMMMM..",
+          "...........",
+          "..MMMMMMM..",
+          ".KKKKKKKKK.",
+          ".KKKKKKKKK.",
+          ".KK.KKK.KK.",
+          ".K...K...K.",
+          "..........."
+        ],
+        "validated_by": null
+      }
     },
     {
       "id": "ulangi-motif",
@@ -187,5 +223,6 @@
       "practice": [],
       "supportive": []
     }
-  ]
+  ],
+  "coverNote": "Ilustrasi render dari pola latihan, bukan foto kain asli."
 }
