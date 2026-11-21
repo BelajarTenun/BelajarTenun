@@ -314,7 +314,7 @@ export const Learn: React.FC = () => {
       {seg.mark === 'benar' && <svg width="1920" height="1080" style={{ position: 'absolute', inset: 0 }}><circle cx={560} cy={760} r={130} fill="none" stroke="#d4b866" strokeWidth={5} opacity={1 - ez(tl, 2.2, 3.2)} /><path d="M520 760 l30 30 l60 -70" fill="none" stroke="#d4b866" strokeWidth={10} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="160" strokeDashoffset={160 * (1 - ez(tl, 0.1, 0.6))} /></svg>}
       {seg.mark === 'istilah' && (
         <div style={{ position: 'absolute', left: 120, top: 150, display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {[['PAKAN', 'benang yang masuk mendatar'], ['Tradisi A', '[istilah 1]'], ['Tradisi B', '[istilah 2]'], ['Tradisi C', '[istilah 3]']].map(([k, v], j) => {
+          {[['PAKAN', 'benang yang masuk mendatar'], ['SEKOCI', 'teropong · torak'], ['PEDANG', 'belida'], ['SISIR', 'suri']].map(([k, v], j) => {
             const p = ez(tl, 0.4 + j * 0.9, 0.8 + j * 0.9, Easing.out(Easing.back(1.4)));
             return <div key={k} style={{ padding: '16px 22px', borderRadius: 20, ...glass(0.5), opacity: Math.min(1, p * 1.3), transform: `translateX(${(1 - p) * -50}px)`, fontFamily: FONT, color: INK }}><div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, color: 'rgba(20,28,58,0.55)' }}>{k}</div><div style={{ fontSize: j === 0 ? 30 : 36, fontWeight: 650 }}>{v}</div></div>;
           })}

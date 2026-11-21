@@ -181,7 +181,7 @@ const LABELS: [string, string, number, number, number][] = [
   ['speaker', 'Speaker', 4.65, -200, 110],
   ['baterai', 'Baterai', 5.1, 120, 130],
 ];
-const TERMS = ['lungsi', 'Tradisi A', 'Tradisi B', 'Tradisi C'];
+const TERMS = ['lungsi', 'lusi', 'warp'];
 const S04: React.FC = () => {
   const f = useCurrentFrame(), t = f / FPS;
   const gT = t - G0, gi = Math.max(0, Math.min(GA.length - 1, Math.round(gT * FPS)));
@@ -196,8 +196,8 @@ const S04: React.FC = () => {
   const iris = ez(t, G0 + 5.85, G0 + 6.5, Easing.inOut(Easing.cubic));
   const logoP = ez(t, 0.15, 1.0);
   const logoOut = 1 - ez(t, 1.35, 1.6);
-  const termI = t < 7.6 ? 0 : Math.min(3, 1 + Math.floor((t - 7.6) / 0.45));
-  const termP = sp(f, t < 7.6 ? 7.0 : 7.6 + (termI - 1) * 0.45, { damping: 14, stiffness: 240 });
+  const termI = t < 7.6 ? 0 : Math.min(2, 1 + Math.floor((t - 7.6) / 0.55));
+  const termP = sp(f, t < 7.6 ? 7.0 : 7.6 + (termI - 1) * 0.55, { damping: 14, stiffness: 240 });
   const phoneP = sp(f, 9.6, { damping: 18, stiffness: 120 });
   return (
     <AbsoluteFill style={{ background: '#000' }}>
@@ -249,7 +249,7 @@ const S04: React.FC = () => {
       {pov && t > 6.9 && t < 9.6 && (
         <div style={{ position: 'absolute', left: 140, top: 200, fontFamily: FONT, color: '#fff', opacity: ez(t, 6.9, 7.1) * (1 - ez(t, 9.4, 9.6)), textShadow: '0 2px 18px rgba(0,0,0,0.5)' }}>
           <div style={{ height: 2, width: 56, background: GOLD, marginBottom: 12 }} />
-          <div style={{ fontSize: 20, letterSpacing: 4, opacity: 0.8, fontWeight: 600 }}>BENANG TEGAK</div>
+          <div style={{ fontSize: 20, letterSpacing: 4, opacity: 0.8, fontWeight: 600 }}>BENANG TEGAK · {termI === 0 ? 'ISTILAH' : 'SEBUTAN LAIN'}</div>
           <div style={{ height: 96, overflow: 'hidden' }}>
             <div style={{ fontSize: 84, fontWeight: 800, letterSpacing: -2.5, transform: `translateY(${(1 - termP) * 70}px)`, opacity: termP, color: termI > 0 ? GOLD : '#fff' }}>{TERMS[termI]}</div>
           </div>
@@ -261,7 +261,7 @@ const S04: React.FC = () => {
           <div style={{ width: '100%', height: '100%', borderRadius: 44, background: CREAM, padding: 30, fontFamily: FONT, color: NAVY, boxSizing: 'border-box' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 20, fontWeight: 700 }}><Mark size={30} speaking={t > 10.1} /> Tutor</div>
             <div style={{ marginTop: 34, fontSize: 18, letterSpacing: 3, fontWeight: 700, opacity: 0.55 }}>TAHAP 1 / 5</div>
-            <div style={{ marginTop: 6, fontSize: 38, fontWeight: 800, letterSpacing: -1, lineHeight: 1.1 }}>Kenali lungsi</div>
+            <div style={{ marginTop: 6, fontSize: 38, fontWeight: 800, letterSpacing: -1, lineHeight: 1.1 }}>Mengenal alat tenun</div>
             <div style={{ display: 'flex', gap: 6, marginTop: 22 }}>{[0, 1, 2, 3, 4].map((i) => <div key={i} style={{ flex: 1, height: 6, borderRadius: 3, background: i === 0 ? GOLD : 'rgba(20,28,58,0.12)' }} />)}</div>
             <div style={{ marginTop: 30, fontSize: 22, lineHeight: 1.45, opacity: ez(t, 10.2, 10.5) }}>Benang yang tegak ini namanya <b style={{ color: '#b08f3a' }}>lungsi</b>.</div>
           </div>
@@ -270,7 +270,7 @@ const S04: React.FC = () => {
       <Captions words={W04} keys={['belajartenun', 'kacamata', 'bahasa', 'mencoba']} />
       <Sfx cues={[[0.2, 'impact', 0.7], [0.85, 'whoosh', 0.35], [G0 + 0.1, 'riser', 0.3], [G0 + 1.3, 'whoosh', 0.3],
         ...LABELS.map(([, , at]) => [G0 + at - 1.05, 'pop', 0.45] as Cue), [G0 + 4.5, 'whoosh', 0.45], [G0 + 5.85, 'impact', 0.5],
-        [7.6, 'tick', 0.5], [8.05, 'tick', 0.5], [8.5, 'tick', 0.5], [9.6, 'whoosh', 0.3], [10.0, 'ding', 0.4]]} />
+        [7.6, 'tick', 0.5], [8.15, 'tick', 0.5], [9.6, 'whoosh', 0.3], [10.0, 'ding', 0.4]]} />
     </AbsoluteFill>
   );
 };

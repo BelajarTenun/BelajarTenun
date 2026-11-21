@@ -145,7 +145,7 @@ const Alur: React.FC = () => {
         {/* kacamata 3D (still) + aliran Bluetooth */}
         {t > 10.2 && t < 14.6 && (
           <div style={{ position: 'absolute', left: 420, top: 560, width: 760, height: 430, transform: `translateY(${(1 - glassesIn) * 400}px)`, opacity: Math.min(1, glassesIn * 1.5) * (1 - ez(t, 14.2, 14.6)) }}>
-            <Img src={staticFile('3d/glasses-still.png')} style={{ position: 'absolute', left: -150, top: -80, width: 1920 * 0.55, height: 1080 * 0.55 }} />
+            <Img src={staticFile('3d/glasses-still.png')} style={{ position: 'absolute', left: -330, top: -80, width: 1920 * 0.55, height: 1080 * 0.55 }} />
           </div>
         )}
         {flow && (
@@ -184,25 +184,25 @@ const Alur: React.FC = () => {
             <div style={{ padding: 28, ...slideIn(6.0) }}>
               <div style={{ fontSize: 34, fontWeight: 800, letterSpacing: -1 }}>Belajar</div>
               <div style={{ marginTop: 18, padding: 20, borderRadius: 22, background: '#fff', display: 'flex', alignItems: 'center', gap: 16 }}>
-                <div style={{ fontSize: 46, fontWeight: 900, color: GOLDD }}>{Math.round(3 * ez(t, 6.3, 7.0))}</div>
+                <div style={{ fontSize: 46, fontWeight: 900, color: GOLDD }}>{Math.round(1 * ez(t, 6.3, 7.0))}</div>
                 <div><div style={{ fontSize: 18, fontWeight: 700 }}>hari berturut-turut berlatih</div>
-                  <div style={{ display: 'flex', gap: 5, marginTop: 8, alignItems: 'flex-end', height: 30 }}>{[0.3, 0.6, 0.2, 0.8, 1, 0.5, 0.9].map((h, i) => <div key={i} style={{ width: 16, height: 30 * h * ez(t, 6.3 + i * 0.06, 6.8 + i * 0.06), borderRadius: 4, background: i > 3 ? GOLD : 'rgba(20,28,58,0.15)' }} />)}</div></div>
+                  <div style={{ display: 'flex', gap: 5, marginTop: 8, alignItems: 'flex-end', height: 30 }}>{[0, 0, 0, 0, 0, 0, 1].map((h, i) => <div key={i} style={{ width: 16, height: 4 + 26 * h * ez(t, 6.3 + i * 0.06, 6.8 + i * 0.06), borderRadius: 4, background: h ? GOLD : 'rgba(20,28,58,0.15)' }} />)}</div></div>
               </div>
-              {[['Tidore dasar', 'Sedang dipelajari', 'Lanjutkan'], ['Tenun polos', 'Berikutnya', 'Mulai'], ['Motif sederhana', 'Berikutnya', '']].map(([n, s, b], i) => (
+              {[['Tenun Tidore – Modul Dasar', 'Sedang dipelajari', 'Lanjutkan'], ['Puta Dino motif Jodati', 'Berikutnya', 'Mulai'], ['Puta Dino motif Barakati', 'Berikutnya', '']].map(([n, s, b], i) => (
                 <div key={n} style={{ marginTop: 14, padding: 20, borderRadius: 22, background: '#fff', ...slideIn(6.3 + i * 0.15), outline: i === 0 && t > 7.9 ? `3px solid ${GOLD}` : 'none' }}>
                   <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, color: i === 0 ? GOLDD : 'rgba(20,28,58,0.45)' }}>{s.toUpperCase()}</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 }}><div style={{ fontSize: 24, fontWeight: 800 }}>{n}</div>{b && <div style={{ padding: '8px 16px', borderRadius: 20, background: i === 0 ? NAVY : 'rgba(20,28,58,0.08)', color: i === 0 ? '#fff' : NAVY, fontSize: 16, fontWeight: 700 }}>{b}</div>}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 }}><div style={{ fontSize: 21, fontWeight: 800 }}>{n}</div>{b && <div style={{ padding: '8px 16px', borderRadius: 20, background: i === 0 ? NAVY : 'rgba(20,28,58,0.08)', color: i === 0 ? '#fff' : NAVY, fontSize: 16, fontWeight: 700 }}>{b}</div>}</div>
                 </div>
               ))}
             </div>
           )}
           {screen === 'kenal' && (
             <div style={{ ...slideIn(8.4) }}>
-              <div style={{ height: 230, position: 'relative', overflow: 'hidden' }}><OffthreadVideo src={staticFile('ref/silungkang.mp4')} muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} /><div style={{ position: 'absolute', left: 16, bottom: 12, padding: '6px 12px', borderRadius: 12, background: 'rgba(20,28,58,0.6)', color: '#fff', fontSize: 14, fontWeight: 700 }}>Video pengenalan</div></div>
+              <div style={{ height: 230, position: 'relative', overflow: 'hidden' }}><OffthreadVideo src={staticFile('footage/7644-full.mp4')} startFrom={F(2)} muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} /><div style={{ position: 'absolute', left: 16, bottom: 12, padding: '6px 12px', borderRadius: 12, background: 'rgba(20,28,58,0.6)', color: '#fff', fontSize: 14, fontWeight: 700 }}>Video pengenalan</div></div>
               <div style={{ padding: 24 }}>
-                <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: -1 }}>Tidore dasar</div>
+                <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: -1 }}>Tenun Tidore – Modul Dasar</div>
                 <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, marginTop: 14, opacity: 0.5 }}>TAHAP LATIHAN</div>
-                {['Mengenal alat', 'Membuka mulut lungsi', 'Memasukkan pakan', 'Merapatkan pakan', 'Mengulang baris'].map((s, i) => <div key={s} style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 10, fontSize: 18, ...slideIn(8.6 + i * 0.08) }}><div style={{ width: 28, height: 28, borderRadius: 14, background: 'rgba(212,184,102,0.3)', fontSize: 14, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</div>{s}</div>)}
+                {['Mengenal alat tenun', 'Membuka celah (mulut) lungsi', 'Memasukkan benang pakan', 'Merapatkan pakan', 'Mengulang beberapa baris'].map((s, i) => <div key={s} style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 10, fontSize: 17, ...slideIn(8.6 + i * 0.08) }}><div style={{ width: 28, height: 28, borderRadius: 14, background: 'rgba(212,184,102,0.3)', fontSize: 14, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</div>{s}</div>)}
                 <div style={{ marginTop: 22, height: 60, borderRadius: 30, background: NAVY, color: '#fff', fontSize: 20, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Mulai latihan</div>
               </div>
             </div>
@@ -234,7 +234,7 @@ const Alur: React.FC = () => {
               <OffthreadVideo src={staticFile('footage/7647-full.mp4')} startFrom={F(9)} muted style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
               <div style={{ position: 'absolute', left: 16, right: 16, bottom: 16, padding: 20, borderRadius: 24, ...glassCard(0.85) }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 16, fontWeight: 700 }}><Mark size={26} speaking={t > 15} /> Tutor · Tahap 1/5</div>
-                <div style={{ fontSize: 26, fontWeight: 800, marginTop: 8 }}>Mengenal alat</div>
+                <div style={{ fontSize: 26, fontWeight: 800, marginTop: 8 }}>Mengenal alat tenun</div>
                 <div style={{ fontSize: 15, opacity: 0.7, marginTop: 8, lineHeight: 1.4 }}>Tutor memindahkan tahap sendiri. Bilang "sudah", "ulangi", atau tanyakan apa saja.</div>
                 <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>{['sudah', 'ulangi', 'tanya'].map((w, i) => <div key={w} style={{ padding: '8px 14px', borderRadius: 16, background: NAVY, color: '#fff', fontSize: 15, fontWeight: 700, ...slideIn(15.2 + i * 0.3) }}>“{w}”</div>)}</div>
               </div>
@@ -285,8 +285,8 @@ const S05: React.FC = () => {
             })}
           </div>
           <div style={{ position: 'absolute', left: 120, top: 110, padding: '18px 26px', borderRadius: 22, ...glassCard(0.85) }}>
-            <Kicker>ARSIP TERBUKA</Kicker>
-            <div style={{ fontFamily: FONT, fontSize: 64, fontWeight: 900, color: NAVY, letterSpacing: -2 }}>{Math.round(interpolate(t, [3.4, 6.6], [12, 1200], cl)).toLocaleString('id-ID')}+ <span style={{ fontSize: 30, fontWeight: 700 }}>video</span></div>
+            <Kicker>VIDEO & ARSIP TERBUKA</Kicker>
+            <div style={{ fontFamily: FONT, fontSize: 52, fontWeight: 900, color: NAVY, letterSpacing: -2 }}>Silungkang · NTT · Sumut · Lombok</div>
           </div>
         </AbsoluteFill>
       )}
@@ -323,11 +323,11 @@ const S06: React.FC = () => {
       </div>
       {/* panel istilah (sumber.html: "Istilah lokal (dugaan AI)") */}
       <div style={{ position: 'absolute', left: 1250, top: 90, width: 590, padding: 30, borderRadius: 28, ...glassCard(0.82), opacity: ez(t, 3.4, 3.7) * (1 - merge), transform: `translateX(${(1 - ez(t, 3.4, 3.8)) * 60}px)`, fontFamily: FONT, color: NAVY }}>
-        <Kicker>ISTILAH LOKAL (DUGAAN AI)</Kicker>
-        {[['lungsi', 0.92], ['pakan', 0.88], ['belida', 0.74], ['gedogan', 0.66]].map(([w, c], i) => (
-          <div key={w as string} style={{ marginTop: 18, opacity: ez(t, 3.6 + i * 0.15, 3.9 + i * 0.15) }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 28, fontWeight: 800 }}>{w}<span style={{ fontSize: 18, opacity: 0.55 }}>{Math.round((c as number) * 100)}%</span></div>
-            <div style={{ height: 8, borderRadius: 4, background: 'rgba(20,28,58,0.1)', marginTop: 8 }}><div style={{ height: '100%', width: `${(c as number) * 100 * ez(t, 3.7 + i * 0.15, 4.3 + i * 0.15)}%`, borderRadius: 4, background: GOLD }} /></div>
+        <Kicker>ISTILAH & SEBUTAN LAIN</Kicker>
+        {[['lungsi', 'lusi'], ['pedang', 'belida'], ['sekoci', 'teropong · torak'], ['sisir', 'suri']].map(([w, c], i) => (
+          <div key={w} style={{ marginTop: 18, paddingBottom: 14, borderBottom: '1px solid rgba(20,28,58,0.1)', opacity: ez(t, 3.6 + i * 0.15, 3.9 + i * 0.15), transform: `translateX(${(1 - ez(t, 3.6 + i * 0.15, 4.0 + i * 0.15)) * 30}px)` }}>
+            <div style={{ fontSize: 30, fontWeight: 800 }}>{w}</div>
+            <div style={{ fontSize: 20, color: GOLDD, fontWeight: 700, marginTop: 2 }}>juga disebut {c}</div>
           </div>
         ))}
       </div>
@@ -381,11 +381,11 @@ const S07: React.FC = () => {
                 <div style={{ padding: '10px 22px', borderRadius: 22, background: t > 8.2 ? GOLD : NAVY, color: t > 8.2 ? NAVY : '#fff', fontSize: 18, fontWeight: 700, transform: `scale(${t > 8.15 && t < 8.35 ? 0.95 : 1})` }}>{t > 8.3 ? 'Tersimpan ✓' : 'Simpan semua'}</div>
               </div>
               <div style={{ display: 'flex', gap: 14, marginTop: 20, fontSize: 18 }}>
-                <div style={{ padding: '8px 16px', borderRadius: 14, background: '#fff' }}>Modul · <b>Tidore dasar</b></div>
+                <div style={{ padding: '8px 16px', borderRadius: 14, background: '#fff' }}>Modul · <b>Tenun Tidore – Modul Dasar</b></div>
                 <div style={{ padding: '8px 16px', borderRadius: 14, background: status === 'Tervalidasi' ? 'rgba(212,184,102,0.35)' : '#fff', fontWeight: 700 }}>Status · {status} ▾</div>
               </div>
               <div style={{ fontSize: 15, fontWeight: 800, letterSpacing: 2, marginTop: 28, opacity: 0.5 }}>TAHAP</div>
-              {['Mengenal alat', 'Membuka mulut lungsi', 'Memasukkan pakan'].map((s, i) => (
+              {['Mengenal alat tenun', 'Membuka celah (mulut) lungsi', 'Memasukkan benang pakan'].map((s, i) => (
                 <div key={s} style={{ marginTop: 12, padding: '18px 22px', borderRadius: 18, background: '#fff', display: 'flex', gap: 16, alignItems: 'center', outline: i === 1 && t > 3.8 ? `3px solid ${GOLD}` : 'none', transform: `translateY(${(1 - sp(f, 2.8 + i * 0.12)) * 30}px)` }}>
                   <div style={{ width: 36, height: 36, borderRadius: 18, background: 'rgba(212,184,102,0.3)', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{i + 1}</div>
                   <div style={{ flex: 1 }}>
@@ -396,7 +396,7 @@ const S07: React.FC = () => {
                 </div>
               ))}
               <div style={{ marginTop: 22, padding: 18, borderRadius: 18, background: 'rgba(20,28,58,0.04)', fontSize: 17, opacity: ez(t, 7.4, 7.7) }}>
-                <b>Riwayat perubahan modul</b><div style={{ marginTop: 8, opacity: 0.75 }}>Hari ini · Tahap 2 dikoreksi & divalidasi oleh penenun mitra</div>
+                <b>Riwayat perubahan modul</b><div style={{ marginTop: 8, opacity: 0.75 }}>Tahap 2 dikoreksi penenun sebelum diajarkan</div>
               </div>
             </div>
             {/* cap emas */}
@@ -446,7 +446,7 @@ const Mitra: React.FC = () => {
           </div>
           <div style={{ position: 'absolute', top: 760, textAlign: 'center', fontFamily: FONT, color: NAVY }}>
             <div style={{ fontSize: 44, fontWeight: 800, letterSpacing: -1, opacity: ez(t, 3.8, 4.1) }}>UKM Puta Dino Kayangan · Soasio, Tidore</div>
-            <div style={{ fontSize: 26, marginTop: 14, opacity: ez(t, 4.4, 4.7) * 0.75 }}>Puta dino, kain warisan Kesultanan Tidore · sempat punah <b style={{ color: GOLDD }}>±{Math.round(100 * ez(t, 4.4, 5.2))} tahun</b> · ditenun kembali sejak <b style={{ color: GOLDD }}>2018</b></div>
+            <div style={{ fontSize: 26, marginTop: 14, opacity: ez(t, 4.4, 4.7) * 0.75 }}>Puta dino, kain warisan Kesultanan Tidore · sempat punah <b style={{ color: GOLDD }}>±{Math.round(100 * ez(t, 4.4, 5.2))} tahun</b> · ditenun kembali sejak <b style={{ color: GOLDD }}>2018</b> oleh Anitawati Gathmir</div>
           </div>
         </AbsoluteFill>
       )}
@@ -454,15 +454,15 @@ const Mitra: React.FC = () => {
         <AbsoluteFill style={{ opacity: ez(t, 6.0, 6.3) * (1 - ez(t, 8.6, 8.9)) }}>
           <div style={{ position: 'absolute', left: 150, top: 330, width: 560, fontFamily: FONT, color: NAVY }}>
             <div style={{ fontSize: 30, fontWeight: 800, color: GOLDD }}>KERJA SAMA 1</div>
-            <div style={{ fontSize: 76, fontWeight: 800, letterSpacing: -3, lineHeight: 1.02, marginTop: 8 }}>Penenun memvalidasi materi</div>
+            <div style={{ fontSize: 76, fontWeight: 800, letterSpacing: -3, lineHeight: 1.02, marginTop: 8 }}>Validasi materi bersama penenun</div>
           </div>
-          {['Mengenal alat', 'Membuka mulut lungsi', 'Memasukkan pakan'].map((s, i) => {
+          {['Puta Dino motif Jodati', 'Puta Dino motif Barakati', 'Puta Dino motif Marasante'].map((s, i) => {
             const p = sp(f, 6.2 + i * 0.15);
             const st = sp(f, 6.9 + i * 0.45, { damping: 9, stiffness: 280 });
             return (
               <div key={s} style={{ position: 'absolute', left: 860, top: 230 + i * 200, width: 860, padding: '28px 32px', borderRadius: 26, background: '#fff', boxShadow: '0 24px 60px rgba(20,28,58,0.12)', fontFamily: FONT, color: NAVY, transform: `translateX(${(1 - p) * 200}px)`, opacity: p, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div><div style={{ fontSize: 16, fontWeight: 800, letterSpacing: 2, opacity: 0.5 }}>TIDORE DASAR · TAHAP {i + 1}</div><div style={{ fontSize: 34, fontWeight: 800, marginTop: 6 }}>{s}</div></div>
-                {t > 6.9 + i * 0.45 && <div style={{ padding: '10px 16px', borderRadius: 14, border: `3px solid ${GOLD}`, color: GOLDD, fontSize: 16, fontWeight: 900, letterSpacing: 1, transform: `rotate(-6deg) scale(${2 - st})`, opacity: Math.min(1, st * 1.6), textAlign: 'center' }}>✓ DIVALIDASI<br />PENENUN PUTA DINO KAYANGAN</div>}
+                <div><div style={{ fontSize: 16, fontWeight: 800, letterSpacing: 2, opacity: 0.5 }}>MODUL · 6 TAHAP</div><div style={{ fontSize: 34, fontWeight: 800, marginTop: 6 }}>{s}</div></div>
+                {t > 6.9 + i * 0.45 && <div style={{ padding: '10px 16px', borderRadius: 14, border: `3px solid ${GOLD}`, color: GOLDD, fontSize: 16, fontWeight: 900, letterSpacing: 1, transform: `rotate(-6deg) scale(${2 - st})`, opacity: Math.min(1, st * 1.6), textAlign: 'center' }}>DIPERIKSA BERSAMA<br />PENENUN PUTA DINO KAYANGAN</div>}
               </div>
             );
           })}
@@ -478,19 +478,25 @@ const Mitra: React.FC = () => {
             const k = io(t, 9.4 + i * 0.25, 10.3 + i * 0.25);
             return (
               <div key={n} style={{ position: 'absolute', left: 150 + i * 560, top: 400, width: 500, height: 430, borderRadius: 30, overflow: 'hidden', background: '#fff', boxShadow: '0 24px 60px rgba(20,28,58,0.14)', transform: `rotate(${(1 - k) * (i - 1) * 8}deg) translateY(${(1 - k) * 60}px)` }}>
-                <div style={{ height: 250, position: 'relative', overflow: 'hidden', filter: `sepia(${1 - k}) grayscale(${(1 - k) * 0.6})` }}>
-                  <OffthreadVideo src={staticFile(i === 1 ? 'ref/silungkang2.mp4' : 'ref/silungkang.mp4')} startFrom={F(5 + i * 6)} muted style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <div style={{ position: 'absolute', left: 14, top: 14, padding: '6px 12px', borderRadius: 10, background: 'rgba(245,239,226,0.92)', fontFamily: FONT, fontSize: 15, fontWeight: 800, color: NAVY }}>{k < 0.5 ? 'ARSIP' : 'PELAJARAN'}</div>
+                <div style={{ height: 200, position: 'relative', background: k < 0.5 ? '#efe6d3' : NAVY, transition: 'none' }}>
+                  {k < 0.5 ? (
+                    <div style={{ padding: 26, fontFamily: FONT, color: NAVY }}>
+                      <div style={{ fontSize: 15, fontWeight: 800, letterSpacing: 2, opacity: 0.55 }}>ARSIP</div>
+                      {[0, 1, 2, 3].map((j) => <div key={j} style={{ height: 10, borderRadius: 5, background: 'rgba(20,28,58,0.15)', marginTop: 16, width: `${90 - j * 15}%` }} />)}
+                    </div>
+                  ) : (
+                    <svg width={500} height={200} viewBox="0 0 500 200">{Array.from({ length: 10 }, (_, c) => Array.from({ length: 4 }, (_, r) => { const d = Math.abs(((c * 50 + 25) % 100) - 50) + Math.abs(((r * 50 + 25) % 100) - 50); return <rect key={c + '-' + r} x={c * 50 + 10} y={r * 50 + 10} width={30} height={30} transform={`rotate(45 ${c * 50 + 25} ${r * 50 + 25})`} fill={d < 30 ? GOLD : 'rgba(245,239,226,0.2)'} />; }))}</svg>
+                  )}
                 </div>
                 <div style={{ padding: 26, fontFamily: FONT, color: NAVY, opacity: ez(k, 0.4, 1) }}>
-                  <div style={{ fontSize: 15, fontWeight: 800, letterSpacing: 2, opacity: 0.5 }}>ORNAMEN PUTA DINO</div>
+                  <div style={{ fontSize: 15, fontWeight: 800, letterSpacing: 2, opacity: 0.5 }}>MODUL · ORNAMEN PUTA DINO</div>
                   <div style={{ fontSize: 44, fontWeight: 800, letterSpacing: -1, marginTop: 4 }}>{n}</div>
-                  <div style={{ fontSize: 22, color: GOLDD, fontWeight: 700 }}>{m}</div>
+                  <div style={{ fontSize: 22, color: GOLDD, fontWeight: 700 }}>makna: {m}</div>
                 </div>
               </div>
             );
           })}
-          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 90, textAlign: 'center', fontFamily: FONT, fontSize: 34, fontWeight: 800, color: NAVY, opacity: ez(t, 11.0, 11.4) }}>Divalidasi penenun. <span style={{ color: GOLDD }}>Dari arsip mitra.</span></div>
+          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 90, textAlign: 'center', fontFamily: FONT, fontSize: 34, fontWeight: 800, color: NAVY, opacity: ez(t, 11.0, 11.4) }}>Bersama penenun. <span style={{ color: GOLDD }}>Dari arsip mitra.</span></div>
         </AbsoluteFill>
       )}
       <Sfx cues={[[0.4, 'whoosh', 0.45], [1.7, 'impact', 0.5], [2.3, 'whoosh', 0.3], [3.7, 'snap', 0.5], [3.8, 'ding', 0.45], [4.4, 'tick', 0.3], [6.0, 'whoosh', 0.35], ...[0, 1, 2].map((i) => [6.9 + i * 0.45, 'impact', 0.4] as Cue), [8.9, 'whoosh', 0.35], ...[0, 1, 2].map((i) => [9.6 + i * 0.25, 'pop', 0.4] as Cue), [11.0, 'ding', 0.35]]} />
@@ -502,7 +508,6 @@ const Mitra: React.FC = () => {
 // 15 · "Penenun tidak tergantikan… akses dari mana saja" Andrew + jaringan
 // ════════════════════════════════════════════════════════════════════════════
 const NET: P2[] = [[1500, 300], [1700, 420], [1760, 610], [1640, 800], [1420, 880], [1230, 760], [1180, 520], [1300, 330], [1600, 560], [1390, 620]];
-const CITIES = ['Jakarta', 'Medan', 'Makassar', 'Bandung', 'Surabaya', 'Kupang', 'Ambon', 'Denpasar', 'Mataram', 'Padang'];
 const S15: React.FC = () => {
   const { f, t } = useT();
   const words = W([['Penenun', 0.43], ['tidak', 1.19], ['tergantikan.', 1.87], ['Dengan', 2.89], ['BelajarTenun,', 3.33], ['akses', 4.51], ['ke', 4.87], ['mereka', 4.99], ['terbuka', 5.29], ['untuk', 6.17], ['lebih', 6.35], ['banyak', 6.67], ['murid,', 7.03], ['dari', 7.55], ['mana', 7.95], ['saja.', 8.11]], 0.2);
@@ -513,7 +518,7 @@ const S15: React.FC = () => {
       <Andrew src="footage/7637a-full.mp4" from={0.2} slide={slide} push={0.06 * io(t, 0, 2.5)} />
       <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0, opacity: slide }}>
         {NET.map(([x, y], i) => { const a = 4.4 + i * 0.12; const k = ez(t, a, a + 0.4); return <line key={i} x1={C[0]} y1={C[1]} x2={C[0] + (x - C[0]) * k} y2={C[1] + (y - C[1]) * k} stroke={GOLD} strokeWidth={3} opacity={0.9} />; })}
-        {NET.map(([x, y], i) => { const s = sp(f, 4.7 + i * 0.12, { damping: 10, stiffness: 240 }); return t > 4.7 + i * 0.12 && <g key={'d' + i}><circle cx={x} cy={y} r={14 * s} fill="#fff" />{t > 7.4 && <text x={x} y={y - 24} textAnchor="middle" fontFamily={FONT} fontSize={20} fontWeight={700} fill="#fff" opacity={ez(t, 7.4 + i * 0.04, 7.7 + i * 0.04)}>{CITIES[i]}</text>}</g>; })}
+        {NET.map(([x, y], i) => { const s = sp(f, 4.7 + i * 0.12, { damping: 10, stiffness: 240 }); return t > 4.7 + i * 0.12 && <g key={'d' + i}><circle cx={x} cy={y} r={14 * s} fill="#fff" /></g>; })}
         <circle cx={C[0]} cy={C[1]} r={30 * sp(f, 3.3, { damping: 10, stiffness: 200 })} fill={GOLD} stroke="#fff" strokeWidth={5} />
         <text x={C[0]} y={C[1] + 66} textAnchor="middle" fontFamily={FONT} fontSize={24} fontWeight={800} fill="#fff" opacity={ez(t, 3.5, 3.8)}>penenun</text>
       </svg>
@@ -535,11 +540,11 @@ const S16: React.FC = () => {
       <Phone x={1230} y={120} w={420} h={840} style={{ transform: `translateY(${(1 - pin) * 900}px) rotate(${(1 - pin) * 8}deg)` }}>
         <div style={{ padding: 30 }}>
           <Kicker>SESI SELESAI</Kicker>
-          <div style={{ display: 'flex', gap: 10, marginTop: 18 }}>{[['Tahap dicapai', 4, ''], ['Durasi', 12, 'mnt'], ['Pertanyaan', 3, '']].map(([l, v, u]) => <div key={l as string} style={{ flex: 1, padding: 12, borderRadius: 16, background: '#fff' }}><div style={{ fontSize: 30, fontWeight: 900 }}>{Math.round((v as number) * ez(t, 0.9, 1.8))}<span style={{ fontSize: 14 }}>{u}</span></div><div style={{ fontSize: 12, opacity: 0.6 }}>{l}</div></div>)}</div>
+          <div style={{ display: 'flex', gap: 10, marginTop: 18 }}>{[['Tahap dicapai', 4, '/5'], ['Pertanyaan', 4, ''], ['Dicatat', 1, '']].map(([l, v, u]) => <div key={l as string} style={{ flex: 1, padding: 12, borderRadius: 16, background: '#fff' }}><div style={{ fontSize: 30, fontWeight: 900 }}>{Math.round((v as number) * ez(t, 0.9, 1.8))}<span style={{ fontSize: 14 }}>{u}</span></div><div style={{ fontSize: 12, opacity: 0.6 }}>{l}</div></div>)}</div>
           <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, marginTop: 26, opacity: 0.5 }}>SUDAH BISA</div>
-          {['Mengenal alat', 'Membuka lungsi', 'Memasukkan pakan'].map((s, i) => <div key={s} style={{ marginTop: 10, padding: 14, borderRadius: 14, background: '#fff', display: 'flex', gap: 10, alignItems: 'center', fontSize: 18, fontWeight: 700, transform: `translateX(${(1 - sp(f, 2.9 + i * 0.18)) * 200}px)` }}><span style={{ color: GOLDD, fontSize: 22 }}>✓</span>{s}</div>)}
+          {['Mengenal alat tenun', 'Membuka celah lungsi', 'Memasukkan benang pakan'].map((s, i) => <div key={s} style={{ marginTop: 10, padding: 14, borderRadius: 14, background: '#fff', display: 'flex', gap: 10, alignItems: 'center', fontSize: 18, fontWeight: 700, transform: `translateX(${(1 - sp(f, 2.9 + i * 0.18)) * 200}px)` }}><span style={{ color: GOLDD, fontSize: 22 }}>✓</span>{s}</div>)}
           <div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, marginTop: 22, opacity: 0.5 }}>MEMBINGUNGKAN</div>
-          <div style={{ marginTop: 10, padding: 14, borderRadius: 14, background: 'rgba(212,184,102,0.3)', display: 'flex', gap: 10, alignItems: 'center', fontSize: 18, fontWeight: 700, transform: `translateX(${(1 - sp(f, 4.6)) * 200}px)` }}><span style={{ fontSize: 22 }}>?</span>Merapatkan pakan</div>
+          <div style={{ marginTop: 10, padding: 14, borderRadius: 14, background: 'rgba(212,184,102,0.3)', display: 'flex', gap: 10, alignItems: 'center', fontSize: 18, fontWeight: 700, transform: `translateX(${(1 - sp(f, 4.6)) * 200}px)` }}><span style={{ fontSize: 22 }}>?</span>Kalau benang putus</div>
         </div>
       </Phone>
       <Captions words={words} keys={['catatan', 'bisa', 'membingungkan']} />
@@ -550,34 +555,36 @@ const S16: React.FC = () => {
 
 // 17 · progres.html: grafik per tahap, tahap tersulit diperbaiki
 const S17: React.FC = () => {
-  const { f, t } = useT();
+  const { t } = useT();
   const words = W([['Dari', 0.0], ['situ', 0.12], ['kami', 0.42], ['bisa', 0.7], ['mengukur', 0.88], ['efektivitasnya', 1.26], ['dan', 2.14], ['memperbaiki', 2.46], ['tahap', 2.88], ['yang', 3.36], ['paling', 3.52], ['sulit.', 3.76]]);
-  const vals = [0.86, 0.74, 0.62, 0.38, 0.7];
-  const fix = sp(f, 3.5, { damping: 12, stiffness: 140 });
+  // Hasil `npm run eval:qa` (data/eval/qa.json, 70 soal pemula): tingkat retrieval benar per jenis soal
+  const rows: [string, number, number][] = [['Parafrase', 0.774, 31], ['Di luar cakupan', 0.75, 12], ['Butuh validasi', 0.933, 15], ['Jebakan budaya', 0.083, 12]];
   return (
     <AbsoluteFill style={{ background: CREAM }}>
-      <Laptop x={300} y={100} w={1320} h={820} url="belajartenun.com/progres.html" style={{ transform: `scale(${0.96 + 0.04 * ez(t, 0, 0.5)})` }}>
+      <Laptop x={300} y={100} w={1320} h={820} url="belajartenun.com · npm run eval:qa" style={{ transform: `scale(${0.96 + 0.04 * ez(t, 0, 0.5)})` }}>
         <div style={{ padding: 36 }}>
-          <div style={{ fontSize: 34, fontWeight: 800 }}>Progres Belajar</div>
-          <div style={{ fontSize: 16, fontWeight: 800, letterSpacing: 2, marginTop: 20, opacity: 0.5 }}>BERHASIL PER TAHAP</div>
-          <div style={{ display: 'flex', gap: 34, alignItems: 'flex-end', height: 420, marginTop: 20 }}>
-            {vals.map((v, i) => {
-              const h = (i === 3 ? v + (0.79 - v) * fix : v) * ez(t, 0.3 + i * 0.1, 1.0 + i * 0.1);
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <div style={{ fontSize: 34, fontWeight: 800 }}>Evaluasi tanya jawab</div>
+            <div style={{ fontSize: 18, opacity: 0.6 }}>70 soal pemula · Recall@3 <b>82,6%</b></div>
+          </div>
+          <div style={{ display: 'flex', gap: 40, alignItems: 'flex-end', height: 440, marginTop: 40 }}>
+            {rows.map(([n, v, c], i) => {
+              const h = v * ez(t, 0.3 + i * 0.12, 1.0 + i * 0.12);
               const hard = i === 3 && t > 2.4;
               return (
-                <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-                  <div style={{ fontSize: 22, fontWeight: 800, color: hard ? GOLDD : NAVY }}>{Math.round(h * 100)}%</div>
-                  <div style={{ width: '100%', height: 400 * h, borderRadius: 14, background: hard ? GOLD : NAVY, outline: hard && t < 3.5 ? `4px solid ${GOLD}` : 'none', outlineOffset: 6 }} />
-                  <div style={{ fontSize: 16, fontWeight: 700, opacity: 0.7, textAlign: 'center' }}>{STAGE5[i]}</div>
+                <div key={n} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+                  <div style={{ fontSize: 26, fontWeight: 800, color: hard ? GOLDD : NAVY }}>{(h * 100).toFixed(1).replace('.', ',')}%</div>
+                  <div style={{ width: '100%', height: Math.max(8, 400 * h), borderRadius: 14, background: hard ? GOLD : NAVY, outline: hard ? `4px solid ${GOLD}` : 'none', outlineOffset: 6 }} />
+                  <div style={{ fontSize: 18, fontWeight: 700, opacity: 0.75, textAlign: 'center' }}>{n}<div style={{ fontSize: 14, opacity: 0.6 }}>{c} soal</div></div>
                 </div>
               );
             })}
           </div>
-          {t > 2.4 && <div style={{ position: 'absolute', right: 40, top: 40, padding: '14px 20px', borderRadius: 16, background: 'rgba(212,184,102,0.3)', fontSize: 18, fontWeight: 800, opacity: ez(t, 2.4, 2.7) }}>{t > 3.5 ? '✓ Tahap direvisi bersama penenun' : 'Tahap tersulit → bahan revisi kurikulum'}</div>}
+          {t > 2.4 && <div style={{ position: 'absolute', right: 40, top: 110, padding: '14px 20px', borderRadius: 16, background: 'rgba(212,184,102,0.3)', fontSize: 18, fontWeight: 800, opacity: ez(t, 2.4, 2.7) }}>Paling sulit → diperbaiki berikutnya</div>}
         </div>
       </Laptop>
       <Captions words={words} keys={['mengukur', 'efektivitas', 'memperbaiki', 'sulit']} dark={() => true} />
-      <Sfx cues={[...vals.map((_, i) => [0.3 + i * 0.1, 'tick', 0.35] as Cue), [2.45, 'pop', 0.45], [3.5, 'ding', 0.45]]} />
+      <Sfx cues={[...rows.map((_, i) => [0.3 + i * 0.12, 'tick', 0.35] as Cue), [2.45, 'pop', 0.45]]} />
     </AbsoluteFill>
   );
 };
@@ -593,9 +600,9 @@ const S18: React.FC = () => {
       {!weave && <Andrew src="footage/7639-full.mp4" from={0} slide={slide} />}
       {!weave && (
         <div style={{ position: 'absolute', left: 1180, top: 190, width: 600, fontFamily: FONT }}>
-          {['Tidore dasar', 'Tenun polos', 'Motif sederhana', 'Istilah lungsi & pakan'].map((n, i) => {
+          {['Tenun Tidore – Modul Dasar', 'Puta Dino motif Jodati', 'Puta Dino motif Barakati', 'Tanya jawab · 22 entri'].map((n, i) => {
             const p = sp(f, 1.3 + i * 0.25, { damping: 16, stiffness: 150 });
-            return <div key={n} style={{ marginTop: 14, padding: '20px 24px', borderRadius: 20, ...glassCard(0.85), color: NAVY, display: 'flex', justifyContent: 'space-between', alignItems: 'center', transform: `translateX(${(1 - p) * 300}px)`, opacity: p }}><div><div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, color: GOLDD }}>✓ TERVALIDASI</div><div style={{ fontSize: 26, fontWeight: 800 }}>{n}</div></div><div style={{ fontSize: 26 }}>⤓</div></div>;
+            return <div key={n} style={{ marginTop: 14, padding: '20px 24px', borderRadius: 20, ...glassCard(0.85), color: NAVY, display: 'flex', justifyContent: 'space-between', alignItems: 'center', transform: `translateX(${(1 - p) * 300}px)`, opacity: p }}><div><div style={{ fontSize: 14, fontWeight: 800, letterSpacing: 2, color: GOLDD }}>SETELAH DIVALIDASI</div><div style={{ fontSize: 26, fontWeight: 800 }}>{n}</div></div><div style={{ fontSize: 26 }}>⤓</div></div>;
           })}
           <div style={{ marginTop: 26, padding: '16px 24px', borderRadius: 30, background: GOLD, color: NAVY, fontSize: 24, fontWeight: 800, textAlign: 'center', transform: `scale(${sp(f, 3.2, { damping: 10, stiffness: 220 })})` }}>Arsip tenun terbuka · unduh bebas</div>
         </div>
@@ -632,7 +639,7 @@ const S19: React.FC = () => {
           </div>
           {/* kanan: kelas tatap muka */}
           <div style={{ position: 'absolute', left: 1030 - merge * 500, top: 200, width: 780, height: 520, borderRadius: 30, background: '#fff', boxShadow: '0 30px 80px rgba(20,28,58,0.14)', opacity: right * (1 - merge), transform: `scale(${1 - merge * 0.4}) translateY(${(1 - right) * 40}px)`, fontFamily: FONT, color: NAVY, padding: 34, boxSizing: 'border-box' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><div style={{ fontSize: 30, fontWeight: 800 }}>Kelas tatap muka</div><div style={{ fontSize: 22, fontWeight: 700, opacity: 0.6 }}>📍 1 lokasi · Sab 09.00</div></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}><div style={{ fontSize: 30, fontWeight: 800 }}>Kelas tatap muka</div><div style={{ fontSize: 22, fontWeight: 700, opacity: 0.6 }}>satu tempat · jadwal tetap</div></div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(8, 1fr)', gap: 16, marginTop: 36 }}>{Array.from({ length: 32 }, (_, i) => <div key={i} style={{ height: 44, borderRadius: 12, background: t > 5.0 + i * 0.02 ? NAVY : 'rgba(20,28,58,0.1)' }} />)}</div>
             {t > 5.8 && <div style={{ marginTop: 30, fontSize: 22, fontWeight: 800, color: GOLDD, opacity: ez(t, 5.8, 6.1) }}>Penuh · terbatas tempat & waktu</div>}
           </div>
@@ -689,15 +696,19 @@ const S20: React.FC = () => {
           </div>
         );
       })}
-      <div style={{ position: 'absolute', left: 980, top: 200, width: 820, height: 680, borderRadius: 36, ...glassCard(0.9), fontFamily: FONT, color: NAVY, padding: 44, boxSizing: 'border-box' }}>
+      <div style={{ position: 'absolute', left: 980, top: 180, width: 820, height: 720, borderRadius: 36, ...glassCard(0.9), fontFamily: FONT, color: NAVY, padding: 44, boxSizing: 'border-box' }}>
         <Kicker>UJI DETEKSI TAHAP</Kicker>
-        <div style={{ fontSize: 190, fontWeight: 900, letterSpacing: -8, lineHeight: 1, marginTop: 20 }}>{pct}<span style={{ fontSize: 90, color: GOLDD }}>%</span></div>
-        <div style={{ fontSize: 26, fontWeight: 700, opacity: 0.7 }}>tahap terdeteksi benar</div>
-        <div style={{ display: 'flex', gap: 14, alignItems: 'flex-end', height: 150, marginTop: 30 }}>{[0.92, 0.88, 0.81, 0.79, 0.95].map((v, i) => <div key={i} style={{ flex: 1, height: 150 * v * ez(t, 4.2 + i * 0.1, 4.9 + i * 0.1), borderRadius: 10, background: i % 2 ? NAVY : GOLD }} />)}</div>
-        <div style={{ position: 'absolute', right: 30, top: 30, padding: '8px 14px', borderRadius: 12, background: 'rgba(20,28,58,0.08)', fontSize: 15, fontWeight: 700 }}>Angka ilustrasi (mockup)</div>
+        <div style={{ fontSize: 26, marginTop: 14, lineHeight: 1.45, opacity: ez(t, 0.4, 0.8) }}>Setiap video diberi <b>label waktu selesai tiap tahap oleh penenun</b>, lalu dibandingkan dengan tahap yang dideteksi AI.</div>
+        <div style={{ fontSize: 16, fontWeight: 800, letterSpacing: 2, marginTop: 34, opacity: 0.5 }}>GERBANG RILIS</div>
+        {[['Tahap tepat waktu', '≥ 70%'], ['Maju terlalu cepat', '≤ 5%']].map(([a, v], i) => (
+          <div key={a} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16, padding: '20px 24px', borderRadius: 20, background: '#fff', transform: `translateX(${(1 - sp(f, 2.4 + i * 0.4)) * 80}px)`, opacity: Math.min(1, sp(f, 2.4 + i * 0.4) * 1.3) }}>
+            <div style={{ fontSize: 28, fontWeight: 800 }}>{a}</div><div style={{ fontSize: 48, fontWeight: 900, color: GOLDD }}>{v}</div>
+          </div>
+        ))}
+        <div style={{ position: 'absolute', left: 44, right: 44, bottom: 40, fontSize: 18, opacity: 0.6 }}>Uji berjalan dengan rekaman berlabel dari berbagai tradisi.</div>
       </div>
       <Captions words={words} keys={['menguji', 'deteksi', 'berlabel', 'tradisi']} dark={() => true} />
-      <Sfx cues={[[0.0, 'whoosh', 0.3], ...Array.from({ length: 16 }, (_, i) => [3.6 + i * 0.1, 'tick', 0.15] as Cue), [5.2, 'impact', 0.5]]} />
+      <Sfx cues={[[0.0, 'whoosh', 0.3], [2.4, 'pop', 0.4], [2.8, 'pop', 0.4]]} />
     </AbsoluteFill>
   );
 };
