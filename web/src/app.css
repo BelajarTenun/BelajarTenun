@@ -729,8 +729,12 @@ html, body { background: var(--paper); color: var(--s800); font: 14px/1.5 var(--
 
 /* Bab sejarah interaktif: kapal berlayar kanan → kiri saat bab terbuka */
 .kc-kapal { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-.kc-kapal-sea { position: absolute; left: 0; right: 0; bottom: 18%; width: 100%; height: 40px; }
-.kc-kapal-ship { position: absolute; bottom: calc(18% + 14px); width: 46%; left: 110%; }
+.kc-kapal-sea { position: absolute; left: 0; right: 0; top: 30%; width: 100%; height: 40px; }
+.kc-kapal-ship { position: absolute; top: calc(30% - 96px); width: 52%; left: 110%; }
+.kc-ch.scene { min-height: 100vh; }
+.kc-ch.scene .kc-band { height: 100vh; }
+.kc-ch.scene .kc-card { top: auto; bottom: 3%; transform: translateY(20px); }
+.kc-ch.scene.in .kc-card { transform: none; }
 .kc-ch.in .kc-kapal-ship { animation: kc-sail 6s cubic-bezier(.3,.1,.3,1) .6s forwards, kc-bob 2.4s ease-in-out infinite; }
 @keyframes kc-sail { from { left: 110%; } to { left: 8%; } }
 @keyframes kc-bob { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-6px) rotate(1.5deg); } }

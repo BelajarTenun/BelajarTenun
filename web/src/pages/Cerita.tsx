@@ -56,7 +56,7 @@ export default function Cerita() {
 
       <main className="kc-cloth">
         {st.chapters.map((c, i) => (
-          <section key={c.id} data-ch={c.id} className={`kc-ch${seen.has(c.id) ? ' in' : ''}${i % 2 ? ' alt' : ''}`}>
+          <section key={c.id} data-ch={c.id} className={`kc-ch${seen.has(c.id) ? ' in' : ''}${i % 2 ? ' alt' : ''}${c.scene ? ' scene' : ''}`}>
             <div className="kc-band" aria-hidden="true"><Band kind={c.band} />{c.scene === 'kapal' && <Kapal />}</div>
             <article className="kc-card">
               <span className="k">{c.kicker}</span>
