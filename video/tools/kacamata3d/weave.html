@@ -13,7 +13,7 @@ const W = 1920, H = 1080;
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha, preserveDrawingBuffer: true });
 renderer.setSize(W, H); renderer.setPixelRatio(1);
 renderer.toneMapping = THREE.NeutralToneMapping; renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.VSMShadowMap;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 if (!alpha) scene.background = new THREE.Color('#f5efe2'); else renderer.setClearColor(0x000000, 0);
@@ -152,7 +152,7 @@ function weaver(opts = {}) {
 
 // ── Lampu & lantai ───────────────────────────────────────────────────────────
 const key = new THREE.DirectionalLight('#fff4e2', 2.2); key.position.set(-3, 6, 4); key.castShadow = true;
-key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 14; key.shadow.blurSamples = 20; key.shadow.bias = -0.0005;
+key.shadow.mapSize.set(1024, 1024); key.shadow.bias = -0.0005;
 Object.assign(key.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 0.5, far: 30 }); scene.add(key);
 const rim = new THREE.DirectionalLight('#ffe0a0', 1.6); rim.position.set(4, 3, -5); scene.add(rim);
 scene.add(new THREE.HemisphereLight('#ffffff', '#e6dccb', 0.6));

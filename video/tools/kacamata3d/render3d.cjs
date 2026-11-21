@@ -9,7 +9,7 @@ const srv = http.createServer((q, r) => { const p = path.join(dir, decodeURIComp
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   const pg = await b.newPage({ viewport: { width: 1920, height: 1080 } });
   pg.on('pageerror', (e) => console.log('err:', e.message));
-  const ts = stills && stills !== '-' ? stills.split(',').map(Number) : Array.from({ length: Math.round(+secs * 30) }, (_, i) => i / 30);
+  const ts = stills && stills !== '-' ? stills.split(',').map(Number) : Array.from({ length: Math.round(+secs * (+process.env.FPS3D || 30)) }, (_, i) => i / (+process.env.FPS3D || 30));
   const anchors = [];
   for (let i = 0; i < ts.length; i++) {
     await pg.goto(`http://localhost:${port}/${page}?shot=${shot}&t=${ts[i].toFixed(4)}${extra}`);
