@@ -122,5 +122,7 @@
   "taskClass": 1,
   "fabricName": "Puta Dino polos (dasar)",
   "weaver": "Rumah Tenun Puta Dino Kayangan",
-  "wholeTask": "Beberapa baris tenun polos yang rata dan rapat"
+  "wholeTask": "Beberapa baris tenun polos yang rata dan rapat",
+  "cover": "/img/kain/tidore-dasar.jpg",
+  "coverNote": "Ilustrasi render, bukan foto kain asli."
 }

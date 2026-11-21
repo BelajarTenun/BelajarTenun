@@ -4,7 +4,7 @@
   "fabricName": "Puta Dino motif Marasante",
   "tradition": "Tenun Tidore",
   "weaver": "Rumah Tenun Puta Dino Kayangan",
-  "cover": null,
+  "cover": "/img/kain/puta-dino-marasante.jpg",
   "level": "lanjutan",
   "taskClass": 4,
   "wholeTask": "Selembar kain kecil dengan beberapa satuan motif Marasante yang rapi",
@@ -133,7 +133,45 @@
       "practice": [],
       "supportive": [
         "motif-marasante"
-      ]
+      ],
+      "pattern": {
+        "label": "Pola latihan tumpal bertingkat (bukan motif Marasante asli)",
+        "authentic": false,
+        "technique": "pakan_tambahan",
+        "unit": "1 kolom = 2 helai lungsi",
+        "palette": {
+          ".": {
+            "name": "hitam (dasar)",
+            "color": "#1f1d1b"
+          },
+          "K": {
+            "name": "kuning",
+            "color": "#d9a81e"
+          },
+          "M": {
+            "name": "merah",
+            "color": "#9b2f22"
+          }
+        },
+        "rows": [
+          ".......M.......",
+          "......MMM......",
+          ".....MMMMM.....",
+          "....MMMMMMM....",
+          "...MMMMMMMMM...",
+          "..MMMMMMMMMMM..",
+          ".MMMMMMMMMMMMM.",
+          "...............",
+          ".KMKKKMKKKMKKK.",
+          "..KMKKKMKKKMK..",
+          "...KMKKKMKKK...",
+          "....KMKKKMK....",
+          ".....KMKKK.....",
+          "......KMK......",
+          ".......K......."
+        ],
+        "validated_by": null
+      }
     },
     {
       "id": "ulangi-motif",
@@ -187,5 +225,6 @@
       "practice": [],
       "supportive": []
     }
-  ]
+  ],
+  "coverNote": "Ilustrasi render dari pola latihan, bukan foto kain asli."
 }
