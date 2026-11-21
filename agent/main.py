@@ -260,6 +260,9 @@ async def run_session(ctx: JobContext) -> None:
             voice=cfg["voice"],
             **VERTEX_OPTS,
             input_audio_transcription=genai_types.AudioTranscriptionConfig(),
+            # Deteksi bicara murid dibuat kurang peka: bunyi alat tenun, gema speaker HP, dan suara latar
+            # tidak lagi dianggap murid menyela, sehingga ucapan tutor tidak terpotong.
+            realtime_input_config=live_input_config(),
             output_audio_transcription=genai_types.AudioTranscriptionConfig(),
         ),
         video_sampler=StalenessSampler(tracer),
@@ -302,9 +305,41 @@ async def run_session(ctx: JobContext) -> None:
     await session.start(room=ctx.room, agent=agent, room_input_options=RoomInputOptions(video_enabled=True))
     await publish_ui({"type": "tutor_ready", "model": model})
     tracer.emit("live_start", engine="livekit+gemini")
-    await session.generate_reply(instructions=("Lihat dulu gambar kamera murid. Sapa singkat, sebutkan dalam satu kalimat apa yang kamu lihat "
-        "(kalau alat tenun belum terlihat, minta murid mengarahkan kamera ke lungsi dan tangannya). "
-        "Lalu panggil get_current_step dan jelaskan tahap ini dengan mengaitkannya ke yang terlihat di kamera."))
+    # Sapa SETELAH gambar kamera benar-benar sampai; tanpa gambar, tutor wajib bilang belum bisa melihat.
+    seen = await wait_first_frame(frames)
+    tracer.emit("greeting", camera=seen)
+    await session.generate_reply(instructions=GREETING_SEEN if seen else GREETING_BLIND)
+
+
+def live_input_config() -> genai_types.RealtimeInputConfig:
+    low = os.environ.get("LIVE_VAD", "low") == "low"
+    return genai_types.RealtimeInputConfig(
+        automatic_activity_detection=genai_types.AutomaticActivityDetection(
+            start_of_speech_sensitivity=genai_types.StartSensitivity.START_SENSITIVITY_LOW if low else genai_types.StartSensitivity.START_SENSITIVITY_HIGH,
+            end_of_speech_sensitivity=genai_types.EndSensitivity.END_SENSITIVITY_LOW,
+            prefix_padding_ms=int(os.environ.get("LIVE_PREFIX_MS", "300")),
+            silence_duration_ms=int(os.environ.get("LIVE_SILENCE_MS", "900")),
+        ),
+    )
+
+
+GREETING_SEEN = ("Sapa murid dengan singkat. Lalu sebutkan dalam satu kalimat apa yang BENAR-BENAR terlihat di gambar kamera saat ini. "
+    "Jangan menebak dan jangan berasumsi ada alat tenun. Jika alat tenun tidak terlihat jelas, katakan terus terang "
+    "bahwa kamu belum melihat alat tenun dan minta murid mengarahkan kamera ke benang lungsi dan tangannya. "
+    "Setelah itu panggil get_current_step dan jelaskan tahap pertama dengan singkat.")
+GREETING_BLIND = ("Sapa murid dengan singkat. Katakan terus terang bahwa gambar kamera belum sampai kepadamu, jadi kamu belum bisa melihat apa pun, "
+    "dan minta murid memeriksa kamera. Jangan mendeskripsikan apa pun yang seolah terlihat. Lalu panggil get_current_step dan jelaskan tahap pertama dengan singkat.")
+
+
+async def wait_first_frame(frames: "FrameHolder", timeout_s: float = 8.0) -> bool:
+    """Tunggu frame kamera pertama, lalu beri jeda agar beberapa frame sempat terkirim ke model sebelum menyapa."""
+    end = time.time() + timeout_s
+    while time.time() < end:
+        if frames.frame is not None:
+            await asyncio.sleep(float(os.environ.get("LIVE_GREET_DELAY_S", "2.0")))
+            return True
+        await asyncio.sleep(0.2)
+    return False
 
 
 async def heartbeat_loop(interval_s: int = 6 * 3600) -> None:
