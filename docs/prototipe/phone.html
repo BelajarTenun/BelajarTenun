@@ -1,0 +1,59 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:transparent;overflow:hidden}</style>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script></head><body>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+const P = new URLSearchParams(location.search);
+const W = 1200, H = 2000;
+const ry = +(P.get('ry') ?? -0.32), rx = +(P.get('rx') ?? 0.06), rz = +(P.get('rz') ?? 0.04);
+const r = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+r.setSize(W, H); r.setPixelRatio(1); r.setClearColor(0, 0); r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.NeutralToneMapping;
+r.shadowMap.enabled = true; r.shadowMap.type = THREE.VSMShadowMap;
+document.body.appendChild(r.domElement);
+const scene = new THREE.Scene();
+scene.environment = new THREE.PMREMGenerator(r).fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.9;
+const rr = (w, h, rad) => { const s = new THREE.Shape(); const x = -w / 2, y = -h / 2; s.moveTo(x + rad, y); s.lineTo(x + w - rad, y); s.quadraticCurveTo(x + w, y, x + w, y + rad); s.lineTo(x + w, y + h - rad); s.quadraticCurveTo(x + w, y + h, x + w - rad, y + h); s.lineTo(x + rad, y + h); s.quadraticCurveTo(x, y + h, x, y + h - rad); s.lineTo(x, y + rad); s.quadraticCurveTo(x, y, x + rad, y); return s; };
+const phone = new THREE.Group(); scene.add(phone);
+const BW = 71.5, BH = 147, BD = 7.8;
+// rangka titanium
+const frameM = new THREE.MeshPhysicalMaterial({ color: '#d9d8d4', metalness: 1, roughness: 0.28, clearcoat: 0.6 });
+const body = new THREE.Mesh(new THREE.ExtrudeGeometry(rr(BW - 2, BH - 2, 10), { depth: BD - 2.4, bevelEnabled: true, bevelThickness: 1.2, bevelSize: 1.0, bevelSegments: 10, curveSegments: 48 }), frameM);
+body.position.z = -BD / 2 + 1.2; body.castShadow = true; phone.add(body);
+// kaca depan hitam
+const front = new THREE.Mesh(new THREE.ShapeGeometry(rr(BW - 1.2, BH - 1.2, 10.4), 48), new THREE.MeshPhysicalMaterial({ color: '#050507', roughness: 0.05, clearcoat: 1 }));
+front.position.z = BD / 2 + 0.02; phone.add(front);
+// layar: tangkapan layar asli dengan sudut membulat
+const img = new Image(); img.src = P.get('img');
+await img.decode();
+const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const x = c.getContext('2d');
+const sw = 66.2, sh = 143.2, k = img.width / sw;
+x.beginPath(); x.roundRect(0, 0, c.width, c.height, 8.6 * k); x.clip();
+const top = Math.round(c.width * 54 / 390); // area status bar (safe area iPhone)
+x.drawImage(img, 0, 0, img.width, 1, 0, 0, c.width, top); // warna bilah atas aplikasi
+x.drawImage(img, 0, top, c.width, c.width * sh / sw - top + 0, 0, top, c.width, c.width * sh / sw - top);
+x.drawImage(img, 0, 0, img.width, img.height * (c.width * sh / sw - top) / img.height, 0, top, c.width, c.width * sh / sw - top);
+const px = x.getImageData(5, 5, 1, 1).data; const dark = px[0] * 0.3 + px[1] * 0.6 + px[2] * 0.1 < 128;
+x.fillStyle = dark ? '#fff' : '#111'; x.font = `600 ${c.width * 16 / 390}px -apple-system, Inter, Arial`; x.textBaseline = 'middle';
+x.fillText('9:41', c.width * 34 / 390, top * 0.55);
+const bx = c.width * 330 / 390, by = top * 0.55, u = c.width / 390;
+for (let i = 0; i < 4; i++) x.fillRect(bx - 34 * u + i * 4.5 * u, by + 4 * u - (i + 1) * 2.2 * u, 3 * u, (i + 1) * 2.2 * u);
+x.strokeStyle = x.fillStyle; x.lineWidth = 1.2 * u; x.beginPath(); x.roundRect(bx, by - 5.5 * u, 24 * u, 11 * u, 3 * u); x.stroke(); x.fillRect(bx + 2 * u, by - 3.5 * u, 18 * u, 7 * u); x.fillRect(bx + 25 * u, by - 2 * u, 1.6 * u, 4 * u);
+const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 16;
+const screen = new THREE.Mesh(new THREE.PlaneGeometry(sw, sh), new THREE.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false }));
+screen.position.z = BD / 2 + 0.05; phone.add(screen);
+// pantulan kaca tipis
+const gl = new THREE.Mesh(new THREE.ShapeGeometry(rr(BW - 1.2, BH - 1.2, 10.4), 48), new THREE.MeshPhysicalMaterial({ color: '#ffffff', transparent: true, opacity: 0.06, roughness: 0, metalness: 0, clearcoat: 1 }));
+gl.position.z = BD / 2 + 0.08; phone.add(gl);
+// dynamic island
+const isl = new THREE.Mesh(new THREE.ShapeGeometry(rr(19, 5.6, 2.8), 24), new THREE.MeshBasicMaterial({ color: '#000' }));
+isl.position.set(0, sh / 2 - 5.2, BD / 2 + 0.1); phone.add(isl);
+// tombol samping
+const btn = (y, h, side) => { const m = new THREE.Mesh(new THREE.CapsuleGeometry(0.7, h, 6, 12), frameM); m.position.set(side * (BW / 2 + 0.25), y, 0); phone.add(m); };
+btn(30, 14, -1); btn(12, 8, -1); btn(2, 8, -1); btn(22, 18, 1);
+phone.rotation.set(rx, ry, rz);
+const key = new THREE.DirectionalLight('#ffffff', 2.2); key.position.set(-80, 140, 160); key.castShadow = true;
+Object.assign(key.shadow.camera, { left: -150, right: 150, top: 150, bottom: -150, near: 1, far: 600 }); key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 20; key.shadow.blurSamples = 25;
+scene.add(key); scene.add(new THREE.DirectionalLight('#ffffff', 0.8).translateX(150).translateZ(80));
+const cam = new THREE.PerspectiveCamera(22, W / H, 1, 2000); cam.position.set(0, 0, 440); cam.lookAt(0, 0, 0);
+r.render(scene, cam); document.title = 'done';
+</script></body></html>

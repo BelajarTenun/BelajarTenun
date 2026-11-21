@@ -1,0 +1,26 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{margin:0;background:#fff;font-family:Inter,'Helvetica Neue',Arial,sans-serif;color:#141c3a}
+.board{width:2400px;padding:110px 90px 120px;box-sizing:border-box}
+.k{font-size:26px;letter-spacing:6px;font-weight:700;color:#b08f3a}
+h1{font-size:84px;letter-spacing:-3px;margin:12px 0 4px}
+.sub{font-size:30px;opacity:.6;margin-bottom:40px}
+.row{display:flex;justify-content:center;align-items:flex-end;gap:10px}
+.ph{position:relative;text-align:center}
+.ph img{height:1100px;display:block;margin:0 -60px}
+.cap{font-size:28px;font-weight:700;margin-top:-20px}
+.cap small{display:block;font-size:22px;font-weight:500;opacity:.55;margin-top:6px}
+.pill{display:inline-block;margin:56px auto 0;padding:22px 80px;border-radius:999px;background:#141c3a;color:#fff;font-size:40px;font-weight:800}
+.c{text-align:center}
+</style></head><body><div class="board" id="b"></div>
+<script>
+const S = {
+ starting: ['01 · STARTING PAGE','Mulai belajar', 'Landing dengan Masuk dengan Google dan kemitraan Puta Dino Kayangan, lalu memilih kain di jalur belajar.', [['ph-landing.png','Landing','in partnership with Puta Dino Kayangan'],['ph-masuk.png','Masuk','Masuk dengan Google'],['ph-modul.png','Pilih kain','jalur belajar: kain dasar, lalu motif']], 'Starting Page'],
+ proses: ['02 · BUSINESS PROCESS UTAMA','Latihan dengan tutor', 'Kamera (kacamata atau HP) dicerminkan ke aplikasi, lalu tutor membimbing secara langsung.', [['ph-kamera.png','Mirroring kamera','Sambungkan kamera · pratinjau'],['ph-live.png','Live Tutor Session','Tahap 1/5 · Live']], 'Business Process Utama'],
+ tracker: ['03 · TRACKER PAGE','Pantau perjalanan menenun', 'Beranda untuk melanjutkan latihan dan Modul untuk melihat jalur kain.', [['ph-beranda.png','Beranda','Kainku · tahap & dikuasai'],['ph-modul2.png','Modul','status tiap kain · terkunci/berikutnya']], 'Tracker Page'],
+};
+const [k,t,s,ph,pill] = S[new URLSearchParams(location.search).get('s')];
+document.getElementById('b').innerHTML = `<div class="k">${k}</div><h1>${t}</h1><div class="sub">${s}</div>
+<div class="row">${ph.map(([i,c,d])=>`<div class="ph"><img src="${i}"><div class="cap">${c}<small>${d}</small></div></div>`).join('')}</div>
+<div class="c"><span class="pill">${pill}</span></div>`;
+document.title='done';
+</script></body></html>
