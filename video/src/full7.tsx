@@ -23,13 +23,13 @@ type P2 = [number, number];
 const D = DOTS as unknown as { indo: P2[]; world: [number, number, number][]; places: Record<string, P2> };
 
 // ── Bahan bersama ────────────────────────────────────────────────────────────
-const glassCard = (o = 0.78): React.CSSProperties => ({ background: `linear-gradient(160deg, rgba(255,255,255,${o}), rgba(255,255,255,${o - 0.22}))`, border: '1px solid rgba(255,255,255,0.75)', boxShadow: '0 30px 80px rgba(20,28,58,0.16)', backdropFilter: 'blur(24px) saturate(160%)' });
-const Kicker: React.FC<{ children: React.ReactNode; color?: string; style?: React.CSSProperties }> = ({ children, color = NAVY, style }) => (
+export const glassCard = (o = 0.78): React.CSSProperties => ({ background: `linear-gradient(160deg, rgba(255,255,255,${o}), rgba(255,255,255,${o - 0.22}))`, border: '1px solid rgba(255,255,255,0.75)', boxShadow: '0 30px 80px rgba(20,28,58,0.16)', backdropFilter: 'blur(24px) saturate(160%)' });
+export const Kicker: React.FC<{ children: React.ReactNode; color?: string; style?: React.CSSProperties }> = ({ children, color = NAVY, style }) => (
   <div style={{ fontFamily: FONT, fontSize: 20, letterSpacing: 4, fontWeight: 700, color, opacity: 0.7, ...style }}>{children}</div>
 );
 
 // Andrew bicara; `slide` (0..1) menggeser ke kiri dan menyisakan ruang di kanan.
-const Andrew: React.FC<{ src: string; from: number; slide: number; push?: number; blur?: number }> = ({ src, from, slide, push = 0, blur = 0 }) => (
+export const Andrew: React.FC<{ src: string; from: number; slide: number; push?: number; blur?: number }> = ({ src, from, slide, push = 0, blur = 0 }) => (
   <AbsoluteFill style={{ background: '#000' }}>
     <div style={{ position: 'absolute', inset: 0, transformOrigin: '50% 40%', transform: `translateX(${-330 * slide}px) scale(${1.02 + push + 0.4 * slide})`, filter: blur ? `blur(${blur}px)` : undefined }}>
       <OffthreadVideo src={staticFile(src)} startFrom={F(from)} muted style={{ width: '100%', height: '100%' }} />
@@ -40,7 +40,7 @@ const Andrew: React.FC<{ src: string; from: number; slide: number; push?: number
 );
 
 // Jari: lingkaran putih + riak saat menekan
-const Finger: React.FC<{ path: [number, number, number][]; taps: number[] }> = ({ path, taps }) => {
+export const Finger: React.FC<{ path: [number, number, number][]; taps: number[] }> = ({ path, taps }) => {
   const { t } = useT();
   if (t < path[0][0] - 0.2 || t > path[path.length - 1][0] + 0.4) return null;
   let x = path[0][1], y = path[0][2];
@@ -63,7 +63,7 @@ const Phone: React.FC<{ x: number; y: number; w?: number; h?: number; children: 
   </div>
 );
 // Laptop kaca (untuk halaman admin)
-const Laptop: React.FC<{ x: number; y: number; w?: number; h?: number; url: string; children: React.ReactNode; style?: React.CSSProperties }> = ({ x, y, w = 1240, h = 760, url, children, style }) => (
+export const Laptop: React.FC<{ x: number; y: number; w?: number; h?: number; url: string; children: React.ReactNode; style?: React.CSSProperties }> = ({ x, y, w = 1240, h = 760, url, children, style }) => (
   <div style={{ position: 'absolute', left: x, top: y, width: w, height: h, borderRadius: 26, padding: 12, ...glassCard(0.6), ...style }}>
     <div style={{ height: 44, display: 'flex', alignItems: 'center', gap: 8, padding: '0 14px' }}>
       {[0, 1, 2].map((i) => <div key={i} style={{ width: 12, height: 12, borderRadius: 6, background: 'rgba(20,28,58,0.18)' }} />)}
@@ -75,8 +75,8 @@ const Laptop: React.FC<{ x: number; y: number; w?: number; h?: number; url: stri
 
 // Layar laptop = tangkapan layar halaman admin asli (1440×900 CSS)
 const LK = 1216 / 1440;
-const lp = (x: number, y: number, X = 340, Y = 110): [number, number] => [X + 12 + x * LK, Y + 56 + y * LK];
-const Ring: React.FC<{ x: number; y: number; w: number; h: number; at: number; label?: string; side?: 'top' | 'bottom' }> = ({ x, y, w, h, at, label, side = 'bottom' }) => {
+export const lp = (x: number, y: number, X = 340, Y = 110): [number, number] => [X + 12 + x * LK, Y + 56 + y * LK];
+export const Ring: React.FC<{ x: number; y: number; w: number; h: number; at: number; label?: string; side?: 'top' | 'bottom' }> = ({ x, y, w, h, at, label, side = 'bottom' }) => {
   const { f, t } = useT();
   if (t < at) return null;
   const p = spring({ frame: f - F(at), fps: FPS, config: { damping: 14, stiffness: 200 } });
@@ -89,7 +89,7 @@ const Ring: React.FC<{ x: number; y: number; w: number; h: number; at: number; l
 };
 
 // Peta titik Indonesia (dan dunia)
-const DotMap: React.FC<{ lit: number; pins?: [string, number][]; dim?: number; world?: number; scale?: number; cx?: number; cy?: number; color?: string }> = ({ lit, pins = [], world = 0, scale = 1, cx = 960, cy = 570, color = NAVY }) => {
+export const DotMap: React.FC<{ lit: number; pins?: [string, number][]; dim?: number; world?: number; scale?: number; cx?: number; cy?: number; color?: string }> = ({ lit, pins = [], world = 0, scale = 1, cx = 960, cy = 570, color = NAVY }) => {
   const { t } = useT();
   return (
     <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>
@@ -199,8 +199,8 @@ const Alur: React.FC = () => {
 // ════════════════════════════════════════════════════════════════════════════
 // 05 · "Ilmu tenun sudah ada di mana-mana…" Andrew + peta titik → dinding video
 // ════════════════════════════════════════════════════════════════════════════
-const REFS: [string, string][] = [['ref/silungkang.mp4', 'Silungkang'], ['ref/ntt.mp4', 'NTT'], ['ref/sumut.mp4', 'Sumatra Utara'], ['ref/lombok.mp4', 'Lombok'], ['ref/silungkang2.mp4', 'Silungkang'], ['ref/proses.mp4', 'Proses']];
-const S05: React.FC = () => {
+export const REFS: [string, string][] = [['ref/silungkang.mp4', 'Silungkang'], ['ref/ntt.mp4', 'NTT'], ['ref/sumut.mp4', 'Sumatra Utara'], ['ref/lombok.mp4', 'Lombok'], ['ref/silungkang2.mp4', 'Silungkang'], ['ref/proses.mp4', 'Proses']];
+export const S05: React.FC = () => {
   const { f, t } = useT();
   const words = W([['Ilmu', 0.91], ['tenun', 1.55], ['sebenarnya', 1.97], ['sudah', 2.51], ['ada', 2.67], ['di', 3.01], ['mana-mana,', 3.17], ['ribuan', 3.93], ['video', 4.67], ['dan', 4.99], ['arsip', 5.23], ['yang', 6.03], ['dibagikan', 6.29], ['terbuka', 6.67], ['di', 7.09], ['internet,', 7.21], ['dan', 7.47], ['banyak', 7.89], ['tradisi.', 8.17]], 0.6);
   const slide = io(t, 0.3, 1.0);
@@ -453,7 +453,7 @@ const S15: React.FC = () => {
 };
 
 // 16 · catatan sesi (Selesai.tsx) di samping Andrew
-const S16: React.FC = () => {
+export const S16: React.FC = () => {
   const { f, t } = useT();
   const words = W([['Setiap', 0.18], ['sesi', 0.86], ['meninggalkan', 1.24], ['catatan:', 2.06], ['apa', 2.7], ['yang', 3.14], ['sudah', 3.28], ['bisa,', 3.46], ['apa', 4.52], ['yang', 4.76], ['membingungkan.', 4.9]]);
   const slide = io(t, 0.0, 0.6);
@@ -471,7 +471,7 @@ const S16: React.FC = () => {
 };
 
 // 17 · progres.html: grafik per tahap, tahap tersulit diperbaiki
-const S17: React.FC = () => {
+export const S17: React.FC = () => {
   const { t } = useT();
   const words = W([['Dari', 0.0], ['situ', 0.12], ['kami', 0.42], ['bisa', 0.7], ['mengukur', 0.88], ['efektivitasnya', 1.26], ['dan', 2.14], ['memperbaiki', 2.46], ['tahap', 2.88], ['yang', 3.36], ['paling', 3.52], ['sulit.', 3.76]]);
   const [a1, b1] = lp(355, 245), [a2, b2] = lp(355, 370);
@@ -579,7 +579,7 @@ const S19: React.FC = () => {
 };
 
 // 20 · uji deteksi tahap: video berlabel → kotak uji → 87% (mockup)
-const S20: React.FC = () => {
+export const S20: React.FC = () => {
   const { f, t } = useT();
   const words = W([['Kami', 0.0], ['menguji', 0.52], ['deteksi', 1.36], ['tahapnya', 1.62], ['dengan', 2.12], ['berbagai', 2.46], ['video', 2.88], ['tenun', 3.28], ['berlabel', 3.72], ['dari', 4.14], ['berbagai', 4.86], ['tradisi.', 5.22]]);
   const pct = Math.round(87 * ez(t, 3.6, 5.2));
@@ -613,7 +613,7 @@ const S20: React.FC = () => {
 };
 
 // 22 · sanggar & sekolah → penghasilan ke penenun → murid baru memperluas ilmu
-const S22: React.FC = () => {
+export const S22: React.FC = () => {
   const { f, t } = useT();
   const words = W([['Kami', 0.62], ['mulai', 1.16], ['dari', 1.56], ['sanggar', 2.0], ['dan', 2.54], ['sekolah.', 2.96], ['Setiap', 3.74], ['modul', 4.54], ['yang', 5.02], ['divalidasi', 5.52], ['memberikan', 6.18], ['penghasilan', 6.76], ['kepada', 7.48], ['para', 7.82], ['penenun,', 8.22], ['dan', 9.04], ['setiap', 9.34], ['murid', 9.72], ['baru', 10.0], ['dapat', 10.32], ['memperluas', 10.6], ['ilmu', 11.26], ['mereka.', 11.54]], 0.4);
   const slide = io(t, 0.3, 0.9);
@@ -655,7 +655,7 @@ const S22: React.FC = () => {
 };
 
 // 23 · peta Indonesia → dunia
-const S23: React.FC = () => {
+export const S23: React.FC = () => {
   const { t } = useT();
   const words = W([['Dari', 0.72], ['satu', 1.42], ['tradisi', 1.62], ['ke', 2.18], ['seluruh', 2.8], ['tradisi', 3.32], ['Indonesia,', 3.62], ['dari', 4.4], ['Indonesia', 4.9], ['ke', 5.36], ['dunia.', 6.08]], 0.4);
   const world = io(t, 4.4, 5.4);
@@ -682,7 +682,7 @@ const S23: React.FC = () => {
 };
 
 // 25 · penutup Andrew
-const S25: React.FC = () => {
+export const S25: React.FC = () => {
   const { t } = useT();
   const words = W([['BelajarTenun.', 0.08], ['Belajar', 1.48], ['menenun,', 1.92], ['dipandu', 2.58], ['ilmu', 3.46], ['Nusantara.', 4.44]]);
   const sweep = ez(t, 4.3, 5.4);
