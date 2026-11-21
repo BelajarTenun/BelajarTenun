@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Shell from '../components/Shell';
 import Icon from '../components/Icon';
 import { LEVELS, simpanProfil, tentukanLevel, type Level } from '../lib/level';
 
@@ -30,8 +29,10 @@ export default function Mulai() {
   const selesai = () => { simpanProfil({ level: hasil.level, alat, pengalaman }); nav('/belajar'); };
 
   return (
-    <Shell>
+    <div className="ob-page">
       <div className="ob">
+        <div className="ob-brand"><img src="/icon.svg" alt="" /><b>Belajar<span>Tenun</span></b></div>
+        <p className="ob-hello">Sebelum mulai, jawab beberapa pertanyaan singkat supaya kami bisa memilihkan teknik dan alat yang pas untukmu.</p>
         <ol className="ob-steps" aria-label="Langkah">
           {['Pengetahuan', 'Alat', 'Levelmu'].map((s, i) => <li key={s} className={i === langkah ? 'now' : i < langkah ? 'done' : ''}><i>{i < langkah ? <Icon name="check" /> : i + 1}</i>{s}</li>)}
         </ol>
@@ -96,9 +97,9 @@ export default function Mulai() {
           {langkah > 0 ? <button className="a-btn" onClick={() => setLangkah(langkah - 1)}><Icon name="chevronLeft" />Kembali</button> : <span />}
           {langkah < 2
             ? <button className="a-btn primary lg" disabled={!bisaLanjut} onClick={() => setLangkah(langkah + 1)}>Lanjut<Icon name="chevronRight" /></button>
-            : <button className="a-btn primary lg" onClick={selesai}>Lihat modul untukku<Icon name="chevronRight" /></button>}
+            : <button className="a-btn primary lg" onClick={selesai}>Mulai belajar<Icon name="chevronRight" /></button>}
         </div>
       </div>
-    </Shell>
+    </div>
   );
 }

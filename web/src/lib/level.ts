@@ -23,3 +23,19 @@ export function tentukanLevel(pengalaman: number, kuisBenar: number, alat: Level
   const alatTertinggi = Math.max(1, ...alat) as Level;
   return { level: Math.min(pengetahuan, alatTertinggi) as Level, pengetahuan, alatTertinggi };
 }
+
+/** Modul berdasarkan TEKNIK per level (purwarupa pitch). `module` = modul yang sudah bisa dipraktikkan bersama tutor. */
+export type Teknik = { id: string; level: Level; title: string; desc: string; foto: string; module?: string };
+export const TEKNIK: Teknik[] = [
+  { id: 'anyaman-polos', level: 1, title: 'Anyaman polos', desc: 'Lungsi dan pakan bergantian atas-bawah.', foto: '/img/kain/tidore-dasar.jpg', module: 'tidore-dasar' },
+  { id: 'bingkai-sumpit', level: 1, title: 'Memasang lungsi di bingkai', desc: 'Merentang benang di kardus atau sumpit.', foto: '/img/alat/sumpit.webp' },
+  { id: 'tepi-rapi', level: 1, title: 'Merapatkan pakan & tepi rapi', desc: 'Kain rapat tanpa tepi menyempit.', foto: '/img/kain/tidore-dasar.jpg' },
+  { id: 'pita-inkle', level: 2, title: 'Pita tenun inkle', desc: 'Lungsi bergantian di inkle loom dan sekoci.', foto: '/img/alat/inkle.webp' },
+  { id: 'pickup-ketupat', level: 2, title: 'Pungut lungsi: belah ketupat', desc: 'Mengangkat lungsi pilihan untuk membentuk motif.', foto: '/img/kain/puta-dino-jodati.jpg', module: 'puta-dino-jodati' },
+  { id: 'pakan-tambahan', level: 2, title: 'Pakan tambahan dua warna', desc: 'Benang motif di atas dasar polos.', foto: '/img/kain/puta-dino-tobaru.jpg', module: 'puta-dino-tobaru' },
+  { id: 'urutan-gun', level: 3, title: 'Urutan pengangkatan gun', desc: 'Membaca dan mengikuti urutan 4 gun.', foto: '/img/alat/empat-gun.webp' },
+  { id: 'kepar', level: 3, title: 'Kepar (twill) dan kepar berlian', desc: 'Garis miring dan berlian dari urutan gun.', foto: '/img/kain/puta-dino-marasante.jpg', module: 'puta-dino-marasante' },
+  { id: 'draft', level: 3, title: 'Membaca draft tenun', desc: 'Grafik pemasangan, pengangkatan, dan injakan.', foto: '/img/kain/puta-dino-barakati.jpg', module: 'puta-dino-barakati' },
+  { id: 'atbm', level: 4, title: 'Menenun di ATBM', desc: 'Kain lebar dengan pedal dan sisir.', foto: '/img/alat/atbm.webp' },
+  { id: 'rancang-motif', level: 4, title: 'Merancang motif sendiri', desc: 'Dari sketsa ke grafik, lalu ke kain.', foto: '/img/kain/puta-dino-kalajengking.jpg', module: 'puta-dino-kalajengking' },
+];
