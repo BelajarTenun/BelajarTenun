@@ -165,10 +165,142 @@ const Scan: React.FC = () => {
   );
 };
 
+
+// ════════════════════════════════════════════════════════════════════════════
+// BLOK A · Mengenal Puta Dino Kayangan (VO5): footage, arsip, 3D, tanpa kotak teks
+// ════════════════════════════════════════════════════════════════════════════
+const VO5W: Wd[] = [['Kenalkan,', 1.14], ['ini', 2.54], ['Ibu', 2.98], ['Anita', 3.4], ['Gathmir,', 3.7], ['pendiri', 4.76], ['Puta', 5.1], ['Dino', 5.6], ['Kayangan', 5.82], ['di', 6.28], ['Tidore.', 6.56], ['Tenun', 7.6], ['Tidore', 7.78], ['sempat', 8.44], ['hilang', 8.9], ['sekitar', 9.24], ['ratusan', 9.54], ['tahun.', 9.86], ['Tradisinya', 10.92], ['ditinggalkan', 11.42], ['dan', 12.38], ['tidak', 12.6], ['ada', 12.86], ['lagi', 13.12], ['warisannya.', 13.44], ['Sampai', 14.86], ['tak', 15.52], ['ada', 15.82], ['penenun', 15.94], ['yang', 16.46], ['tersisa.', 16.68], ['Sejak', 17.86], ['2017,', 18.26], ['Bu', 19.92], ['Anita', 20.06], ['dan', 20.52], ['Puta', 20.78], ['Dino', 21.1], ['Kayangan', 21.32], ['menghidupkannya', 22.02], ['kembali.', 22.84], ['Kini,', 24.2], ['BelajarTenun', 25.1], ['bekerja', 25.96], ['sama', 26.3], ['dengan', 26.72], ['mereka', 26.94], ['untuk', 27.48], ['meneruskan', 28.16], ['tenun', 28.66], ['Tidore', 28.88], ['ke', 29.46], ['generasi', 29.66], ['berikutnya.', 30.38]];
+const A0 = 0.2; export const PD_SECONDS = 32.6;
+const Cut: React.FC<{ a: number; b: number; children: React.ReactNode }> = ({ a, b, children }) => <Sequence from={F(a)} durationInFrames={F(b - a)}>{children}</Sequence>;
+const Ken: React.FC<{ src: string; z?: [number, number]; o?: string }> = ({ src, z = [1.05, 1.18], o = '50% 50%' }) => {
+  const { t, f } = useT(); void f;
+  return <Img src={staticFile(src)} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${z[0] + (z[1] - z[0]) * Math.min(1, t / 3)})`, transformOrigin: o }} />;
+};
+const Wipe: React.FC<{ at: number; children: React.ReactNode }> = ({ at, children }) => {
+  const { t } = useT(); const k = io(t, at, at + 0.45);
+  return <div style={{ position: 'absolute', inset: 0, clipPath: `polygon(0 0, ${k * 130}% 0, ${k * 130 - 30}% 100%, 0 100%)` }}>{children}</div>;
+};
+const PuraDino: React.FC = () => {
+  const { f, t } = useT();
+  const v = t - A0;
+  const yr = Math.round(2017 - 100 * io(v, 7.6, 10.6));
+  const knot = io(v, 25.3, 26.6);
+  const lt = ez(v, 3.0, 3.5) * (1 - ez(v, 6.6, 7.1));
+  return (
+    <AbsoluteFill style={{ background: '#05070d' }}>
+      <Cut a={0} b={A0 + 2.7}><Full src="pdwa/vid3.mp4" from={0} style={{ transform: `scale(${1.15 - 0.08 * t / 3})` }} /></Cut>
+      <Cut a={A0 + 2.7} b={A0 + 4.2}><Full src="footage/pd7802.mp4" from={0.4} /></Cut>
+      <Cut a={A0 + 4.2} b={A0 + 5.7}><Full src="footage/pd7801.mp4" from={6.2} /></Cut>
+      <Cut a={A0 + 5.7} b={A0 + 7.4}><Full src="footage/pd7796.mp4" from={1.0} /></Cut>
+      <Cut a={A0 + 7.4} b={A0 + 10.9}><OffthreadVideo src={staticFile('3d/unravel.mp4')} muted playbackRate={0.75} style={{ position: 'absolute', inset: 0, filter: `brightness(${0.95 - 0.35 * io(v, 8.5, 10.8)})` }} /></Cut>
+      <Cut a={A0 + 10.9} b={A0 + 14.8}><OffthreadVideo src={staticFile('3d/gagal.mp4')} muted style={{ position: 'absolute', inset: 0, filter: 'saturate(0.7)' }} /></Cut>
+      <Cut a={A0 + 14.8} b={A0 + 17.9}><OffthreadVideo src={staticFile('3d/kosong.mp4')} muted style={{ position: 'absolute', inset: 0, filter: 'saturate(0.5) brightness(0.85)' }} /></Cut>
+      <Cut a={A0 + 17.9} b={A0 + 19.9}><Ken src="pdwa/img19.jpg" z={[1.0, 1.25]} o="62% 40%" /></Cut>
+      <Cut a={A0 + 19.9} b={A0 + 23.4}>
+        <Ken src="pdwa/img17.jpg" z={[1.1, 1.2]} o="30% 60%" />
+        <Wipe at={0.9}><Ken src="pdwa/img20.jpg" z={[1.05, 1.15]} /></Wipe>
+        <Wipe at={1.8}><Ken src="pdwa/img18.jpg" z={[1.0, 1.12]} /></Wipe>
+        <Wipe at={2.7}><Ken src="pdwa/img16.jpg" z={[1.0, 1.1]} /></Wipe>
+      </Cut>
+      <Cut a={A0 + 23.4} b={A0 + 25.3}><OffthreadVideo src={staticFile('3d/reweave.mp4')} muted startFrom={F(0.6)} /></Cut>
+      <Cut a={A0 + 25.3} b={A0 + 28.6}><Full src="pdwa/vid4.mp4" from={0.5} /><AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 55%, rgba(5,7,13,0.15), rgba(5,7,13,0.65))' }} /></Cut>
+      <Cut a={A0 + 28.6} b={A0 + 30.6}><OffthreadVideo src={staticFile('3d/hand.mp4')} muted startFrom={F(0.6)} /></Cut>
+      <Cut a={A0 + 30.6} b={PD_SECONDS}><Full src="pdwa/vid2.mp4" from={1.0} /></Cut>
+      {/* nama tanpa kotak */}
+      <div style={{ position: 'absolute', left: 90, bottom: 190, fontFamily: FONT, color: '#fff', opacity: lt, textShadow: '0 2px 16px rgba(0,0,0,0.55)' }}>
+        <div style={{ height: 2, width: 70, background: GOLD, transform: `scaleX(${ez(v, 3.0, 3.6)})`, transformOrigin: 'left', marginBottom: 14 }} />
+        <div style={{ fontSize: 40, fontWeight: 700, letterSpacing: -0.6, transform: `translateY(${(1 - lt) * 12}px)` }}>Anita Gathmir</div>
+        <div style={{ fontSize: 22, opacity: 0.85, marginTop: 4 }}>Pendiri Rumah Tenun Puta Dino Kayangan · Tidore</div>
+      </div>
+      {/* angka tahun mundur di atas kain yang terurai */}
+      {v > 7.4 && v < 10.9 && <div style={{ position: 'absolute', right: 120, top: 110, fontFamily: FONT, fontWeight: 200, fontSize: 210, letterSpacing: -8, color: NAVY, opacity: 0.85 * ez(v, 7.5, 7.9) * (1 - io(v, 10.0, 10.9)), fontVariantNumeric: 'tabular-nums' }}>{yr}</div>}
+      {/* 2017: angka emas tipis di sudut foto arsip */}
+      {v > 17.9 && v < 19.9 && <div style={{ position: 'absolute', left: 110, top: 90, fontFamily: FONT, fontWeight: 200, fontSize: 170, letterSpacing: -6, color: GOLD, opacity: ez(v, 18.1, 18.5), textShadow: '0 4px 30px rgba(0,0,0,0.5)' }}>2017</div>}
+      {/* benang emas menyambungkan dua logo di atas ruang tenun */}
+      {v > 25.3 && v < 28.6 && (
+        <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', opacity: ez(v, 25.4, 25.8) }}>
+            <Img src={staticFile('brand/partner-puta-dino-kayangan.png')} style={{ height: 150, filter: 'drop-shadow(0 6px 24px rgba(0,0,0,0.6)) brightness(1.15)', transform: `translateX(${(1 - knot) * -60}px)` }} />
+            <svg width={260} height={90}><path d={`M0 45 C 70 ${45 - 30 * knot}, 190 ${45 + 30 * knot}, 260 45`} fill="none" stroke={GOLD} strokeWidth={6} strokeDasharray={320} strokeDashoffset={320 * (1 - knot)} strokeLinecap="round" />{knot > 0.97 && <circle cx={130} cy={45} r={11 * sp(f, A0 + 26.6, { damping: 8, stiffness: 300 })} fill={GOLD} />}</svg>
+            <div style={{ transform: `translateX(${(1 - knot) * 60}px)`, filter: 'drop-shadow(0 6px 24px rgba(0,0,0,0.6))' }}><Mark size={140} /></div>
+          </div>
+        </AbsoluteFill>
+      )}
+      <Sequence from={F(A0)}><Audio src={staticFile('vo/VO5-clean.wav')} /></Sequence>
+      <Captions words={off(VO5W, A0)} keys={['anita', 'puta', 'ratusan', 'warisan', 'tersisa', '2017', 'kembali', 'generasi']} dark={(x) => (x > A0 + 7.4 && x < A0 + 17.9) || (x > A0 + 23.4 && x < A0 + 25.3) || (x > A0 + 28.6 && x < A0 + 30.6)} />
+      <Sfx cues={[[0.1, 'whoosh', 0.25], [A0 + 2.7, 'tick', 0.3], [A0 + 4.2, 'tick', 0.3], [A0 + 5.7, 'tick', 0.3], [A0 + 7.4, 'riser', 0.22], ...[0, 1, 2, 3].map((i) => [A0 + 8.2 + i * 0.5, 'snap', 0.18] as Cue), [A0 + 12.4, 'snap', 0.35], [A0 + 17.9, 'ding', 0.3], ...[0, 1, 2].map((i) => [A0 + 20.8 + i * 0.9, 'whoosh', 0.18] as Cue), [A0 + 23.4, 'riser', 0.25], [A0 + 26.6, 'snap', 0.45], [A0 + 26.7, 'ding', 0.35], [A0 + 28.6, 'pop', 0.35]]} />
+    </AbsoluteFill>
+  );
+};
+
+// ════════════════════════════════════════════════════════════════════════════
+// BLOK B · Pindai kain → mulai belajar, 5 langkah jelas (VO6)
+// ════════════════════════════════════════════════════════════════════════════
+const VO6W: Wd[] = [['Pindai', 0.94], ['kode', 1.82], ['di', 2.24], ['label', 2.48], ['kain', 2.84], ['Puta', 3.16], ['Dino,', 3.5], ['baca', 4.74], ['kisah', 4.96], ['kain', 5.34], ['dan', 5.66], ['motifnya,', 5.84], ['tekan', 7.06], ['Belajar', 7.32], ['menenun', 7.7], ['motif', 8.08], ['ini,', 8.36], ['sambungkan', 9.36], ['kacamata,', 9.72], ['dan', 10.92], ['mulai', 11.08], ['belajar', 11.48], ['bersama', 12.08], ['tutor.', 12.58]];
+const B0 = 0.3; export const SCAN8_SECONDS = 14.6;
+const STEPS5: [number, string][] = [[0, 'Pindai label kain'], [4.9, 'Baca kisah kain'], [7.3, 'Tekan "Belajar menenun motif ini"'], [9.6, 'Sambungkan kacamata'], [11.2, 'Mulai belajar bersama tutor']];
+const QR_IMG = Array.from({ length: 16 }, (_, i) => `pdwa/img${String(i).padStart(2, '0')}.jpg`);
+const Scan8: React.FC = () => {
+  const { f, t } = useT();
+  const k = [...STEPS5].reverse().findIndex(([a]) => t >= a + B0); const si = STEPS5.length - 1 - k;
+  const sP = sp(f, STEPS5[si][0] + B0, { damping: 18, stiffness: 170 });
+  const zoomIn = io(t, 13.3, 14.6);
+  const ph = { x: 1000, y: 70, h: 940 };
+  const [tx, ty] = tapPos('depan', ph.x, ph.y, ph.h, 195, 54 + 585);
+  return (
+    <AbsoluteFill style={{ background: `radial-gradient(circle at 60% 50%, #1d2650, ${NAVY})` }}>
+      {/* 1 · footage memindai, lalu label QR asli melayang dalam 3D bersama koleksi motif */}
+      <Cut a={0} b={B0 + 2.4}><Full src="footage/pd7805.mp4" from={0.2} /></Cut>
+      {t > B0 + 2.3 && t < B0 + 5.2 && (
+        <AbsoluteFill style={{ perspective: 1600, opacity: ez(t, B0 + 2.3, B0 + 2.6) * (1 - ez(t, B0 + 4.9, B0 + 5.2)) }}>
+          {QR_IMG.slice(1).map((src, i) => { const c = i % 5, r = Math.floor(i / 5); return <Img key={src} src={staticFile(src)} style={{ position: 'absolute', left: 80 + c * 370 + ((t * 30 + i * 13) % 40), top: 60 + r * 340, width: 170, borderRadius: 12, opacity: 0.35, transform: `translateZ(${-400 - (i % 3) * 200}px) rotateY(${-20 + c * 10}deg)`, filter: 'blur(1px)' }} />; })}
+          <div style={{ position: 'absolute', left: 760, top: 110, width: 400, transformStyle: 'preserve-3d', transform: `rotateY(${-22 + 18 * io(t, B0 + 2.4, B0 + 4.4)}deg) rotateX(8deg) translateZ(${120 * io(t, B0 + 2.4, B0 + 4.6)}px)`, filter: 'drop-shadow(0 40px 60px rgba(0,0,0,0.55))' }}>
+            <Img src={staticFile(QR_IMG[0])} style={{ width: 400, borderRadius: 18 }} />
+            <div style={{ position: 'absolute', left: 30, right: 30, top: 250 + ((t - B0 - 2.6) * 260) % 330, height: 4, background: GOLD, boxShadow: `0 0 24px ${GOLD}`, opacity: ez(t, B0 + 2.6, B0 + 2.8) }} />
+          </div>
+        </AbsoluteFill>
+      )}
+      {/* 2–5 · HP 3D dengan halaman asli */}
+      {t > B0 + 4.9 && (
+        <div style={{ position: 'absolute', inset: 0, transform: `scale(${1 + zoomIn * 2.4})`, transformOrigin: `${ph.x + 280}px ${ph.y + 470}px` }}>
+          {t > B0 + 9.4 && t < B0 + 11.4 && <Img src={staticFile('3d/glasses-still.png')} style={{ position: 'absolute', left: -560 + 300 * sp(f, B0 + 9.5, { damping: 18, stiffness: 90 }), top: 150, width: 1920 * 0.62, height: 1080 * 0.62 }} />}
+          {t > B0 + 9.9 && t < B0 + 11.3 && <svg width={1920} height={1080} style={{ position: 'absolute', inset: 0 }}>{[0, 1, 2].map((i) => { const r = ((t * 1.4 + i / 3) % 1); return <circle key={i} cx={760} cy={560} r={20 + r * 90} fill="none" stroke={GOLD} strokeWidth={3} opacity={1 - r} />; })}</svg>}
+          <div style={{ position: 'absolute', inset: 0, transform: `translateY(${(1 - sp(f, B0 + 4.9, { damping: 18, stiffness: 110 })) * 900}px)` }}>
+            <Phone3D pose="depan" x={ph.x} y={ph.y} h={ph.h}>
+              {t < B0 + 9.6 ? (
+                <Screen dark bar="#141c3a">
+                  <Sequence from={F(B0 + 4.9)}><OffthreadVideo src={staticFile('ui/cerita-scroll.mp4')} startFrom={F(2.2)} muted playbackRate={3.0} style={{ width: SCREEN_W }} /></Sequence>
+                </Screen>
+              ) : t < B0 + 11.2 ? (
+                <Screen><Img src={staticFile('ui/w-06-tersambung.png')} style={{ width: SCREEN_W }} /></Screen>
+              ) : (
+                <Screen dark bar="#000">
+                  <OffthreadVideo src={staticFile('footage/pd7818A.mp4')} startFrom={F(16)} muted style={{ position: 'absolute', left: -507, top: 0, height: 790, width: 1404, objectFit: 'cover' }} />
+                  <Img src={staticFile('ui/prak-ui-t0.png')} style={{ position: 'absolute', left: 0, top: 0, width: SCREEN_W }} />
+                </Screen>
+              )}
+            </Phone3D>
+          </div>
+        </div>
+      )}
+      <Finger path={[[B0 + 7.6, tx + 80, ty + 260], [B0 + 8.2, tx, ty], [B0 + 8.8, tx, ty]]} taps={[B0 + 8.45]} />
+      {/* label langkah: teks + garis, tanpa kotak */}
+      <div style={{ position: 'absolute', left: 90, top: 380, width: 760, fontFamily: FONT, color: '#fff', opacity: 1 - zoomIn, textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 22 }}>{STEPS5.map(([a], i) => <div key={i} style={{ height: 5, width: 60, borderRadius: 3, background: t >= a + B0 ? GOLD : 'rgba(255,255,255,0.25)' }} />)}</div>
+        <div style={{ fontSize: 24, letterSpacing: 5, fontWeight: 800, color: GOLD, opacity: sP }}>LANGKAH {si + 1}/5</div>
+        <div style={{ fontSize: 64, fontWeight: 800, letterSpacing: -2, lineHeight: 1.05, marginTop: 8, transform: `translateY(${(1 - sP) * 24}px)`, opacity: sP }}>{STEPS5[si][1]}</div>
+      </div>
+      <Sequence from={F(B0)}><Audio src={staticFile('vo/VO6-clean.wav')} /></Sequence>
+      <Captions words={off(VO6W, B0)} keys={['pindai', 'kisah', 'tekan', 'kacamata', 'tutor']} />
+      <Sfx cues={[[B0 + 2.3, 'whoosh', 0.3], [B0 + 2.7, 'blip', 0.3], [B0 + 4.2, 'ding', 0.35], [B0 + 4.9, 'whoosh', 0.3], [B0 + 8.45, 'click', 0.6], [B0 + 9.6, 'whoosh', 0.25], [B0 + 10.1, 'blip', 0.3], [B0 + 10.8, 'ding', 0.35], [B0 + 13.3, 'whoosh', 0.4]]} />
+    </AbsoluteFill>
+  );
+};
+
 // ════════════════════════════════════════════════════════════════════════════
 // E · LATIHAN TIAP LEVEL: POV asli (Drive) + HP 3D berisi layar Praktik asli
 // ════════════════════════════════════════════════════════════════════════════
-type Seg = { dur: number; src: string; from: number; audio?: string; tutor?: string; words?: Wd[]; me?: boolean; rate?: number };
+type Seg = { dur: number; src: string; from: number; audio?: string; tutor?: string; words?: Wd[]; me?: boolean; rate?: number; cut?: { at: number; from: number; zoom: number } };
 const PovLevel: React.FC<{ n: number; name: string; alat: string; ui: string; segs: Seg[] }> = ({ n, name, alat, ui, segs }) => {
   const { t } = useT();
   let acc = 0; const starts = segs.map((s) => { const a = acc; acc += s.dur; return a; });
@@ -181,6 +313,7 @@ const PovLevel: React.FC<{ n: number; name: string; alat: string; ui: string; se
       {segs.map((s, k) => (
         <Sequence key={k} from={F(starts[k])} durationInFrames={F(s.dur)}>
           <Full src={s.src} from={s.from} rate={s.rate} />
+          {s.cut && <Sequence from={F(s.cut.at)}><div style={{ position: 'absolute', inset: 0, transform: `scale(${s.cut.zoom})`, transformOrigin: '55% 40%' }}><Full src={s.src} from={s.cut.from} /></div></Sequence>}
           {s.audio && <Audio src={staticFile(s.audio)} startFrom={F(s.from)} />}
           {s.tutor && <><Audio src={staticFile('sfx2/blip.wav')} volume={0.35} /><Sequence from={F(0.25)}><Audio src={staticFile(`tutor/${s.tutor}.mp3`)} /></Sequence></>}
           {/* HP 3D di kanan: layar Praktik asli, kamera = POV yang sama */}
@@ -221,7 +354,7 @@ const L3: Seg[] = [
 ];
 const L4: Seg[] = [
   { dur: 4.7, src: 'footage/pd7826.mp4', from: 0.2, audio: 'audio/pd7826-clean.wav', words: W([['Baiklah,', 0.37], ['sekarang', 1.27], ['aku', 1.33], ['sudah', 1.51], ['punya', 1.65], ['ATBM,', 1.85], ['yang', 3.41], ['pertama', 3.57], ['harus', 3.85], ['apa?', 4.07]], 0.2) },
-  { dur: 9.4, src: 'footage/pd7826.mp4', from: 4.9, tutor: 'T12', words: T12W, rate: 0.66 },
+  { dur: 9.4, src: 'footage/pd7826.mp4', from: 4.9, tutor: 'T12', words: T12W, cut: { at: 6.3, from: 7.6, zoom: 1.4 } },
 ];
 const sum = (s: Seg[]) => s.reduce((a, b) => a + b.dur, 0);
 
@@ -455,8 +588,9 @@ const S24v8: React.FC = () => (
 type Row = [string, number, React.ReactNode, { src: string; from: number } | null];
 const ROWS: Row[] = [
   ['B1', B1V7_SECONDS, <Babak1V7 music={false} />, null],
+  ['PD', PD_SECONDS, <PuraDino />, null],
   ['ALUR', ALUR8_SECONDS, <Alur8 />, null],
-  ['SCAN', SCAN_SECONDS, <Scan />, null],
+  ['SCAN', SCAN8_SECONDS, <Scan8 />, null],
   ['L1', sum(L1), <PovLevel n={1} name="Dasar" alat="Bingkai sumpit" ui="t2" segs={L1} />, null],
   ['L2', sum(L2), <PovLevel n={2} name="Pengembangan" alat="Inkle loom" ui="t3" segs={L2} />, null],
   ['L4', sum(L4), <PovLevel n={4} name="Kreasi" alat="ATBM" ui="j3" segs={L4} />, null],
@@ -466,7 +600,6 @@ const ROWS: Row[] = [
   ['O1', 7.5, <OwnerClip src="footage/pd7801.mp4" from={0} words={W7801} title="Owner · menjelaskan kesalahan pola" />, { src: 'audio/pd7801-clean.wav', from: 0 }],
   ['O2', 9.5, <OwnerClip src="footage/pd7802.mp4" from={0} words={W7802} title="Owner · pola harus dicerminkan" note={[[6.4, <MirrorNote />]]} />, { src: 'audio/pd7802-clean.wav', from: 0 }],
   ['07b', 6.8, <S07b />, { src: 'audio/7636-clean.wav', from: 2.4 }],
-  ['MITRA', MITRA8_SECONDS, <Mitra8 />, null],
   ['15', 8.4, <S15v8 />, { src: 'audio/7637a-clean.wav', from: 0.2 }],
   ['16', 5.8, <S16 />, { src: 'audio/7637b-clean.wav', from: 0 }],
   ['17', 4.6, <S17 />, { src: 'audio/7637c-clean.wav', from: 0 }],
@@ -481,8 +614,8 @@ const ROWS: Row[] = [
 ];
 const STARTS = ROWS.reduce<number[]>((a, r, i) => [...a, i === 0 ? 0 : a[i - 1] + ROWS[i - 1][1]], []);
 export const FULL8_SECONDS = Math.ceil(STARTS[STARTS.length - 1] + ROWS[ROWS.length - 1][1]);
-const VOICE = new Set(['L1', 'L2', 'L3', 'L4', 'O1', 'O2']);
-const QUIET = new Set(['SCAN', '24', '26']);
+const VOICE = new Set(['L1', 'L2', 'L3', 'L4', 'O1', 'O2', 'PD', 'SCAN']);
+const QUIET = new Set(['24', '26']);
 const B1_SPEECH: [number, number][] = [[0.3, 4.6], [5.0, 13.6], [13.8, 18.4], [18.8, 29.6]];
 const musicVol = (s: number) => {
   const i = STARTS.findIndex((st, k) => s >= st && s < st + ROWS[k][1]);

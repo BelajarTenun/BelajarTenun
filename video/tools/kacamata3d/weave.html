@@ -390,6 +390,32 @@ if (shot === 'blok') {
   camera.fov = 28; camera.position.set(0, 1.6, 7.6); camera.lookAt(0, 0.6, 0); camera.updateProjectionMatrix();
 }
 
+// ── SHOT: serah-terima gagal: anak muda berbalik, kain jatuh ─────────────────
+if (shot === 'gagal') {
+  const E = weaver(); E.root.position.set(0.05, 0, 0); E.root.rotation.y = -0.55; scene.add(E.root);
+  const Y = person({ hair: 'short', top: M.white, bottom: M.navy, s: 0.97 }); Y.root.position.set(1.05, 0, 0.55); scene.add(Y.root);
+  const turn = seg(T, 1.0, 1.7); Y.root.rotation.y = lerp(-Math.PI / 2 - 0.35, 0.9, turn);
+  if (T > 1.7) { const w = T - 1.7; Y.root.position.x = 1.05 + w * 0.9; Y.root.position.z = 0.55 + w * 0.6; const ph = w * 9; Y.ll.th.rotation.x = Math.sin(ph) * 0.4; Y.rl.th.rotation.x = -Math.sin(ph) * 0.4; }
+  const roll = new THREE.Mesh(new RoundedBoxGeometry(0.42, 0.05, 0.22, 3, 0.02), new THREE.MeshPhysicalMaterial({ map: MOTIF, roughness: 0.7 })); shadowy(roll); scene.add(roll);
+  E.weave(0.9); scene.updateMatrixWorld(true);
+  const meet = V(0.62, 0.92, 0.42); const fall = Math.max(0, T - 1.5);
+  const rp = meet.clone(); rp.y = Math.max(0.03, 0.92 - 4.9 * fall * fall); roll.position.copy(rp); roll.rotation.z = Math.min(1.2, fall * 3);
+  const lift = eo(T / 0.8); E.torso.rotation.x = lerp(0.12, -0.08, lift); E.neck.rotation.y = 0.6 * lift;
+  const hold = 1 - seg(T, 1.5, 2.6);
+  ik(E.ra, null, meet.clone().add(V(-0.1, 0, 0.05)).lerp(E.root.localToWorld(V(-0.15, 0.4, 0.3)), 1 - hold), V(0, -1, 0.3)); ik(E.la, null, meet.clone().add(V(0.12, 0, -0.04)).lerp(E.root.localToWorld(V(0.15, 0.4, 0.3)), 1 - hold), V(0, -1, -0.3));
+  E.head.rotation.x = lerp(0.05, 0.45, seg(T, 2.0, 3.2));
+  camera.position.set(lerp(-0.25, -0.05, ease(T / 4)), 1.6, 5.9); camera.lookAt(0.05, 0.72, 0.1);
+  key.intensity = lerp(2.2, 1.2, seg(T, 2.2, 4));
+}
+// ── SHOT: alat tenun kosong, debu benang turun ───────────────────────────────
+if (shot === 'kosong') {
+  const L = loom(); L.g.position.set(0, 0.17, 0.2); L.g.rotation.x = -0.18; L.g.rotation.y = -0.5; scene.add(L.g);
+  let seed = 5; const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 60; i++) { const y0 = 1.8 + r() * 1.5, sp2 = 0.15 + r() * 0.2; const y = y0 - ((T * sp2 + r() * 2) % 2.2); const m = new THREE.Mesh(new THREE.CylinderGeometry(0.003, 0.003, 0.05 + r() * 0.06, 4), r() > 0.5 ? M.gold : M.cream); m.position.set((r() - 0.5) * 2.4, y, (r() - 0.5) * 1.6); m.rotation.set(r() * 6 + T, r() * 6, r() * 6 + T * 0.5); scene.add(m); }
+  key.intensity = lerp(1.6, 0.7, ease(T / 3));
+  camera.position.set(lerp(-0.4, -0.1, ease(T / 3)), 1.3, lerp(3.6, 3.2, ease(T / 3))); camera.lookAt(0, 0.35, 0.5);
+}
+
 renderer.render(scene, camera);
 const out = {};
 for (const [k, f] of Object.entries(anchors)) { const p = f().project(camera); out[k] = [Math.round((p.x + 1) / 2 * W), Math.round((1 - p.y) / 2 * H)]; }
