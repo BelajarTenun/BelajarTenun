@@ -18,7 +18,7 @@ Blok "Mitra" yang lama (VO4 di tengah video) dihapus karena isinya sudah ada di 
 
 | Waktu | Suara (Andrew, VO5) | Visual |
 |---|---|---|
-| 0–4 | "Kenalkan, ini Ibu Anita Gathmir, pendiri Puta Dino Kayangan di Tidore." | Footage Bu Anita (IMG_7802, saat berbicara sambil menunjuk). Lower-third: **Anita Gathmir · Pendiri Rumah Tenun Puta Dino Kayangan** |
+| 0–4 | "Kenalkan, ini Ibu Anita Gathmir, pendiri Puta Dino Kayangan di Tidore." | Montase wajah Bu Anita dari semua footage Drive (IMG_7802, 7801, 7796, 7798), 1–1,5 dtk per potongan. Lower-third: **Anita Gathmir · Pendiri Rumah Tenun Puta Dino Kayangan** |
 | 4–9 | "Tenun Tidore sempat hilang sekitar seratus tahun." | Animasi: kain 3D terurai dan memudar, angka tahun berhitung mundur ±100 tahun, peta titik dengan pin Tidore |
 | 9–14 | "Tradisinya ditinggalkan dan tidak lagi diwariskan, sampai tak ada penenun yang tersisa." | Animasi 3D: serah-terima kain antargenerasi yang **terputus** (figur kedua tidak menerima, kain jatuh), lalu alat tenun kosong |
 | 14–18 | "Sejak 2017, Bu Anita dan Puta Dino Kayangan menghidupkannya kembali." | Kain 3D **tertenun kembali**, lalu footage Bu Anita dan penenun (IMG_7796) |
@@ -55,7 +55,7 @@ Rekam di HP, tempat tenang, jarak ±20 cm, satu file per VO. Ulangi 2× bila ada
 Opsional: kalau Andrew mau mengganti VO4 lama, tidak perlu. VO4 tidak dipakai lagi.
 
 ## Yang perlu dikonfirmasi
-1. **Izin Bu Anita** untuk menampilkan nama lengkap, wajah, dan suara.
+1. ~~Izin Bu Anita~~ **Sudah diizinkan**: nama lengkap, wajah, suara, dan semua footage Drive boleh dipakai.
 2. **Tahun mulai**: 2017 (atau tahun lain menurut Bu Anita).
 3. Penulisan nama: "Anita Gathmir" atau "Anitawati Gathmir".
 
