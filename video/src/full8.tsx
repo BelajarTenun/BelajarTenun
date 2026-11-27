@@ -242,7 +242,7 @@ const STEPS5: [number, string][] = [[0, 'Pindai label kain'], [4.9, 'Baca kisah 
 const QR_IMG = Array.from({ length: 16 }, (_, i) => `pdwa/img${String(i).padStart(2, '0')}.jpg`);
 const Scan8: React.FC = () => {
   const { f, t } = useT();
-  const k = [...STEPS5].reverse().findIndex(([a]) => t >= a + B0); const si = STEPS5.length - 1 - k;
+  const si = Math.max(0, STEPS5.reduce((acc, [a], i) => (t >= a + B0 ? i : acc), 0));
   const sP = sp(f, STEPS5[si][0] + B0, { damping: 18, stiffness: 170 });
   const zoomIn = io(t, 13.3, 14.6);
   const ph = { x: 1000, y: 70, h: 940 };
