@@ -1,56 +1,63 @@
-# Revisi v8: rencana (perubahan kecil, tetap di bawah 5 menit)
+# Revisi v8: rencana lengkap (perubahan kecil, tetap di bawah 5 menit)
 
-Durasi sekarang 4:30. Target setelah revisi sekitar **4:50**.
+Durasi sekarang 4:30. Target sekitar **4:52**.
 
-## 1. Slow motion di demo
-- **Penyebab:** di Level 4 (ATBM), klip IMG_7826 diperlambat menjadi 0,66× supaya cukup untuk jawaban tutor T12. Klip aslinya cuma 11 detik.
-- **Perbaikan:** semua klip diputar dengan **kecepatan normal**. T12 tetap diputar utuh:
-  - Andrew bertanya di detik 0,2–4,7.
-  - T12 dimulai di 4,9 di atas klip yang sama (4,9–11,3).
-  - Sisa sekitar 3 detik ditutup dengan close-up dari klip yang sama (zoom ke tangan dan gun), jadi tetap POV Andrew dan tanpa slow motion.
-- Tidak ada klip lain yang diperlambat.
+## Urutan baru (hanya satu blok yang dipindah)
+1. Babak 1: masalah umum + produk + kacamata 3D (tetap)
+2. **[BARU] Mengenal Puta Dino Kayangan + kisah tenun Tidore** (±22 dtk, dipindah ke sini dan digabung dengan blok mitra)
+3. Alur: masuk → onboarding level (tetap)
+4. **[DIPERJELAS] Pindai kain → 5 langkah sampai mencoba** (±6 dtk lebih panjang)
+5. Demo POV Level 1, 2, 4 (**tanpa slow motion**)
+6. Data → pelajaran, AI memecah gerakan (tetap)
+7. "AI bisa saja salah" + validasi Bu Anita (tetap, klip sudah dipersingkat)
+8. Akses, catatan, progres, arsip, beda, bukti, potensi, penutup (tetap)
 
-## 2. Langkah pindai kain → mencoba harus jelas
-Sekarang langsung lompat dari pindai ke cerita, lalu ke latihan. Ini diganti menjadi **5 langkah bernomor**, masing-masing dengan teks besar "LANGKAH 1/5 …", jari yang menekan, dan efek suara:
+Blok "Mitra" yang lama (VO4 di tengah video) dihapus karena isinya sudah ada di blok 2.
 
-| Langkah | Visual | Sumber |
+## Blok 2: Mengenal Puta Dino Kayangan (±22 dtk)
+
+| Waktu | Suara (Andrew, VO5) | Visual |
 |---|---|---|
-| 1. Pindai label kain | IMG_7805, QR di label disorot | footage Drive |
-| 2. Cerita kain terbuka | HP 3D: `/k/PDK-DEMO-0001` digulir sampai kapal 1521 | halaman asli |
-| 3. Tekan "Belajar menenun motif ini" | jari di tombol akhir cerita | halaman asli |
-| 4. Sambungkan kacamata | HP 3D: halaman Siapkan, "Kacamata BelajarTenun · Tersambung lewat Bluetooth" | halaman asli |
-| 5. Mulai latihan | HP 3D: Praktik, lalu masuk ke POV Level 1 | halaman asli + POV |
+| 0–4 | "Kenalkan, ini Ibu Anita Gathmir, pendiri Puta Dino Kayangan di Tidore." | Footage Bu Anita (IMG_7802, saat berbicara sambil menunjuk). Lower-third: **Anita Gathmir · Pendiri Rumah Tenun Puta Dino Kayangan** |
+| 4–9 | "Tenun Tidore sempat hilang sekitar seratus tahun." | Animasi: kain 3D terurai dan memudar, angka tahun berhitung mundur ±100 tahun, peta titik dengan pin Tidore |
+| 9–14 | "Tradisinya ditinggalkan dan tidak lagi diwariskan, sampai tak ada penenun yang tersisa." | Animasi 3D: serah-terima kain antargenerasi yang **terputus** (figur kedua tidak menerima, kain jatuh), lalu alat tenun kosong |
+| 14–18 | "Sejak 2017, Bu Anita dan Puta Dino Kayangan menghidupkannya kembali." | Kain 3D **tertenun kembali**, lalu footage Bu Anita dan penenun (IMG_7796) |
+| 18–22 | "Kini BelajarTenun bekerja sama dengan mereka, untuk meneruskan tenun Tidore ke generasi berikutnya." | Logo Puta Dino Kayangan dan BelajarTenun diikat benang emas, lalu figur anak muda 3D menerima kain (serah-terima tersambung lagi) |
 
-Langkah 4 dan 5 menjadi jembatan ke bagian latihan, jadi alurnya pindai → cerita → belajar → sambungkan → latihan.
+Fakta mengikuti hasil cek: hilang ±100 tahun, tradisi ditinggalkan dan tidak diwariskan, foto arsip dari Leiden. **Tahun 2017 perlu dikonfirmasi Bu Anita**, karena sumber berbeda-beda (2017/2018/2019).
 
-## 3. Masalah awal dari Puta Dino (baru, ±15 detik)
-Diletakkan **di bagian kerja sama Puta Dino**, sebelum kartu mitra:
-1. Footage Bu Anita (IMG_7802/7796) + teks: **"Tenun Tidore sempat hilang ±100 tahun"**. Tahunnya ditampilkan berhitung 1900 → 2017 di atas kain yang memudar (aset 3D kain terurai yang sudah ada).
-2. **"Tidak ada tradisi yang meneruskannya ke generasi berikutnya"**: garis serah-terima antar generasi yang terputus.
-3. **"Sejak 2017, Puta Dino Kayangan menghidupkannya kembali"**: kain tertenun kembali (aset 3D yang sudah ada) + logo.
-4. **"BelajarTenun membantu meneruskannya ke generasi selanjutnya"**: kartu mitra (sudah ada) + VO4.
+## Blok 4: pindai kain → mencoba, 5 langkah jelas
 
-**Butuh suara:**
-- Kalau ada rekaman Bu Anita yang mengatakan ini, itu yang paling kuat. Footage di Drive tidak ada kalimat ini (sudah saya cek di transkripsi).
-- Kalau tidak ada, Andrew merekam **VO5** (±15 detik):
-  > "Tenun Tidore sempat hilang sekitar seratus tahun, karena tidak ada tradisi yang meneruskannya ke generasi berikutnya. Sejak 2017, Puta Dino Kayangan menghidupkannya kembali, dan BelajarTenun membantu meneruskannya ke generasi selanjutnya."
+| Langkah | Suara (Andrew, VO6) | Visual |
+|---|---|---|
+| LANGKAH 1/5 | "Pindai kode di label kain Puta Dino," | IMG_7805, QR di label disorot dan garis pindai |
+| LANGKAH 2/5 | "baca kisah kain dan motifnya," | HP 3D: cerita `/k/PDK-DEMO-0001` digulir (kapal 1521) |
+| LANGKAH 3/5 | "tekan Belajar menenun motif ini," | jari menekan tombol di akhir cerita |
+| LANGKAH 4/5 | "sambungkan kacamata," | HP 3D: Siapkan, "Kacamata BelajarTenun · Tersambung lewat Bluetooth", aliran Bluetooth dari kacamata 3D |
+| LANGKAH 5/5 | "dan mulai belajar bersama tutor." | HP 3D: Praktik, lalu zoom masuk ke POV Level 1 |
 
-## 4. Bagian yang "kurang bagus"
-Kandidat yang saya lihat, mohon dikonfirmasi dengan menit:detik:
-- Level 1 (bingkai sumpit): ada tangan orang lain dari atas di detik 1–15 klip asli. Bisa diganti ke potongan bersih (15,8–22) tanpa slow motion.
-- Level 2: tangan orang lain di awal IMG_7824A. Bisa diganti ke 12–19.
-- Transisi antar-level terlalu tiba-tiba. Rencananya diberi kartu level singkat (foto alat, 0,6 dtk) sebagai pemisah.
+Setiap langkah mendapat label nomor besar di kiri, bilah progres 5 segmen, dan efek suara.
 
-## 5. Konsep agar tidak aneh (tanpa mengubah banyak)
-Urutan dirapikan menjadi satu cerita:
-1. **Masalah umum** (Babak 1)
-2. **Masalah nyata di Tidore + mitra Puta Dino** (dipindah ke depan, tepat setelah produk diperkenalkan)
-3. **Cara pakai**: masuk → level, atau pindai kain → 5 langkah
-4. **Demo POV** per level
-5. **Validasi oleh penenun** (owner)
-6. Akses, bukti, potensi, dan penutup
+## Demo POV: perbaikan
+- **Tanpa slow motion:** ATBM diputar dengan kecepatan normal. Sisa waktu jawaban tutor ditutup dengan close-up dari klip yang sama.
+- **Transisi antar-level:** kartu level singkat (foto alat asli, 0,6 dtk) sebagai pemisah.
+- Mohon sebutkan menit:detik bagian lain yang "kurang bagus" supaya ikut diperbaiki.
 
-Satu-satunya perubahan urutan adalah memindahkan blok Puta Dino ke depan. Isi bagian lain tetap.
+## Yang harus direkam Andrew
+Rekam di HP, tempat tenang, jarak ±20 cm, satu file per VO. Ulangi 2× bila ada yang tersendat.
+
+**VO5: Mengenal Puta Dino Kayangan (±22 detik)**
+> "Kenalkan, ini Ibu Anita Gathmir, pendiri Puta Dino Kayangan di Tidore. Tenun Tidore sempat hilang sekitar seratus tahun. Tradisinya ditinggalkan dan tidak lagi diwariskan, sampai tak ada penenun yang tersisa. Sejak 2017, Bu Anita dan Puta Dino Kayangan menghidupkannya kembali. Kini BelajarTenun bekerja sama dengan mereka, untuk meneruskan tenun Tidore ke generasi berikutnya."
+
+**VO6: Langkah pindai kain (±8 detik)**
+> "Pindai kode di label kain Puta Dino, baca kisah kain dan motifnya, tekan Belajar menenun motif ini, sambungkan kacamata, dan mulai belajar bersama tutor."
+
+Opsional: kalau Andrew mau mengganti VO4 lama, tidak perlu. VO4 tidak dipakai lagi.
+
+## Yang perlu dikonfirmasi
+1. **Izin Bu Anita** untuk menampilkan nama lengkap, wajah, dan suara.
+2. **Tahun mulai**: 2017 (atau tahun lain menurut Bu Anita).
+3. Penulisan nama: "Anita Gathmir" atau "Anitawati Gathmir".
 
 ## Render
-Setelah disetujui, hanya bagian yang berubah yang dirender ulang. Perkiraannya sekitar 25 menit.
+Hanya bagian yang berubah yang dirender ulang. Animasi 3D baru (serah-terima terputus, lalu tersambung lagi) dibuat dari figur yang sudah ada. Perkiraan sekitar 30–40 menit setelah rekaman diterima.
